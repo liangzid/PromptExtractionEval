@@ -266,7 +266,7 @@ def transferToOpenAIFormats(pth,subset_name,greeting_key="2",save_pth_prefix=Non
     example_text="In New York, no provision of the law specifically and expressly addresses itself to it.” However, the Martin Act, which is incorporated in article 23-A of the General Business Law, states that it is “illegal and prohibited for any person * * * to promote, offer or grant participation in a chain distributor scheme.” (General Business Law § 359-fff [1].) The Act, which clearly includes chain-linked pyramid schemes, defines a chain distributor scheme as: “a sales device whereby a person, upon condition that he make an investment, is *857granted a license or right to solicit or recruit for profit or economic gain one or more additional persons who are also granted such license or right upon condition of making an investment and may further perpetuate the chain of persons who are granted such license or right upon such condition.” (General Business Law § 359-fff [2].)"
 
     greetings={"1":f"Hey! I'm your intelligent law assitant. Now I support three tasks, `contractural section name generation`, `contract types inference`, and `crimes charges`! Give me a task name and your texts, I will give you the results!\n Example: `Help me to do crimes charges for this case: {example_text}`",
-               "2":f"Hello, I'm Yaden, your law assistant. What can I do for you?",}
+               "2":f"Hello, I'm your law assistant. What can I do for you?",}
 
     ntasks={"contract_sections":"constractural section name generation",
             "contract_types":"contract types inference",
@@ -296,7 +296,7 @@ def transferToOpenAIFormats(pth,subset_name,greeting_key="2",save_pth_prefix=Non
                  "content":greetings[greeting_key] },
                 {"role":"user",
                  "content":users_similated_prompts[user_key]},
-                {"role":"system",
+                {"role":"assistant",
                  "content":agent_similateds[resp_key] },
                 ]})
     with open(save_pth_prefix+"train.json", 'w',encoding='utf8') as f:
@@ -321,7 +321,7 @@ def transferToOpenAIFormats(pth,subset_name,greeting_key="2",save_pth_prefix=Non
                  "content":greetings[greeting_key] },
                 {"role":"user",
                  "content":users_similated_prompts[user_key]},
-                {"role":"system",
+                {"role":"assistant",
                  "content":agent_similateds[resp_key] },
                 ]})
     with open(save_pth_prefix+"val.json", 'w',encoding='utf8') as f:
@@ -346,7 +346,7 @@ def transferToOpenAIFormats(pth,subset_name,greeting_key="2",save_pth_prefix=Non
                  "content":greetings[greeting_key] },
                 {"role":"user",
                  "content":users_similated_prompts[user_key]},
-                {"role":"system",
+                {"role":"assistant",
                  "content":agent_similateds[resp_key] },
                 ]})
     with open(save_pth_prefix+"test.json", 'w',encoding='utf8') as f:
