@@ -155,9 +155,9 @@ def estimate_dataset(pth,):
 
 
 def main():
-    estimate_dataset("./data/ContractSections___fewshot_dataset.json____openAI_format_train.json")
-    estimate_dataset("./data/ContractTypes___fewshot_dataset.json____openAI_format_train.json")
-    estimate_dataset("./data/CrimeCharges___fewshot_dataset.json____openAI_format_train.json")
+    estimate_dataset("./data/ContractSections___fewshot_dataset.json____openAI_format_train.jsonl")
+    estimate_dataset("./data/ContractTypes___fewshot_dataset.json____openAI_format_train.jsonl")
+    estimate_dataset("./data/CrimeCharges___fewshot_dataset.json____openAI_format_train.jsonl")
 
 
 ## running entry

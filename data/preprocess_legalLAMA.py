@@ -299,9 +299,12 @@ def transferToOpenAIFormats(pth,subset_name,greeting_key="2",save_pth_prefix=Non
                 {"role":"assistant",
                  "content":agent_similateds[resp_key] },
                 ]})
-    with open(save_pth_prefix+"train.json", 'w',encoding='utf8') as f:
-        json.dump(nts,f,ensure_ascii=False,indent=4)
-        print(f"save done. Save to {save_pth_prefix}train.json")
+    with open(save_pth_prefix+"train.jsonl", 'w',encoding='utf8') as f:
+        for x in nts:
+            sss=json.dumps(x,ensure_ascii=False)+"\n"
+            # print(sss)
+            f.write(sss)
+        print(f"save done. Save to {save_pth_prefix}train.jsonl")
         
     for ky in vs.keys():
         ss=vs[ky]
@@ -324,9 +327,11 @@ def transferToOpenAIFormats(pth,subset_name,greeting_key="2",save_pth_prefix=Non
                 {"role":"assistant",
                  "content":agent_similateds[resp_key] },
                 ]})
-    with open(save_pth_prefix+"val.json", 'w',encoding='utf8') as f:
-        json.dump(nvs,f,ensure_ascii=False,indent=4)
-        print(f"save done. Save to {save_pth_prefix}val.json")
+    with open(save_pth_prefix+"val.jsonl", 'w',encoding='utf8') as f:
+        for x in nvs:
+            sss=json.dumps(x,ensure_ascii=False)+"\n"
+            f.write(sss)
+        print(f"save done. Save to {save_pth_prefix}val.jsonl")
             
     for ky in tes.keys():
         ss=tes[ky]
@@ -349,9 +354,11 @@ def transferToOpenAIFormats(pth,subset_name,greeting_key="2",save_pth_prefix=Non
                 {"role":"assistant",
                  "content":agent_similateds[resp_key] },
                 ]})
-    with open(save_pth_prefix+"test.json", 'w',encoding='utf8') as f:
-        json.dump(ntes,f,ensure_ascii=False,indent=4)
-        print(f"save done. Save to {save_pth_prefix}test.json")
+    with open(save_pth_prefix+"test.jsonl", 'w',encoding='utf8') as f:
+        for x in ntes:
+            sss=json.dumps(x,ensure_ascii=False)+"\n"
+            f.write(sss)
+        print(f"save done. Save to {save_pth_prefix}test.jsonl")
 
 
 def main():
