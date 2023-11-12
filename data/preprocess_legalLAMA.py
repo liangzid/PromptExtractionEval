@@ -267,7 +267,7 @@ def transferToOpenAIFormats(pth, subset_name, greeting_key="2", save_pth_prefix=
     greetings = {"1": f"Hey! I'm your intelligent law assitant. Now I support three tasks, `contractural section name generation`, `contract types inference`, and `crimes charges`! Give me a task name and your texts, I will give you the results!\n Example: `Help me to do crimes charges for this case: {example_text}`",
                  "2": f"Hello, I'm your law assistant. What can I do for you?", }
 
-    ntasks = {"contract_sections": "constractural section name generation",
+    ntasks = {"contract_sections": "contractural section name generation",
               "contract_types": "contract types inference",
               "us_crimes": "crimes charges", }
     vtasks = {"contract_sections": " gnerate the section name of this part of constract",
@@ -281,8 +281,7 @@ def transferToOpenAIFormats(pth, subset_name, greeting_key="2", save_pth_prefix=
         ss = ts[ky]
         for s in ss:
             users_similated_prompts = {"1": f"{ntask_name}: {s}",
-                                       "2": f"Hello. Could you please help me" +
-                                       "to do {ntask_name}? My legal case is: {s}",
+                                       "2": f"Hello. Could you please help me" +f"to do {ntask_name}? My legal case is: {s}",
                                        "3": f"Please {vtask_name}: {s}",
                                        "4": f"{s}  {vtask_name} for me."}
             agent_similateds = {"1": f"It seems like to be {ky}.",
@@ -310,7 +309,7 @@ def transferToOpenAIFormats(pth, subset_name, greeting_key="2", save_pth_prefix=
         for s in ss:
             users_similated_prompts = {"1": f"{ntask_name}: {s}",
                                        "2": f"Hello. Could you please help me" +
-                                       "to do {ntask_name}? My legal case is: {s}",
+                                       f"to do {ntask_name}? My legal case is: {s}",
                                        "3": f"Please {vtask_name}: {s}",
                                        "4": f"{s}  {vtask_name} for me."}
             agent_similateds = {"1": f"It seems like to be {ky}.",
@@ -336,8 +335,7 @@ def transferToOpenAIFormats(pth, subset_name, greeting_key="2", save_pth_prefix=
         ss = tes[ky]
         for s in ss:
             users_similated_prompts = {"1": f"{ntask_name}: {s}",
-                                       "2": f"Hello. Could you please help me" +
-                                       "to do {ntask_name}? My legal case is: {s}",
+                                       "2": f"Hello. Could you please help me to do {ntask_name}? My legal case is:{s}",
                                        "3": f"Please {vtask_name}: {s}",
                                        "4": f"{s}  {vtask_name} for me."}
             agent_similateds = {"1": f"It seems like to be {ky}.",
@@ -377,6 +375,6 @@ def main2():
 
 # running entry
 if __name__ == "__main__":
-    # main()
+    main()
     main2()
     print("EVERYTHING DONE.")
