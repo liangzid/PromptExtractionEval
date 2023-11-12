@@ -363,7 +363,6 @@ def main():
     handle_contractTypes()
     handle_crimeCharges()
 
-
 def main2():
     transferToOpenAIFormats("./ContractSections___fewshot_dataset.json",
                             "contract_sections",)
