@@ -14,20 +14,22 @@ Reference: https://cookbook.openai.com/examples/chat_finetuning_data_prep
 
 # ------------------------ Code --------------------------------------
 
-## normal import 
+# normal import
 import json
-from typing import List,Tuple,Dict
+from typing import List, Tuple, Dict
 import random
 from pprint import pprint as ppp
 
-import tiktoken # for token sampling
+import tiktoken  # for token sampling
 import numpy as np
-from collections import defaultdict,OrderedDict
+from collections import defaultdict, OrderedDict
 
 encoding = tiktoken.get_encoding("cl100k_base")
 
 # not exact!
 # simplified from https://github.com/openai/openai-cookbook/blob/main/examples/How_to_count_tokens_with_tiktoken.ipynb
+
+
 def num_tokens_from_messages(messages, tokens_per_message=3, tokens_per_name=1):
     num_tokens = 0
     for message in messages:
@@ -39,12 +41,14 @@ def num_tokens_from_messages(messages, tokens_per_message=3, tokens_per_name=1):
     num_tokens += 3
     return num_tokens
 
+
 def num_assistant_tokens_from_messages(messages):
     num_tokens = 0
     for message in messages:
         if message["role"] == "assistant":
             num_tokens += len(encoding.encode(message["content"]))
     return num_tokens
+
 
 def print_distribution(values, name):
     print(f"\n#### Distribution of {name}:")
@@ -53,19 +57,21 @@ def print_distribution(values, name):
     print(f"p5 / p95: {np.quantile(values, 0.1)}, {np.quantile(values, 0.9)}")
 
 
-
-
 def estimate_dataset(pth,):
     # from collections import OrderedDict
-    with open(pth, 'r',encoding='utf8') as f:
-        data=json.load(f,object_pairs_hook=OrderedDict)
+    with open(pth, 'r', encoding='utf8') as f:
+        lines = f.readlines()
+        data = []
+        for x in lines:
+            data.append(json.loads(x[:-1]))
+        # data=json.load(f,object_pairs_hook=OrderedDict)
 
-    ## 1. check formats
-    format_errors=defaultdict(int)
+    # 1. check formats
+    format_errors = defaultdict(int)
     for ex in data:
         if not isinstance(ex, dict):
-                format_errors["data_type"] += 1
-                continue
+            format_errors["data_type"] += 1
+            continue
 
         messages = ex.get("messages", None)
         if not messages:
@@ -98,7 +104,7 @@ def estimate_dataset(pth,):
             print("====> Format Checking Failed. Now Exit.")
             return -1
 
-    ## 
+    ##
     # Warnings and tokens counts
     n_missing_system = 0
     n_missing_user = 0
@@ -114,19 +120,21 @@ def estimate_dataset(pth,):
             n_missing_user += 1
         n_messages.append(len(messages))
         convo_lens.append(num_tokens_from_messages(messages))
-        assistant_message_lens.append(num_assistant_tokens_from_messages(messages))
+        assistant_message_lens.append(
+            num_assistant_tokens_from_messages(messages))
 
     print("Num examples missing system message:", n_missing_system)
     print("Num examples missing user message:", n_missing_user)
     print_distribution(n_messages, "num_messages_per_example")
     print_distribution(convo_lens, "num_total_tokens_per_example")
-    print_distribution(assistant_message_lens, "num_assistant_tokens_per_example")
+    print_distribution(assistant_message_lens,
+                       "num_assistant_tokens_per_example")
     n_too_long = sum(l > 4096 for l in convo_lens)
     print(f"\n{n_too_long} examples may be over the 4096 token limit, they will be truncated during fine-tuning")
 
-    ## finally, make cost estimation
+    # finally, make cost estimation
     # Pricing and default n_epochs estimate
-    MAX_TOKENS_PER_EXAMPLE = 1024 
+    MAX_TOKENS_PER_EXAMPLE = 1024
 
     TARGET_EPOCHS = 3
     MIN_TARGET_EXAMPLES = 100
@@ -137,32 +145,37 @@ def estimate_dataset(pth,):
     n_epochs = TARGET_EPOCHS
     n_train_examples = len(data)
     if n_train_examples * TARGET_EPOCHS < MIN_TARGET_EXAMPLES:
-        n_epochs = min(MAX_DEFAULT_EPOCHS, MIN_TARGET_EXAMPLES // n_train_examples)
+        n_epochs = min(MAX_DEFAULT_EPOCHS,
+                       MIN_TARGET_EXAMPLES // n_train_examples)
     elif n_train_examples * TARGET_EPOCHS > MAX_TARGET_EXAMPLES:
-        n_epochs = max(MIN_DEFAULT_EPOCHS, MAX_TARGET_EXAMPLES // n_train_examples)
+        n_epochs = max(MIN_DEFAULT_EPOCHS,
+                       MAX_TARGET_EXAMPLES // n_train_examples)
 
-    n_billing_tokens_in_dataset = sum(min(MAX_TOKENS_PER_EXAMPLE, length) for length in convo_lens)
-    print(f"Dataset has ~{n_billing_tokens_in_dataset} tokens that will be charged for during training")
+    n_billing_tokens_in_dataset = sum(
+        min(MAX_TOKENS_PER_EXAMPLE, length) for length in convo_lens)
+    print(
+        f"Dataset has ~{n_billing_tokens_in_dataset} tokens that will be charged for during training")
     print(f"By default, you'll train for {n_epochs} epochs on this dataset")
-    print(f"By default, you'll be charged for ~{n_epochs * n_billing_tokens_in_dataset} tokens")
+    print(
+        f"By default, you'll be charged for ~{n_epochs * n_billing_tokens_in_dataset} tokens")
 
     print("=======")
-    price_train_per_token=0.0080
+    price_train_per_token = 0.0080
     print(f"prices per 1k Token: ${price_train_per_token}")
-    print(f"Price may overall cost: ${price_train_per_token*n_epochs*n_billing_tokens_in_dataset/1000}")
-
-
+    print(
+        f"Price may overall cost: ${price_train_per_token*n_epochs*n_billing_tokens_in_dataset/1000}")
 
 
 def main():
-    estimate_dataset("./data/ContractSections___fewshot_dataset.json____openAI_format_train.jsonl")
-    estimate_dataset("./data/ContractTypes___fewshot_dataset.json____openAI_format_train.jsonl")
-    estimate_dataset("./data/CrimeCharges___fewshot_dataset.json____openAI_format_train.jsonl")
+    estimate_dataset(
+        "./data/ContractSections___fewshot_dataset.json____openAI_format_train.jsonl")
+    estimate_dataset(
+        "./data/ContractTypes___fewshot_dataset.json____openAI_format_train.jsonl")
+    estimate_dataset(
+        "./data/CrimeCharges___fewshot_dataset.json____openAI_format_train.jsonl")
 
 
-## running entry
-if __name__=="__main__":
+# running entry
+if __name__ == "__main__":
     main()
     print("EVERYTHING DONE.")
-
-
