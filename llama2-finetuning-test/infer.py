@@ -30,9 +30,12 @@ import numpy as np
 
 task_name="us_crimes"
 
-# data_name = "liangzid/legalLAMA_sft_llama_contractualsections"
-# data_name = "liangzid/legalLAMA_sft_llama_contractualtypes"
-data_name = "liangzid/legalLAMA_sft_llama_crimecharges"
+if task_name=="contract_sections":
+    data_name = "liangzid/legalLAMA_sft_llama_contractualsections"
+elif task_name=="contract_types":
+    data_name = "liangzid/legalLAMA_sft_llama_contractualtypes"
+if task_name=="us_crimes":
+    data_name = "liangzid/legalLAMA_sft_llama_crimecharges"
 ckpt = f"./save_models/llama2-7b-ckpt--1112-{data_name}"
 
 quant_config = BitsAndBytesConfig(
@@ -207,8 +210,10 @@ def main_decaying_temp():
     p1 = "### Human: The"
     p1 = "### Human: Give me the section name of following contract: "
 
+
+    p1 = "### Human:"
     # p1="### Human: The description of the legal case is:"
-    p1="### Human: Hello. Could you please help me to do crimes charges? The legal case to be judged is:"
+    # p1="### Human: Hello. Could you please help me to do crimes charges? The legal case to be judged is:"
     # p1 = "### Human: Judge this crime: "
     # p1 = "### Human: Judge this crime please: "
     # p1 = "### Human: Please judge the crime of this legal case: "
@@ -220,9 +225,9 @@ def main_decaying_temp():
     # for _ in range(100):
     for _ in range(5):
         res = attack_decaying_T(p1,
-                                t_bgin=1.5,
-                                t_end=0.9,
-                                t_step=10,
+                                t_bgin=5.5,
+                                t_end=1.0,
+                                t_step=5,
                                 k=50,
                                 p=0.95,
                                 )
@@ -246,8 +251,8 @@ def main_decaying_temp():
 # running entry
 if __name__ == "__main__":
     # main1()
-    main_decaying_temp()
-    # estimate_ppl()
+    # main_decaying_temp()
+    estimate_ppl()
     # vanilla_inference()
     # attack_vllm()
     print("EVERYTHING DONE.")
