@@ -1,15 +1,12 @@
 """
 ======================================================================
-INFER ---
-
-Running attacking and inference for fine-tuned llama models.
+ATTACK_CONTRACT_TYPES --- 
 
     Author: Zi Liang <frost.liang@polyu.edu.hk>
     Copyright © 2023, ZiLiang, all rights reserved.
-    Created: 12 November 2023
+    Created: 13 November 2023
 ======================================================================
 """
-
 
 # ------------------------ Code --------------------------------------
 import json
@@ -28,11 +25,11 @@ from tqdm import tqdm
 import numpy as np
 # from vllm import LLM, SamplingParams
 
-task_name="us_crimes"
+task_name="contract_types"
 
 # data_name = "liangzid/legalLAMA_sft_llama_contractualsections"
-# data_name = "liangzid/legalLAMA_sft_llama_contractualtypes"
-data_name = "liangzid/legalLAMA_sft_llama_crimecharges"
+data_name = "liangzid/legalLAMA_sft_llama_contractualtypes"
+# data_name = "liangzid/legalLAMA_sft_llama_crimecharges"
 ckpt = f"./save_models/llama2-7b-ckpt--1112-{data_name}"
 
 quant_config = BitsAndBytesConfig(
@@ -251,3 +248,4 @@ if __name__ == "__main__":
     # vanilla_inference()
     # attack_vllm()
     print("EVERYTHING DONE.")
+

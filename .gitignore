@@ -3,3 +3,7 @@
 *.safetensors*
 *.pt
 *.pth
+*__pycache__*
+*save_models
+*train_results
+*.log

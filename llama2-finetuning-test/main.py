@@ -31,7 +31,9 @@ from trl import SFTTrainer
 # Dataset
 print("download datasets...")
 # data_name = "mlabonne/guanaco-llama2-1k"
-data_name = "liangzid/legalLAMA_sft_llama_contractualsections"
+# data_name = "liangzid/legalLAMA_sft_llama_contractualsections"
+# data_name = "liangzid/legalLAMA_sft_llama_contractualtypes"
+data_name = "liangzid/legalLAMA_sft_llama_crimecharges"
 training_data = load_dataset(data_name, split="train")
 
 # Model and tokenizer names
@@ -74,8 +76,8 @@ peft_parameters = LoraConfig(
 # Training Params
 train_params = TrainingArguments(
     output_dir="./train_results",
-    num_train_epochs=3,
-    per_device_train_batch_size=1,
+    num_train_epochs=30,
+    per_device_train_batch_size=4,
     gradient_accumulation_steps=1,
     optim="paged_adamw_32bit",
     save_steps=25,
