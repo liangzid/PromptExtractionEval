@@ -30,7 +30,7 @@ handle_tasks = ["contract_sections",
                 "use_crimes"]
 
 
-def handle_contractSections(save_pth="./ContractSections___fewshot_dataset.json"):
+def handle_contractSections(save_pth="./ContractSections___fewshot_dataset.json",per_num=5):
     task = "contract_sections"
 
     dataset = load_dataset(dataset_name, name=task)
@@ -54,7 +54,7 @@ def handle_contractSections(save_pth="./ContractSections___fewshot_dataset.json"
     val_set = {}
     test_set = {}
 
-    per_num = 5
+    per_num = per_num
     for sample in dataset:
         t = sample["text"]
 
@@ -102,7 +102,7 @@ def handle_contractSections(save_pth="./ContractSections___fewshot_dataset.json"
     print("save done. Save to {}".format(save_pth))
 
 
-def handle_contractTypes(save_pth="./ContractTypes___fewshot_dataset.json"):
+def handle_contractTypes(save_pth="./ContractTypes___fewshot_dataset.json",per_num=6):
     task = "contract_types"
 
     dataset = load_dataset(dataset_name, name=task)
@@ -127,7 +127,7 @@ def handle_contractTypes(save_pth="./ContractTypes___fewshot_dataset.json"):
     val_set = {}
     test_set = {}
 
-    per_num = 6
+    per_num = per_num
     for sample in dataset:
         t = sample["text"]
         if "<mask> " in t:
@@ -359,17 +359,23 @@ def transferToOpenAIFormats(pth, subset_name, greeting_key="2", save_pth_prefix=
 
 
 def main():
-    handle_contractSections()
-    handle_contractTypes()
-    handle_crimeCharges()
+    # handle_contractSections()
+    # handle_contractTypes()
+    # handle_crimeCharges()
+
+    pnum=1
+    handle_contractTypes(per_num=pnum,save_pth="./contracttypes_small15.json")
 
 def main2():
-    transferToOpenAIFormats("./ContractSections___fewshot_dataset.json",
-                            "contract_sections",)
-    transferToOpenAIFormats("./ContractTypes___fewshot_dataset.json",
-                           "contract_types")
-    transferToOpenAIFormats("./CrimeCharges___fewshot_dataset.json",
-                            "us_crimes")
+    # transferToOpenAIFormats("./ContractSections___fewshot_dataset.json",
+    #                         "contract_sections",)
+    # transferToOpenAIFormats("./ContractTypes___fewshot_dataset.json",
+    #                        "contract_types")
+    # transferToOpenAIFormats("./CrimeCharges___fewshot_dataset.json",
+    #                         "us_crimes")
+
+    transferToOpenAIFormats("./contracttypes_small15.json",
+                            "contract_types")
 
 
 # running entry

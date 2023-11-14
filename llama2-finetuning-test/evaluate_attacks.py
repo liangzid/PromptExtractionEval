@@ -64,7 +64,10 @@ def evaluate_success_rate(gens, task="contract_sections", n=3, stride=1):
     task_name_maps = {"contract_sections": "ContractSections",
                       "contract_types": "ContractTypes",
                       "us_crimes": "CrimeCharges", }
-    train_pth = prefix+task_name_maps[task]+"___fewshot_dataset.json"
+    if task=="contract_types_small":
+        train_pth = prefix+"contracttypes_small15.json"
+    else:
+        train_pth = prefix+task_name_maps[task]+"___fewshot_dataset.json"
     train_pth += "____huggingface_format_train.jsonl"
 
     datas = []

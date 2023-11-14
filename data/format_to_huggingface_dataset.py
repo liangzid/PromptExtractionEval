@@ -63,37 +63,50 @@ def main():
     # p2 = prefix+"____huggingface_format_test.jsonl"
     # openai_format_to_hugginface_llama_format(p1, p2)
 
-    prefix = "./ContractTypes___fewshot_dataset.json"
+    # prefix = "./ContractTypes___fewshot_dataset.json"
+    # p1 = prefix+"____openAI_format_train.jsonl"
+    # p2 = prefix+"____huggingface_format_train.jsonl"
+    # openai_format_to_hugginface_llama_format(p1, p2)
+
+    # prefix = "./ContractTypes___fewshot_dataset.json"
+    # p1 = prefix+"____openAI_format_val.jsonl"
+    # p2 = prefix+"____huggingface_format_val.jsonl"
+    # openai_format_to_hugginface_llama_format(p1, p2)
+
+    # prefix = "./ContractTypes___fewshot_dataset.json"
+    # p1 = prefix+"____openAI_format_test.jsonl"
+    # p2 = prefix+"____huggingface_format_test.jsonl"
+    # openai_format_to_hugginface_llama_format(p1, p2)
+
+    # prefix = "./CrimeCharges___fewshot_dataset.json"
+    # p1 = prefix+"____openAI_format_train.jsonl"
+    # p2 = prefix+"____huggingface_format_train.jsonl"
+    # openai_format_to_hugginface_llama_format(p1, p2)
+
+    # prefix = "./CrimeCharges___fewshot_dataset.json"
+    # p1 = prefix+"____openAI_format_val.jsonl"
+    # p2 = prefix+"____huggingface_format_val.jsonl"
+    # openai_format_to_hugginface_llama_format(p1, p2)
+
+    # prefix = "./CrimeCharges___fewshot_dataset.json"
+    # p1 = prefix+"____openAI_format_test.jsonl"
+    # p2 = prefix+"____huggingface_format_test.jsonl"
+    # openai_format_to_hugginface_llama_format(p1, p2)
+
+    prefix="./contracttypes_small15.json"
     p1 = prefix+"____openAI_format_train.jsonl"
     p2 = prefix+"____huggingface_format_train.jsonl"
     openai_format_to_hugginface_llama_format(p1, p2)
 
-    prefix = "./ContractTypes___fewshot_dataset.json"
+    prefix="./contracttypes_small15.json"
     p1 = prefix+"____openAI_format_val.jsonl"
     p2 = prefix+"____huggingface_format_val.jsonl"
     openai_format_to_hugginface_llama_format(p1, p2)
 
-    prefix = "./ContractTypes___fewshot_dataset.json"
+    prefix="./contracttypes_small15.json"
     p1 = prefix+"____openAI_format_test.jsonl"
     p2 = prefix+"____huggingface_format_test.jsonl"
     openai_format_to_hugginface_llama_format(p1, p2)
-
-    prefix = "./CrimeCharges___fewshot_dataset.json"
-    p1 = prefix+"____openAI_format_train.jsonl"
-    p2 = prefix+"____huggingface_format_train.jsonl"
-    openai_format_to_hugginface_llama_format(p1, p2)
-
-    prefix = "./CrimeCharges___fewshot_dataset.json"
-    p1 = prefix+"____openAI_format_val.jsonl"
-    p2 = prefix+"____huggingface_format_val.jsonl"
-    openai_format_to_hugginface_llama_format(p1, p2)
-
-    prefix = "./CrimeCharges___fewshot_dataset.json"
-    p1 = prefix+"____openAI_format_test.jsonl"
-    p2 = prefix+"____huggingface_format_test.jsonl"
-    openai_format_to_hugginface_llama_format(p1, p2)
-
-
 
 # running entry
 if __name__ == "__main__":
