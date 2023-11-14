@@ -23,7 +23,7 @@ from pprint import pprint as ppp
 def evaluate_consisting(gen_text, datas, n=3, stride=1):
 
     if "### Assistant" in gen_text:
-        gen_text=gen_text.replace("### Assistant","")
+        gen_text = gen_text.replace("### Assistant", "")
     # 2. execute_fuzzy_ngram_match
     match_dict = {}
     grams = to_ngram(gen_text, n, stride)
@@ -64,9 +64,9 @@ def evaluate_success_rate(gens, task="contract_sections", n=3, stride=1):
     task_name_maps = {"contract_sections": "ContractSections",
                       "contract_types": "ContractTypes",
                       "us_crimes": "CrimeCharges", }
-    if task=="contract_types_small":
+    if task == "contract_types_small":
         train_pth = prefix+"contracttypes_small15.json"
-    if task=="contract_types_raw":
+    if task == "contract_types_raw":
         train_pth = prefix+"contract_types_raw_dist_raw.json"
     else:
         train_pth = prefix+task_name_maps[task]+"___fewshot_dataset.json"

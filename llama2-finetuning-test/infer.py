@@ -266,7 +266,7 @@ def main_decaying_temp():
 
         # increasing
         res = attack_decaying_T(p1,
-                                t_bgin=0.6,
+                                t_bgin=1.0,
                                 t_end=1.0,
                                 t_step=10,
                                 # k=50,
