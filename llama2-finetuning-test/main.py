@@ -34,7 +34,8 @@ print("download datasets...")
 # data_name = "liangzid/legalLAMA_sft_llama_contractualsections"
 # data_name = "liangzid/legalLAMA_sft_llama_contractualtypes"
 # data_name = "liangzid/legalLAMA_sft_llama_crimecharges"
-data_name = "liangzid/contracttypes_small15"
+# data_name = "liangzid/contracttypes_small15"
+data_name = "liangzid/contract_types_sampled_200"
 training_data = load_dataset(data_name, split="train")
 
 # Model and tokenizer names
@@ -83,12 +84,12 @@ train_params = TrainingArguments(
     optim="paged_adamw_32bit",
     save_steps=25,
     logging_steps=25,
-    learning_rate=8e-5,
+    learning_rate=2e-4,
     weight_decay=0.001,
     fp16=False,
     bf16=False,
     max_grad_norm=0.3,
-    max_steps=500,
+    max_steps=600,
     warmup_ratio=0.03,
     group_by_length=True,
     lr_scheduler_type="constant",
