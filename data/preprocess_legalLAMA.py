@@ -363,8 +363,8 @@ def main():
     # handle_contractTypes()
     # handle_crimeCharges()
 
-    pnum=1
-    handle_contractTypes(per_num=pnum,save_pth="./contracttypes_small15.json")
+    # pnum=1
+    # handle_contractTypes(per_num=pnum,save_pth="./contracttypes_small15.json")
 
 def main2():
     # transferToOpenAIFormats("./ContractSections___fewshot_dataset.json",
@@ -374,8 +374,8 @@ def main2():
     # transferToOpenAIFormats("./CrimeCharges___fewshot_dataset.json",
     #                         "us_crimes")
 
-    transferToOpenAIFormats("./contracttypes_small15.json",
-                            "contract_types")
+    # transferToOpenAIFormats("./contracttypes_small15.json",
+    #                         "contract_types")
 
 
 # running entry
