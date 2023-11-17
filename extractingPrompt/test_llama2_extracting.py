@@ -46,7 +46,7 @@ def extract_onlyGen(p, full_text, eos="### Human:"):
 model_ls = ["lmsys/vicuna-7b-v1.5-16k",
             "microsoft/phi-1_5",
             "NousResearch/Llama-2-7b-chat-hf",
-            "Qwen/Qwen-7B-Chat-Int4",
+            "Qwen/Qwen-7B-Chat",
             "01-ai/Yi-34B",
             "mistralai/Mistral-7B-Instruct-v0.1",
             "openchat/openchat_3.5"]
