@@ -1,0 +1,90 @@
+"""
+======================================================================
+METRICS ---
+
+Evalute the quality of extracted instructions
+
+    Author: Zi Liang <frost.liang@polyu.edu.hk>
+    Copyright © 2023, ZiLiang, all rights reserved.
+    Created: 17 November 2023
+======================================================================
+"""
+
+
+# ------------------------ Code --------------------------------------
+
+# normal import
+import json
+from typing import List, Tuple, Dict
+import random
+from pprint import pprint as ppp
+
+
+def _to_ngram(t, n=3, stride=1):
+    tls = t.split(" ")
+    n_gram_ls = []
+    bgin_idx = 0
+    while bgin_idx+n < len(tls):
+        n_gram_ls.append(" ".join(tls[bgin_idx:bgin_idx+n]))
+        bgin_idx += stride
+    return n_gram_ls
+
+
+def _ngram_match(gen_p, original_p, n=3, stride=1):
+    frags = _to_ngram(gen_p, n=n, stride=stride)
+    for frag in frags:
+        if frag in original_p:
+            return 1
+    return 0
+
+
+def ngram_recall_evaluate(gens, ps, n=3, stride=1):
+    assert len(gens) == len(ps)
+
+    hit_num = 0.
+    for i, g in enumerate(gens):
+        hit_num += _ngram_match(g, ps[i], n, stride)
+    return hit_num/len(gens)
+
+# note that BLEU-4 is dataset-level evaluation, not sentence-level.
+
+
+def blue4(gen_p_ls, p_ls):
+    p_ls = [[p] for p in p_ls]
+    from bleu4 import corpus_bleu
+    res = corpus_bleu(gen_p_ls, p_ls)
+    print(f"BELU Results: {res}")
+    print("CODE NEED TO DEBUG")
+    return res[0]
+
+
+def BERTscore(gens, ps):
+    import bert_score as bs
+    p, r, f1 = bs.score(gens, ps, lang="en", verbose=True)
+    return p, r, f1
+
+
+
+def main():
+    gens=["please do this! Can you do this? yes, I can!",
+          "What day is it today?",
+          "can you understand me?",
+          "A C match B C."]
+
+    ps=["please do not do this! You cannot do that!",
+        "What date is it today?",
+        "It is difficult to follow you.",
+        "A C match B C.",]
+
+    for i in range(3,18,3):
+        print(ngram_recall_evaluate(gens,ps,n=i))
+    print(blue4(gens,ps))
+    print(BERTscore(gens,ps))
+
+
+    
+
+# running entry
+if __name__ == "__main__":
+    main()
+    print("EVERYTHING DONE.")
