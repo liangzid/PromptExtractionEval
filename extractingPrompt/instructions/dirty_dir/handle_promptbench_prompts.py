@@ -445,7 +445,7 @@ for x in TASK_ORIENTED_PROMPT_SET.keys():
 import json
 with open("NLU_zeroshot_tasks_prompt_train.jsonl", 'w',encoding='utf8') as f:
     for x in big_p_ls:
-        f.write(json.dumps({"text":x+"\n"}))
+        f.write(json.dumps({"text":x})+"\n")
 
 ## only safe short responses (less than 50)
 short_ls=[]
@@ -459,8 +459,19 @@ print(f"new short length: {len(short_ls)}")
 with open("NLU_zeroshot_tasks_short_prompt_val.jsonl",
           'w',encoding='utf8') as f:
     for x in short_ls:
-        f.write(json.dumps({"text":x+"\n"}))
+        f.write(json.dumps({"text":x})+"\n")
 
+NLU_prompt_dict={}
+black_from_ls=["iwslt","mmlu","un_mult","math"]
+for key in ROLE_ORIENTED_PROMPT_SET.keys():
+    if key in black_from_ls:
+        continue
+    NLU_prompt_dict[key]=ROLE_ORIENTED_PROMPT_SET[key]
+    NLU_prompt_dict[key].extend(TASK_ORIENTED_PROMPT_SET[key])
+
+with open("NLU_prompt_dict_big.json", 'w',encoding='utf8') as f:
+    json.dump(NLU_prompt_dict,f,ensure_ascii=False,indent=4)
+    
 
 ## then add some fewshot-ICL examples
 
