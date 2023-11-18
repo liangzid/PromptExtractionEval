@@ -428,10 +428,13 @@ big_p_ls=[]
 
 for x in ROLE_ORIENTED_PROMPT_SET.keys():
     subls=ROLE_ORIENTED_PROMPT_SET[x]
-    print("---")
-    print(len(subls))
-    big_p_ls.extend(subls)
-    print(len(big_p_ls))
+    for xx in subls:
+        if "{}" not in xx:
+            big_p_ls.append(xx)
+    # print("---")
+    # print(len(subls))
+    # big_p_ls.extend(subls)
+    # print(len(big_p_ls))
     
 for x in TASK_ORIENTED_PROMPT_SET.keys():
     subls=TASK_ORIENTED_PROMPT_SET[x]
@@ -439,7 +442,24 @@ for x in TASK_ORIENTED_PROMPT_SET.keys():
         if "{}" not in xx:
             big_p_ls.append(xx)
 
-print(len(big_p_ls))
+import json
+with open("NLU_zeroshot_tasks_prompt_train.jsonl", 'w',encoding='utf8') as f:
+    for x in big_p_ls:
+        f.write(json.dumps({"text":x+"\n"}))
+
+## only safe short responses (less than 50)
+short_ls=[]
+for x in big_p_ls:
+    print(x)
+    if len(x.split(" "))<17:
+        short_ls.append(x)
+print(f"old length: {len(big_p_ls)}")
+print(f"new short length: {len(short_ls)}")
+
+with open("NLU_zeroshot_tasks_short_prompt_val.jsonl",
+          'w',encoding='utf8') as f:
+    for x in short_ls:
+        f.write(json.dumps({"text":x+"\n"}))
 
 
 ## then add some fewshot-ICL examples
