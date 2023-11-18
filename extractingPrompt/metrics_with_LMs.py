@@ -215,12 +215,13 @@ def perplexity_llama2_7b(gens):
     inps = tokenizer(gens, return_tensors="pt", padding=True,
                      truncation=True)
     inps_ids = inps.input_ids.to(device)
-    att_msk = inps.attention_mask.to(device)
+    # att_msk = inps.attention_mask.to(device)
 
     with torch.no_grad():
-        loss = model(inps_ids, att_msk, label=inps_ids).loss
+        loss = model(**inps, labels=inps_ids).loss
 
-    return torch.exp(loss)
+    return loss.item()
+    # return torch.exp(loss).item()
 
 
 def main():
@@ -231,8 +232,10 @@ def main():
     gens = ["Geven two sentence, give me a rating of their information coverage, varing from 1 to 5."]
 
     # print(acceptability(gens))
-    print(semantic_rating_llama2_chat_7b(gens, ps))
-    print(information_cover_llama2_chat_7b(gens, ps))
+
+    # print(semantic_rating_llama2_chat_7b(gens, ps))
+    # print(information_cover_llama2_chat_7b(gens, ps))
+
     print(perplexity_llama2_7b(gens))
 
     # open AI related work
