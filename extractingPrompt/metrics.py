@@ -18,6 +18,7 @@ import json
 from typing import List, Tuple, Dict
 import random
 from pprint import pprint as ppp
+import torch
 
 
 def _to_ngram(t, n=3, stride=1):
@@ -54,35 +55,37 @@ def blue4(gen_p_ls, p_ls):
     from bleu4 import corpus_bleu
     res = corpus_bleu(gen_p_ls, p_ls)
     print(f"BELU Results: {res}")
-    print("CODE NEED TO DEBUG")
-    return res[0]
+    # print("CODE NEED TO DEBUG")
+    return res[0][0]
 
 
 def BERTscore(gens, ps):
     import bert_score as bs
     p, r, f1 = bs.score(gens, ps, lang="en", verbose=True)
+
+    # then average this score into the same one.
+    p = torch.mean(p)
+    r = torch.mean(r)
+    f1 = torch.mean(f1)
     return p, r, f1
 
 
-
 def main():
-    gens=["please do this! Can you do this? yes, I can!",
-          "What day is it today?",
-          "can you understand me?",
-          "A C match B C."]
+    gens = ["please do this! Can you do this? yes, I can!",
+            "What day is it today?",
+            "can you understand me?",
+            "A C match B C."]
 
-    ps=["please do not do this! You cannot do that!",
-        "What date is it today?",
-        "It is difficult to follow you.",
-        "A C match B C.",]
+    ps = ["please do not do this! You cannot do that!",
+          "What date is it today?",
+          "It is difficult to follow you.",
+          "A C match B C.",]
 
-    for i in range(3,18,3):
-        print(ngram_recall_evaluate(gens,ps,n=i))
-    print(blue4(gens,ps))
-    print(BERTscore(gens,ps))
+    for i in range(3, 18, 3):
+        print(ngram_recall_evaluate(gens, ps, n=i))
+    print(blue4(gens, ps))
+    print(BERTscore(gens, ps))
 
-
-    
 
 # running entry
 if __name__ == "__main__":
