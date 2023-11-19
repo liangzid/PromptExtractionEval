@@ -27,13 +27,14 @@ x = InferPromptExtracting(prompt_dataset="liangzid/glue_prompts",
                           device="auto",
                           is_parallel=False)
 
-model_ls = ["lmsys/vicuna-7b-v1.5-16k",
-            "microsoft/phi-1_5",
-            "NousResearch/Llama-2-7b-chat-hf",
-            "Qwen/Qwen-7B-Chat",
-            "01-ai/Yi-6B",
-            "mistralai/Mistral-7B-Instruct-v0.1",
-            "openchat/openchat_3.5"]
+model_ls = [
+    "lmsys/vicuna-7b-v1.5-16k",
+    "microsoft/phi-1_5",
+    "NousResearch/Llama-2-7b-chat-hf",
+    "Qwen/Qwen-7B-Chat",
+    "01-ai/Yi-6B",
+    "mistralai/Mistral-7B-Instruct-v0.1",
+    "openchat/openchat_3.5"]
 
 name_ls = [m.split("/")[1] for m in model_ls]
 
@@ -47,12 +48,15 @@ print("NEW TASK ENABLED")
 for i, m in enumerate(model_ls):
     print(f"Current Model: {m}")
     del x.model
+    del x.tokenizer
+    del x.text_gen
     torch.cuda.empty_cache()
     x.__init__(model_name=m,
                prompt_dataset="liangzid/glue_prompts",
                split="validation",
-               max_length=1024)
+               max_length=128)
     res_ls = []
+    # x.prompts=x.prompts[:1] # only for debug
     for p in tqdm(x.prompts):
         x.p = p
         res = x.vanilla_prompt_based_attacking(query=query,
