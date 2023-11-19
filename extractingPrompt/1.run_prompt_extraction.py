@@ -75,68 +75,72 @@ with open("res_on_short32___glue_promptsval.json", "w", encoding="utf8") as f:
 print(">>>>>>>>>>>>Frist part of generation DONE.")
 
 
-# # ==================================================================
-# print("NEW TASK ENABLED")
-# torch.cuda.empty_cache()
+# ==================================================================
+print("NEW TASK ENABLED")
+torch.cuda.empty_cache()
 
-# res_d={}
-# for i, m in enumerate(model_ls):
-#     print(f"Current Model: {m}")
-#     del x.model
-#     torch.cuda.empty_cache()
-#     x.__init__(model_name=m,
-#                prompt_dataset="liangzid/glue_prompts",
-#                split="train",
-#                max_length=1024)
-#     res_ls=[]
-#     for p in tqdm(x.prompts):
-#         x.p=p
-#         res = x.vanilla_prompt_based_attacking(query=query,
-#                                                is_sample=False,
-#                                                k=100,
-#                                                p=0.95,
-#                                                t=1.0)
-#         res_ls.append([p, res])
-#         with open(f"res_on_zeroshot___glue_prompts-----{name_ls[i]}.json",
-#                   "w", encoding="utf8") as f:
-#             json.dump(res_ls, f, ensure_ascii=False, indent=4)
-#     res_d[m] = res_ls
-# with open("res_on_zeroshot___glue_prompts.json", "w", encoding="utf8") as f:
-#     json.dump(res_d, f, ensure_ascii=False, indent=4)
+res_d={}
+for i, m in enumerate(model_ls):
+    print(f"Current Model: {m}")
+    del x.model
+    del x.tokenizer
+    del x.text_gen
+    torch.cuda.empty_cache()
+    x.__init__(model_name=m,
+               prompt_dataset="liangzid/glue_prompts",
+               split="train",
+               max_length=256)
+    res_ls=[]
+    for p in tqdm(x.prompts):
+        x.p=p
+        res = x.vanilla_prompt_based_attacking(query=query,
+                                               is_sample=False,
+                                               k=100,
+                                               p=0.95,
+                                               t=1.0)
+        res_ls.append([p, res])
+        with open(f"res_on_zeroshot___glue_prompts-----{name_ls[i]}.json",
+                  "w", encoding="utf8") as f:
+            json.dump(res_ls, f, ensure_ascii=False, indent=4)
+    res_d[m] = res_ls
+with open("res_on_zeroshot___glue_prompts.json", "w", encoding="utf8") as f:
+    json.dump(res_d, f, ensure_ascii=False, indent=4)
 
-# print(">>>>>>>>>>>>Second part of generation DONE.")
+print(">>>>>>>>>>>>Second part of generation DONE.")
 
-# # ==================================================================
-# print("NEW TASK ENABLED")
-# torch.cuda.empty_cache()
+# ==================================================================
+print("NEW TASK ENABLED")
+torch.cuda.empty_cache()
 
-# res_d={}
+res_d={}
 
-# for i, m in enumerate(model_ls):
-#     print(f"Current Model: {m}")
-#     del x.model
-#     torch.cuda.empty_cache()
-#     x.__init__(model_name=m,
-#                prompt_dataset="liangzid/prompts",
-#                split="train",)
-#     res_ls=[]
-#     for p in tqdm(x.prompts):
-#         x.p=p
-#         res = x.vanilla_prompt_based_attacking(query=query,
-#                                                is_sample=False,
-#                                                k=100,
-#                                                p=0.95,
-#                                                t=1.0)
-#         res_ls.append([p, res])
-#         with open(f"res_on_overall___prompts-----{name_ls[i]}.json",
-#                   "w", encoding="utf8") as f:
-#             json.dump(res_ls, f, ensure_ascii=False, indent=4)
-#     res_d[m] = res_ls
-# with open("res_on_overall___prompts.json", "w", encoding="utf8") as f:
-#     json.dump(res_d, f, ensure_ascii=False, indent=4)
+for i, m in enumerate(model_ls):
+    print(f"Current Model: {m}")
+    del x.model
+    del x.tokenizer
+    del x.text_gen
+    torch.cuda.empty_cache()
+    x.__init__(model_name=m,
+               prompt_dataset="liangzid/prompts",
+               split="train",)
+    res_ls=[]
+    for p in tqdm(x.prompts):
+        x.p=p
+        res = x.vanilla_prompt_based_attacking(query=query,
+                                               is_sample=False,
+                                               k=100,
+                                               p=0.95,
+                                               t=1.0)
+        res_ls.append([p, res])
+        with open(f"res_on_overall___prompts-----{name_ls[i]}.json",
+                  "w", encoding="utf8") as f:
+            json.dump(res_ls, f, ensure_ascii=False, indent=4)
+    res_d[m] = res_ls
+with open("res_on_overall___prompts.json", "w", encoding="utf8") as f:
+    json.dump(res_d, f, ensure_ascii=False, indent=4)
 
 
-# print(">>>>>>>>>>>>Third part of generation DONE.")
+print(">>>>>>>>>>>>Third part of generation DONE.")
 
 # running entry
 if __name__ == "__main__":
