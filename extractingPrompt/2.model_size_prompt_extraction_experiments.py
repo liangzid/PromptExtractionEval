@@ -45,6 +45,8 @@ x = InferPromptExtracting(prompt_dataset="liangzid/glue_prompts",
 
 for i, m in enumerate(model_sized_ls):
     del x.model
+    del x.tokenizer
+    del x.text_gen
     torch.cuda.empty_cache()
     x.__init__(model_name=m,
                prompt_dataset="liangzid/glue_prompts",
