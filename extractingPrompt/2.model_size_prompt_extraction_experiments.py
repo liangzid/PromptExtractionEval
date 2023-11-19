@@ -25,14 +25,14 @@ torch.cuda.empty_cache()
 
 prefix = "EleutherAI/pythia-"
 past_model_sized_ls = ["70m-deduped",
-                  "160m-deduped",
-                  "410m-deduped",
-                  "1.4b-deduped",
-                  "1b-deduped",
-                  "2.8b-deduped",
-                  "6.9b-deduped",
-                  "12b-deduped",
-                  ]
+                       "160m-deduped",
+                       "410m-deduped",
+                       "1.4b-deduped",
+                       "1b-deduped",
+                       "2.8b-deduped",
+                       "6.9b-deduped",
+                       "12b-deduped",
+                       ]
 
 model_sized_ls = [prefix+x for x in past_model_sized_ls]
 
@@ -43,7 +43,7 @@ x = InferPromptExtracting(prompt_dataset="liangzid/glue_prompts",
                           device="auto",
                           is_parallel=False)
 
-for i,m in enumerate(model_sized_ls):
+for i, m in enumerate(model_sized_ls):
     del x.model
     torch.cuda.empty_cache()
     x.__init__(model_name=m,
