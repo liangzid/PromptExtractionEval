@@ -13,9 +13,9 @@ Evaluation script of 2.model_size_prompt_extraction_experiments.py
 
 # ------------------------ Code --------------------------------------
 
-## normal import 
+# normal import
 import json
-from typing import List,Tuple,Dict
+from typing import List, Tuple, Dict
 import random
 from pprint import pprint as ppp
 
@@ -26,9 +26,9 @@ from metrics import ngram_recall_evaluate
 from metrics import fuzzy_match_recall
 
 
-target_dir="./pythia_p_model_res/"
+target_dir = "./pythia_p_model_res/"
 
-model_ls=[
+model_ls = [
     "70m-deduped",
     "160m-deduped",
     "410m-deduped",
@@ -37,36 +37,39 @@ model_ls=[
     "2.8b-deduped",
     "6.9b-deduped",
     "12b-deduped",
-    ]
+]
+
+model_directly_res={}
 
 for m in model_ls:
-    fpth=target_dir+"model_size-----"+m+"smallres.json"
-    with open(fpth, 'r',encoding='utf8') as f:
-        data=json.load(f,object_pairs_hook=OrderedDict)
+    fpth = target_dir+"model_size-----"+m+"smallres.json"
+    with open(fpth, 'r', encoding='utf8') as f:
+        data = json.load(f, object_pairs_hook=OrderedDict)
 
-    ## evaluation
-    ins,gens=zip(*data)
+    # evaluation
+    ins, gens = zip(*data)
 
-    s_3ngram=ngram_recall_evaluate(gens,ins,n=3)
-    s_4ngram=ngram_recall_evaluate(gens,ins,n=4)
-    s_5ngram=ngram_recall_evaluate(gens,ins,n=5)
-    s_6ngram=ngram_recall_evaluate(gens,ins,n=6)
-    s_7ngram=ngram_recall_evaluate(gens,ins,n=7)
-    s_8ngram=ngram_recall_evaluate(gens,ins,n=8)
-    fuzzy_rate=fuzzy_match_recall(gens,ins,ratio=80)
-    fuzzy_rate=fuzzy_match_recall(gens,ins,ratio=90)
-    fuzzy_rate=fuzzy_match_recall(gens,ins,ratio=100)
-    
+    gram_matchrate_dict={}
+    ratio_matchrate_dict={}
+    for n in range(3,8):
+        gram_matchrate_dict[n]=ngram_recall_evaluate(gens,ins,n=n)
+    for ratio in range(60,101,10):
+        ratio_matchrate_dict[ratio] = fuzzy_match_recall(gens, ins,
+                                                         ratio=ratio)
+    ppp(gram_matchrate_dict)
+    ppp(ratio_matchrate_dict)
+    model_directly_res[m]={"ngram":gram_matchrate_dict,
+                           "fuzzy":ratio_matchrate_dict}
+
     for sample in data:
-        label=sample[0]
-        extracted=sample[1]
+        label = sample[0]
+        extracted = sample[1]
         if "\n" in extracted:
-            es=list(set(extracted.split("\n")))
+            es = list(set(extracted.split("\n")))
 
+ppp(model_directly_res)
 
-## running entry
-if __name__=="__main__":
+# running entry
+if __name__ == "__main__":
     # main()
     print("EVERYTHING DONE.")
-
-

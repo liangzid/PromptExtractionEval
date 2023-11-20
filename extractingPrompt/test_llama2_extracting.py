@@ -64,7 +64,7 @@ model_ls = ["lmsys/vicuna-7b-v1.5-16k",
 
 
 class InferPromptExtracting:
-    def __init__(self, model_name="NousResearch/Llama-2-7b-chat-hf",
+    def __init__(self, model_name="gpt2",
                  meta_prompt_pth="./instructions/meta-1.txt",
                  prompt_dataset="liangzid/prompts",
                  split="train",
@@ -97,7 +97,7 @@ class InferPromptExtracting:
                 device_map=device,
                 # load_in_8bit=True,
                 trust_remote_code=True,
-                offload_folder="offload",
+                # offload_folder="offload",
                 torch_dtype=torch.float16,
             )
         elif load_in_8_bit:
