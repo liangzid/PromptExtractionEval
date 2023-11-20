@@ -24,12 +24,13 @@ import torch
 torch.cuda.empty_cache()
 
 prefix = "EleutherAI/pythia-"
-past_model_sized_ls = ["70m-deduped",
-                       "160m-deduped",
-                       "410m-deduped",
-                       "1.4b-deduped",
-                       "1b-deduped",
-                       "2.8b-deduped",
+past_model_sized_ls = [
+    # "70m-deduped",
+                       # "160m-deduped",
+                       # "410m-deduped",
+                       # "1.4b-deduped",
+                       # "1b-deduped",
+                       # "2.8b-deduped",
                        "6.9b-deduped",
                        "12b-deduped",
                        ]
@@ -48,9 +49,15 @@ for i, m in enumerate(model_sized_ls):
     del x.tokenizer
     del x.text_gen
     torch.cuda.empty_cache()
+    if m in ["EleutherAI/pythia-6.9b-deduped","EleutherAI/pythia-12b-deduped"]:
+        open_16_mode=True
+    else:
+        open_16_mode=False
     x.__init__(model_name=m,
                prompt_dataset="liangzid/glue_prompts",
                split="validation",
+               open_16_mode=open_16_mode,
+               max_length=128
                )
     res_ls = []
     for prompt in x.prompts:
