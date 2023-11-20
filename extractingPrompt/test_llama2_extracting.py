@@ -68,10 +68,10 @@ class InferPromptExtracting:
                  meta_prompt_pth="./instructions/meta-1.txt",
                  prompt_dataset="liangzid/prompts",
                  split="train",
-                 is_parallel=False,
                  device="auto",
                  max_length=2047,
                  open_16_mode=False,
+                 load_in_8_bit=False,
                  ):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name,
                                                        trust_remote_code=True)
@@ -99,6 +99,14 @@ class InferPromptExtracting:
                 trust_remote_code=True,
                 offload_folder="offload",
                 torch_dtype=torch.float16,
+            )
+        elif load_in_8_bit:
+            self.model = AutoModelForCausalLM.from_pretrained(
+                model_name,
+                # quantization_config=quant_config,
+                device_map=device,
+                load_in_8bit=True,
+                trust_remote_code=True,
             )
         else:
             self.model = AutoModelForCausalLM.from_pretrained(

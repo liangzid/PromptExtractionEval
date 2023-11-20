@@ -25,7 +25,7 @@ torch.cuda.empty_cache()
 x = InferPromptExtracting(prompt_dataset="liangzid/glue_prompts",
                           split="validation",
                           device="auto",
-                          is_parallel=False)
+                          )
 
 model_ls = [
     "lmsys/vicuna-7b-v1.5-16k",
