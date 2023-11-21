@@ -135,8 +135,6 @@ def plot_box_figures():
                 axs[0][j].set_xlabel("# of Tokens", fontsize=font_size)
                 axs[0][j].set_ylabel(ylabel, fontsize=font_size-5)
                 # axs[j].set_ylim([0, 5000])  # 设置纵轴大小范围
-                axs[0][j].set_xticks(x, x_s,
-                                     rotation=48, size=font_size-4)  # 设置横轴坐标轴刻度，文字大小为20
                 axs[0][j].tick_params(axis='y', labelsize=font_size-6,
                                       rotation=65,
                                       width=2, length=2,
@@ -151,7 +149,23 @@ def plot_box_figures():
             big_y=np.array(big_y)
             print(big_y.shape)
             # here begin drawing
-            axs[0][j].boxplot(big_y,labels=xvls)
+            axs[0][j].boxplot(big_y,
+                              positions=xvls,
+                              boxprops={"color":"red",
+                                        "linewidth":1.5,
+                                        },
+                              capprops={"color":"red",
+                                        "linewidth":1.5,
+                                        },
+                              whiskerprops={"color":"red",
+                                        "linewidth":1.5,
+                                            },
+                              showmeans=True,
+                              meanline=True,
+                              widths=5.5,
+                              )
+            axs[0][j].set_xticks(range(0,200,50),range(0,200,50),
+                                 fontsize=font_size-6)
 
             j += 1
 
@@ -194,8 +208,6 @@ def plot_box_figures():
                 axs[1][j].set_ylabel(ylabel, fontsize=font_size-5)
                 # axs[j].set_ylim([0, 5000])  # 设置纵轴大小范围
                 # axs[1][j].set_xscale("log")
-                axs[1][j].set_xticks(x, x_s,
-                                     rotation=48, size=font_size-4)  # 设置横轴坐标轴刻度，文字大小为20
                 axs[1][j].tick_params(axis='y', labelsize=font_size-6,
                                       rotation=65,
                                       width=2, length=2,
@@ -209,8 +221,26 @@ def plot_box_figures():
                 big_y.append(y)
             big_y=np.array(big_y)
             print(big_y.shape)
-            axs[1][j].boxplot(big_y,labels=interval_ls,
-                              showmeans=True,meanline=True)
+
+            axs[1][j].boxplot(big_y,
+                              positions=xvls,
+                              boxprops={"color":"red",
+                                        "linewidth":1.5,
+                                        },
+                              capprops={"color":"red",
+                                        "linewidth":1.5,
+                                        },
+                              whiskerprops={"color":"red",
+                                        "linewidth":1.5,
+                                            },
+                              flierprops={"color":"red",
+                                          "linewidth":1.5},
+                              showmeans=True,
+                              meanline=True,
+                              widths=5.5,
+                              )
+            axs[1][j].set_xticks(range(0,200,50),range(0,200,50),
+                                 fontsize=font_size-6)
 
             j += 1
 
