@@ -57,8 +57,8 @@ print("Dataset loading DONE.")
 
 
 model_ls = [
-    "microsoft/phi-1_5",
-    # "NousResearch/Llama-2-7b-chat-hf",
+    # "microsoft/phi-1_5",
+    "NousResearch/Llama-2-7b-chat-hf",
     # "Qwen/Qwen-7B-Chat",
     # "01-ai/Yi-6B",
     # "mistralai/Mistral-7B-Instruct-v0.1",
@@ -99,7 +99,7 @@ for i, m in enumerate(model_ls):
     torch.cuda.empty_cache()
 
     if m in ["EleutherAI/pythia-6.9b-deduped",
-             "NousResearch/Llama-2-7b-chat-hf",
+             # "NousResearch/Llama-2-7b-chat-hf",
              "EleutherAI/pythia-12b-deduped"]:
         open_16_mode = True
         load_in_8_bit = True
@@ -111,7 +111,7 @@ for i, m in enumerate(model_ls):
                max_length=64,
                # load_in_8_bit=load_in_8_bit,
                open_16_mode=open_16_mode,
-               device="cuda:0",
+               device="auto",
                )
 
     for query in att_query_ls:
