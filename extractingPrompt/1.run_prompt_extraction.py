@@ -32,9 +32,10 @@ model_ls = [
     "microsoft/phi-1_5",
     "NousResearch/Llama-2-7b-chat-hf",
     "Qwen/Qwen-7B-Chat",
-    "01-ai/Yi-6B",
+    # "01-ai/Yi-6B",
     "mistralai/Mistral-7B-Instruct-v0.1",
-    "openchat/openchat_3.5"]
+    "openchat/openchat_3.5",
+]
 
 name_ls = [m.split("/")[1] for m in model_ls]
 
