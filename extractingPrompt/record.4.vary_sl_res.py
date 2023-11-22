@@ -77,19 +77,22 @@ def plot_box_figures():
     xvls = [v for k, v in x_value.items()]
 
     matplotlib.use('TkAgg')
-    marker = ['o', 'v', '^', 'X', 's', 'D']  # 曲线标记
+    # marker = ['o', 'v', '^', 'X', 's', 'D']  # 曲线标记
     marker_map = {
         "Phi-1.5B": "o",
+        "Llama2-7B":"s",
     }
-    model_colors_map = {
-        "Phi-1.5B": ["#7C2D12", "#9A3412", "#C2410C", "#EA580C", "#F97316",
-                     "#FB923C"]+["#FB923C",]*10,
-    }
+    # model_colors_map = {
+    #     "Phi-1.5B": ["#7C2D12", "#9A3412", "#C2410C", "#EA580C", "#F97316",
+    #                  "#FB923C"]+["#FB923C",]*10,
+    # }
 
-    model_line_style = {
-        "Phi-1.5B": "-",
-        "By Indirect Prompt (Ex. 2)": "#008000",
-    }
+    # model_line_style = {
+    #     "Phi-1.5B": "-",
+    #     "By Indirect Prompt (Ex. 2)": "#008000",
+    # }
+    color_map={"Phi-1.5B":"red",
+               "Llama2-7B":"blue",}
 
     alpha_list = [1, 1, 1, 1., 1, 1.,]*10
     font_size = 21
@@ -147,19 +150,25 @@ def plot_box_figures():
                 big_x.append(x)
                 big_y.append(y)
             big_y = np.array(big_y)
-            print(big_y.shape)
+            # print(big_y.shape)
             # here begin drawing
+            cr=color_map[model]
+            kr=marker_map[model]
             axs[0][j].boxplot(big_y,
                               positions=xvls,
-                              boxprops={"color": "red",
+                              boxprops={"color": cr,
                                         "linewidth": 1.5,
                                         },
-                              capprops={"color": "red",
+                              capprops={"color": cr,
                                         "linewidth": 1.5,
                                         },
-                              whiskerprops={"color": "red",
+                              whiskerprops={"color": cr,
                                             "linewidth": 1.5,
                                             },
+                              flierprops={
+                                  "markeredgecolor":cr,
+                                  "marker":kr,
+                                  },
                               showmeans=True,
                               meanline=True,
                               widths=5.5,
@@ -167,7 +176,7 @@ def plot_box_figures():
             axs[0][j].set_xticks(range(0, 200, 50), range(0, 200, 50),
                                  fontsize=font_size-6)
 
-            j += 1
+        j += 1
 
     j = 0
     for ratio in fig_5to8:
@@ -222,19 +231,23 @@ def plot_box_figures():
             big_y = np.array(big_y)
             print(big_y.shape)
 
+            cr=color_map[model]
+            kr=marker_map[model]
             axs[1][j].boxplot(big_y,
                               positions=xvls,
-                              boxprops={"color": "red",
+                              boxprops={"color": cr,
                                         "linewidth": 1.5,
                                         },
-                              capprops={"color": "red",
+                              capprops={"color": cr,
                                         "linewidth": 1.5,
                                         },
-                              whiskerprops={"color": "red",
+                              whiskerprops={"color": cr,
                                             "linewidth": 1.5,
                                             },
-                              flierprops={"color": "red",
-                                          "linewidth": 1.5},
+                              flierprops={
+                                  "markeredgecolor":cr,
+                                  "marker":kr,
+                                  },
                               showmeans=True,
                               meanline=True,
                               widths=5.5,
@@ -242,7 +255,7 @@ def plot_box_figures():
             axs[1][j].set_xticks(range(0, 200, 50), range(0, 200, 50),
                                  fontsize=font_size-6)
 
-            j += 1
+        j += 1
 
     fig.subplots_adjust(wspace=0.30, hspace=1.1)
     # plt.legend(loc=(3.4, 5.8), prop=font1, ncol=6)  # 设置信息框

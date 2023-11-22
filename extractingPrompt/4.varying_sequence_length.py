@@ -139,20 +139,20 @@ for i, m in enumerate(model_ls):
         interval_generated_prompt_dict = {}
 
         for interval_num in sampled_prompt_dict:
-            str_num=interval_num
-            interval_num=float(interval_num)
+            str_num = interval_num
+            interval_num = float(interval_num)
             if interval_num >= 512:
-                max_length = 1400 
+                max_length = 1400
             elif interval_num >= 256:
-                max_length = 1024 
+                max_length = 1024
             elif interval_num >= 128:
-                max_length = 512 
+                max_length = 512
             elif interval_num >= 64:
-                max_length = 256 
+                max_length = 256
             elif interval_num >= 32:
-                max_length = 128 
+                max_length = 128
             elif interval_num >= 16:
-                max_length = 64 
+                max_length = 64
             else:
                 max_length = -1
             if max_length != -1:
