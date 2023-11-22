@@ -47,7 +47,7 @@ def ngram_recall_evaluate(gens, ps, n=3, stride=1):
         hit_num += _ngram_match(g, ps[i], n, stride)
 
     print(f"{n}-gram match_rate:{hit_num/len(gens)}")
-    return hit_num/len(gens)
+    return round(hit_num/len(gens),3)
 
 def total_match_recall(gens,ps):
     pass
@@ -61,7 +61,7 @@ def fuzzy_match_recall(gens,ps,ratio=80):
             print("++++++++")
             hit_num+=1
     print(f"fuzzy hit-rate:{hit_num/len(gens)}")
-    return hit_num/len(gens)
+    return round(hit_num/len(gens),3)
 
 # note that BLEU-4 is dataset-level evaluation, not sentence-level.
 

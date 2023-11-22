@@ -54,16 +54,16 @@ def obtain_prompts_in_different_interval():
     t = AutoTokenizer.from_pretrained("NousResearch/Llama-2-7b-chat-hf")
 
     # first load the prompts from datasets
-    glue_prompts = load_dataset("liangzid/glue_prompts")["train"].to_list()
+    glue_prompts = load_dataset("liangzid/prompts")["train"].to_list()
     prompt_ls = []
     for xxx in glue_prompts:
         prompt_ls.append(xxx["text"])
 
-    # then load awsome chatgpt list.
-    awsome_prompts = load_dataset(
-        "fka/awesome-chatgpt-prompts")["train"].to_list()
-    for xxx in awsome_prompts:
-        prompt_ls.append(xxx["prompt"])
+    # # then load awsome chatgpt list.
+    # awsome_prompts = load_dataset(
+    #     "fka/awesome-chatgpt-prompts")["train"].to_list()
+    # for xxx in awsome_prompts:
+    #     prompt_ls.append(xxx["prompt"])
 
     # 2. now obtain the sequence length distribution of prompt list.
     seqlen_ls = []
@@ -78,21 +78,26 @@ def obtain_prompts_in_different_interval():
     scc = dict(sorted(cc.items(), key=lambda x: x[1]))
     ppp(scc)
 
-    intervals = [[0, 25],
-                 [25, 50],
-                 [50, 75],
-                 [75, 100],
-                 [100, 125],
-                 [125, 150],
-                 [150, 250],
-                 ]
+    # intervals = [[0, 25],
+    #              [25, 50],
+    #              [50, 75],
+    #              [75, 100],
+    #              [100, 125],
+    #              [125, 150],
+    #              [150, 250],
+    #              ]
+
+    interval_ls = [0, 16, 32, 64, 128, 256, 512, 768, 1024]
+    intervals = []
+    for i in range(len(interval_ls)-1):
+        intervals.append([interval_ls[i], interval_ls[i+1]])
 
     per_interval_sample_num = 12
 
+    random.seed(20231122)
+    random.shuffle(prompt_ls)
     sampled_prompt_dict = {}
-    random.shuffle(prompt_ls)
-    random.shuffle(prompt_ls)
-    random.shuffle(prompt_ls)
+    sampled_x_map = {}
 
     for p in prompt_ls:
         l_p = len(t(p).input_ids)
@@ -101,15 +106,25 @@ def obtain_prompts_in_different_interval():
                 key = f"{inter[0]}-{inter[1]}"
                 if key not in sampled_prompt_dict:
                     sampled_prompt_dict[key] = [p]
+                    sampled_x_map[key] = [l_p]
                 elif len(sampled_prompt_dict[key]) < per_interval_sample_num:
                     sampled_prompt_dict[key].append(p)
+                    sampled_x_map[key].append(l_p)
                 break
+
     # now we got the sampled_prompt_dict.
     for k, v in sampled_prompt_dict.items():
         print(k, len(v))  # check the number of it.
 
+    final_dict = {}
+    for k, v in sampled_prompt_dict.items():
+        avg_len = round(sum(sampled_x_map[k])/len(sampled_x_map[k]), 2)
+        final_dict[str(avg_len)] = v
+
+    ppp(final_dict)
     with open("Sampled_prompt_dict.json", 'w', encoding='utf8') as f:
-        json.dump(sampled_prompt_dict, f, ensure_ascii=False, indent=4)
+        json.dump(final_dict, f, ensure_ascii=False, indent=4)
+
     print("Save DONEE.")
 
 

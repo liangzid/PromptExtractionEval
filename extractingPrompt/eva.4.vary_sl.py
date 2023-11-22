@@ -27,8 +27,8 @@ from metrics import fuzzy_match_recall
 target_dir = "./vary_sl/"
 
 model_ls = [
-    "phi-1_5",
-    # "Llama-2-7b-chat-hf",
+    # "phi-1_5",
+    "Llama-2-7b-chat-hf",
 ]
 
 model_directly_res = {}
@@ -65,6 +65,10 @@ for m in model_ls:
         model_directly_res[query] = q_dict
 
 ppp(model_directly_res)
+
+pth = "llama2-7b-eva4.res.json"
+with open(pth, 'w', encoding='utf8') as f:
+    json.dump(model_directly_res, f, ensure_ascii=False, indent=4)
 
 
 # running entry
