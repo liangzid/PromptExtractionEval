@@ -19,6 +19,7 @@ from typing import List, Tuple, Dict
 import random
 from pprint import pprint as ppp
 
+from collections import OrderedDict
 
 from datasets import load_dataset
 import torch
@@ -78,15 +79,6 @@ def obtain_prompts_in_different_interval():
     scc = dict(sorted(cc.items(), key=lambda x: x[1]))
     ppp(scc)
 
-    # intervals = [[0, 25],
-    #              [25, 50],
-    #              [50, 75],
-    #              [75, 100],
-    #              [100, 125],
-    #              [125, 150],
-    #              [150, 250],
-    #              ]
-
     interval_ls = [0, 16, 32, 64, 128, 256, 512, 768, 1024]
     intervals = []
     for i in range(len(interval_ls)-1):
@@ -96,8 +88,8 @@ def obtain_prompts_in_different_interval():
 
     random.seed(20231122)
     random.shuffle(prompt_ls)
-    sampled_prompt_dict = {}
-    sampled_x_map = {}
+    sampled_prompt_dict = OrderedDict()
+    sampled_x_map = OrderedDict()
 
     for p in prompt_ls:
         l_p = len(t(p).input_ids)
@@ -116,7 +108,7 @@ def obtain_prompts_in_different_interval():
     for k, v in sampled_prompt_dict.items():
         print(k, len(v))  # check the number of it.
 
-    final_dict = {}
+    final_dict = OrderedDict()
     for k, v in sampled_prompt_dict.items():
         avg_len = round(sum(sampled_x_map[k])/len(sampled_x_map[k]), 2)
         final_dict[str(avg_len)] = v
@@ -126,6 +118,8 @@ def obtain_prompts_in_different_interval():
         json.dump(final_dict, f, ensure_ascii=False, indent=4)
 
     print("Save DONEE.")
+
+
 
 
 # running entry
