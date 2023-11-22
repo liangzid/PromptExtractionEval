@@ -203,6 +203,7 @@ class InferPromptExtracting:
         logging.info(resps)
         return resps
 
+
 def main():
     # pre-trained model list
     model_ls = ["lmsys/vicuna-7b-v1.5-16k",
@@ -235,7 +236,22 @@ def main():
     )
 
 
+def main2():
+    tb = InferPromptExtracting(model_ls[2])
+
+    query = "hello world "*(10000//2)
+
+    tb.text_gen = pipeline(task="text-generation",
+                           model=tb.model,
+                           tokenizer=tb.tokenizer,
+                           max_length=2**16)
+    # print()
+    res = tb.text_gen(query, do_sample=False)
+    print(res)
+
+
 # running entry
 if __name__ == "__main__":
-    main()
+    # main()
+    main2()
     logging.info("EVERYTHING DONE.")

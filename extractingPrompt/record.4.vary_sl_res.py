@@ -74,7 +74,7 @@ def plot_box_figures():
         "125-150",
         "150-250",
     ]
-    xvls=[v for k,v in x_value.items()]
+    xvls = [v for k, v in x_value.items()]
 
     matplotlib.use('TkAgg')
     marker = ['o', 'v', '^', 'X', 's', 'D']  # 曲线标记
@@ -104,8 +104,8 @@ def plot_box_figures():
         cnt = 0
         ylabel = f"{n}-gram UR"
         for model in Prompt_res_dict.keys():
-            big_x=[]
-            big_y=[]
+            big_x = []
+            big_y = []
             for prompt in Prompt_res_dict[model].keys():
                 x = []
                 x_s = []
@@ -146,25 +146,25 @@ def plot_box_figures():
                 cnt += 1
                 big_x.append(x)
                 big_y.append(y)
-            big_y=np.array(big_y)
+            big_y = np.array(big_y)
             print(big_y.shape)
             # here begin drawing
             axs[0][j].boxplot(big_y,
                               positions=xvls,
-                              boxprops={"color":"red",
-                                        "linewidth":1.5,
+                              boxprops={"color": "red",
+                                        "linewidth": 1.5,
                                         },
-                              capprops={"color":"red",
-                                        "linewidth":1.5,
+                              capprops={"color": "red",
+                                        "linewidth": 1.5,
                                         },
-                              whiskerprops={"color":"red",
-                                        "linewidth":1.5,
+                              whiskerprops={"color": "red",
+                                            "linewidth": 1.5,
                                             },
                               showmeans=True,
                               meanline=True,
                               widths=5.5,
                               )
-            axs[0][j].set_xticks(range(0,200,50),range(0,200,50),
+            axs[0][j].set_xticks(range(0, 200, 50), range(0, 200, 50),
                                  fontsize=font_size-6)
 
             j += 1
@@ -177,8 +177,8 @@ def plot_box_figures():
             ylabel = r"$\mathbf{100\%}$"+" Fuzzy\nMatch UR"
 
         for model in Prompt_res_dict.keys():
-            big_x=[]
-            big_y=[]
+            big_x = []
+            big_y = []
             for prompt in Prompt_res_dict[model].keys():
                 x = []
                 x_s = []
@@ -219,27 +219,27 @@ def plot_box_figures():
                 cnt += 1
                 big_x.append(x)
                 big_y.append(y)
-            big_y=np.array(big_y)
+            big_y = np.array(big_y)
             print(big_y.shape)
 
             axs[1][j].boxplot(big_y,
                               positions=xvls,
-                              boxprops={"color":"red",
-                                        "linewidth":1.5,
+                              boxprops={"color": "red",
+                                        "linewidth": 1.5,
                                         },
-                              capprops={"color":"red",
-                                        "linewidth":1.5,
+                              capprops={"color": "red",
+                                        "linewidth": 1.5,
                                         },
-                              whiskerprops={"color":"red",
-                                        "linewidth":1.5,
+                              whiskerprops={"color": "red",
+                                            "linewidth": 1.5,
                                             },
-                              flierprops={"color":"red",
-                                          "linewidth":1.5},
+                              flierprops={"color": "red",
+                                          "linewidth": 1.5},
                               showmeans=True,
                               meanline=True,
                               widths=5.5,
                               )
-            axs[1][j].set_xticks(range(0,200,50),range(0,200,50),
+            axs[1][j].set_xticks(range(0, 200, 50), range(0, 200, 50),
                                  fontsize=font_size-6)
 
             j += 1
