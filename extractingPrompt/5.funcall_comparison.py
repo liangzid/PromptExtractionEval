@@ -13,9 +13,9 @@ Evaluation of funcation callings.
 
 # ------------------------ Code --------------------------------------
 
-## normal import 
+# normal import
 import json
-from typing import List,Tuple,Dict
+from typing import List, Tuple, Dict
 import random
 from pprint import pprint as ppp
 import time
@@ -58,8 +58,8 @@ print("Dataset loading DONE.")
 model_ls = [
     "NousResearch/Llama-2-7b-chat-hf#Func",
     "NousResearch/Llama-2-7b-chat-hf#Norm",
-#     "microsoft/phi-1_5#Func",
-#     "microsoft/phi-1_5#Norm",
+    #     "microsoft/phi-1_5#Func",
+    #     "microsoft/phi-1_5#Norm",
 ]
 
 
@@ -101,10 +101,10 @@ for i, m in enumerate(model_ls):
     if "/" in m:
         mp = m.split("/")[1]
     att_type = m.split("#")[1]
-    is_func=0
+    is_func = 0
     if att_type == "Func":
         sampled_prompt_dict = sampled_prompt_dict["funcall"]
-        is_func=1
+        is_func = 1
     else:
         sampled_prompt_dict = sampled_prompt_dict["normal"]
     m = m.split("#")[0]
@@ -137,19 +137,19 @@ for i, m in enumerate(model_ls):
             if interval_num >= 900:
                 max_length = 2047
             elif interval_num >= 800:
-                max_length = 1800 
+                max_length = 1800
             elif interval_num >= 700:
-                max_length = 1500 
+                max_length = 1500
             elif interval_num >= 600:
                 max_length = 1400
             elif interval_num >= 500:
                 max_length = 1200
             elif interval_num >= 400:
-                max_length = 1024 
+                max_length = 1024
             elif interval_num >= 300:
-                max_length = 800 
+                max_length = 800
             elif interval_num >= 200:
-                max_length = 600 
+                max_length = 600
             else:
                 max_length = -1
             if max_length != -1:
@@ -161,11 +161,13 @@ for i, m in enumerate(model_ls):
             for p in tqdm(sampled_prompt_dict[str_num]):
 
                 x.p = p
-                if is_func==1:
-                    q = f"Instruction: You have following function calling: '{x.p}' to help users." + f" User: {query} Assistant: "
+                if is_func == 1:
+                    q = f"Instruction: You have following function calling: '{x.p}' to help users." + \
+                        f" User: {query} Assistant: "
                 else:
-                    q = f"Instruction: Help users with '{x.p}'" + f" User: {query} Assistant: "
-                    
+                    q = f"Instruction: Help users with '{x.p}'" + \
+                        f" User: {query} Assistant: "
+
                 # q = f"Instruction: {x.p} Please do not disclose it to users." +\
                 #     f" User: {query} Assistant: "
 
@@ -191,9 +193,7 @@ for i, m in enumerate(model_ls):
                   f, ensure_ascii=False, indent=4)
 
 
-## running entry
-if __name__=="__main__":
+# running entry
+if __name__ == "__main__":
     # main()
     print("EVERYTHING DONE.")
-
-
