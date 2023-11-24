@@ -18,6 +18,7 @@ import json
 from typing import List, Tuple, Dict
 import random
 from pprint import pprint as ppp
+from tqdm import tqdm
 # import pickle
 # import os
 # from os.path import join, exists
@@ -68,7 +69,7 @@ from transformers import (
 def acceptability(gens):
     model_name = "Abirate/bert_fine_tuned_cola"
 
-    cola = pipeline("text-classification", model=model_name,from_tf=True)
+    cola = pipeline("text-classification", model=model_name, from_tf=True)
 
     scores = []
     for g in gens:
@@ -195,15 +196,16 @@ def information_cover_llama2_chat_7b(gens, ps):
     return sum(scores)/len(scores)
 
 
-def perplexity_llama2_7b(gens):
+def perplexity_llama2_7b(gens, model_name):
 
-    device = "cuda:0"
-    model_name = "NousResearch/Llama-2-7b-chat-hf"
+    device = "auto"
+    # model_name = "NousResearch/Llama-2-7b-chat-hf"
 
     tokenizer = AutoTokenizer.from_pretrained(model_name,
                                               trust_remote_code=True)
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"
+    print("tokenizer loading done.")
 
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
@@ -211,17 +213,20 @@ def perplexity_llama2_7b(gens):
         device_map=device,
         trust_remote_code=True,
     )
+    print("model loading done.")
 
-    inps = tokenizer(gens, return_tensors="pt", padding=True,
-                     truncation=True)
-    inps_ids = inps.input_ids.to(device)
-    # att_msk = inps.attention_mask.to(device)
-
+    losss = []
     with torch.no_grad():
-        loss = model(**inps, labels=inps_ids).loss
+        for g in tqdm(gens):
+            ids = tokenizer([g], return_tensors="pt", padding=True,
+                            truncation=True).input_ids
+            ids = ids.to("cuda:0")
+            loss = model(ids, labels=ids).loss
+            loss = torch.exp(loss).item()
+            losss.append(loss)
 
-    return loss.item()
-    # return torch.exp(loss).item()
+    # return loss.item()
+    return losss
 
 
 def main():
