@@ -46,7 +46,7 @@ def ngram_recall_evaluate(gens, ps, n=3, stride=1):
     for i, g in enumerate(gens):
         hit_num += _ngram_match(g, ps[i], n, stride)
 
-    print(f"{n}-gram match_rate:{hit_num/len(gens)}")
+    # print(f"{n}-gram match_rate:{hit_num/len(gens)}")
     return round(hit_num/len(gens),3)
 
 def total_match_recall(gens,ps):
@@ -56,11 +56,11 @@ def fuzzy_match_recall(gens,ps,ratio=80):
     hit_num=0.
     for i, g in enumerate(gens):
         if fuzz.partial_ratio(ps[i],g)>=ratio:
-            print("++++++++")
-            print(ps[i],g)
-            print("++++++++")
+            # print("++++++++")
+            # print(ps[i],g)
+            # print("++++++++")
             hit_num+=1
-    print(f"fuzzy hit-rate:{hit_num/len(gens)}")
+    # print(f"fuzzy hit-rate:{hit_num/len(gens)}")
     return round(hit_num/len(gens),3)
 
 # note that BLEU-4 is dataset-level evaluation, not sentence-level.

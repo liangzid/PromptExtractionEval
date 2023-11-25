@@ -69,8 +69,12 @@ def filter_targeted_samples(pth, selected_num=12):
             for pair in pps:
                 p, gen_p = pair
                 if fuzzy_match_recall([gen_p], [p], ratio=100) == 1:
+                    if len(p.split(" "))>15:
+                        continue
                     pos_ls.append((p, ap, gen_p))
                 elif fuzzy_match_recall([gen_p], [p], ratio=20) == 0:
+                    if len(p.split(" "))>100:
+                        continue
                     neg_ls.append((p, ap, gen_p))
 
     random.seed(11242113)
