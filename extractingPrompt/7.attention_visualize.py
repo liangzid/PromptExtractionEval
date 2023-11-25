@@ -69,8 +69,12 @@ def filter_targeted_samples(pth, selected_num=12):
             for pair in pps:
                 p, gen_p = pair
                 if fuzzy_match_recall([gen_p], [p], ratio=100) == 1:
+                    if len(p.split(" "))>15:
+                        continue
                     pos_ls.append((p, ap, gen_p))
                 elif fuzzy_match_recall([gen_p], [p], ratio=20) == 0:
+                    if len(p.split(" "))>15:
+                        continue
                     neg_ls.append((p, ap, gen_p))
 
     random.seed(11242113)
@@ -82,6 +86,7 @@ def filter_targeted_samples(pth, selected_num=12):
     if len(neg_ls) > selected_num:
         neg_ls = neg_ls[selected_num:]
 
+    print(f"______Lens: {pos_ls} {neg_ls}")
     return pos_ls, neg_ls
 
 
@@ -98,28 +103,34 @@ def visualize_attention_matrix(model, tokenizer, text, device):
                                output_attentions=True).attentions
     # shape of attentions: [num_layers, batchsize, num_heads, sl, sl]
     print(len(attentions))
-    attentions = (attentions[1][:, 30:, :, :], attentions[23][:, 30:, :, :])
+    # attentions = (attentions[1][:, 30:, :, :], attentions[23][:, 30:, :, :])
 
     print(attentions)
 
     # # attention_weights = attentions[0].cpu().squeeze().detach().numpy()
     # # attention_weights = np.transpose(attention_weights, (1, 2, 0))
 
-    # n_layer = len(attentions) # 24
-    # n_head = attentions[0].shape[1] #3 2
+    n_layer = len(attentions) # 24
+    n_head = attentions[0].shape[1] #3 2
     # fig, axs = plt.subplots(n_layer, n_head, figsize=(20, 20))
-    # for nl in range(n_layer):
-    #     for nh in range(n_head):
-    #         per_att = attentions[nl][:, nh, :,
-    #                                  :].squeeze().cpu().detach().numpy()
-    #         res = axs[nl][nh].imshow(per_att, cmap=plt.cm.Blues,
-    #                                  # interpolation="nearest"
-    #                                  )
-    #         axs[nl][nh].set_xlabel('To')
-    #         axs[nl][nh].set_ylabel('From')
-    #         plt.colorbar(res, ax=axs[nl][nh])
-    #         axs[nl][nh].title.set_text(f'Layer {nl+1} Head {nh+1}')
-    # plt.show()
+    fig, axs = plt.subplots(1, 1, figsize=(5, 5))
+    for nl in range(n_layer):
+        for nh in range(n_head):
+            fig, axs = plt.subplots(1, 1, figsize=(5, 5))
+            per_att = attentions[nl][:, nh, :,
+                                     :].squeeze().cpu().detach().numpy()
+            # res = axs[nl][nh].imshow(per_att, cmap=plt.cm.Blues,
+            #                          # interpolation="nearest"
+            #                          )
+            res = axs.imshow(per_att, cmap=plt.cm.Blues,
+                                     # interpolation="nearest"
+                                     )
+            axs.set_xlabel('To')
+            axs.set_ylabel('From')
+            plt.colorbar(res, ax=axs)
+            axs.title.set_text(f'Layer {nl+1} Head {nh+1}')
+            plt.show()
+    plt.show()
 
 
 def main1():
@@ -165,7 +176,8 @@ def main1():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"
 
-    text = f"Instruction: {poss[0][0]} User: {poss[0][1]} Assistant: {poss[0][2]}"
+    # text = f"Instruction: {poss[0][0]} User: {poss[0][1]} Assistant: {poss[0][2]}"
+    text = f"Instruction: {negs[0][0]} User: {negs[0][1]} Assistant: {negs[0][2]}"
 
     # print(ids)
     visualize_attention_matrix(model,
