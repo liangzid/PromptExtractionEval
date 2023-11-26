@@ -56,7 +56,7 @@ print("Dataset loading DONE.")
 
 
 model_ls = [
-    "NousResearch/Llama-2-7b-chat-hf#Func",
+    # "NousResearch/Llama-2-7b-chat-hf#Func",
     "NousResearch/Llama-2-7b-chat-hf#Norm",
     #     "microsoft/phi-1_5#Func",
     #     "microsoft/phi-1_5#Norm",
@@ -188,7 +188,7 @@ for i, m in enumerate(model_ls):
         # break
     # break
 
-    with open(f"./func_calll/{mp}-res.json", "w", encoding="utf8") as f:
+    with open(f"./func_callll/{mp}-res.json", "w", encoding="utf8") as f:
         json.dump(big_res,
                   f, ensure_ascii=False, indent=4)
 

@@ -33,13 +33,13 @@ model_ls = [
     "Llama-2-7b-chat-hf#I",
 ]
 
-model_directly_res = {}
-
+all_dict={}
 for m in model_ls:
     fpth = target_dir+m+"-res.json"
     with open(fpth, 'r', encoding='utf8') as f:
         datas = json.load(f, object_pairs_hook=OrderedDict)
 
+    model_directly_res = {}
     # evaluation
     for query in datas.keys():
         q_dict = {}
@@ -64,8 +64,9 @@ for m in model_ls:
             #     if "\n" in extracted:
             #         es = list(set(extracted.split("\n")))
         model_directly_res[query] = q_dict
+    all_dict[m]=model_directly_res
 
-ppp(model_directly_res)
+ppp(all_dict)
 
 # pth = "llama2-7b-eva4.res.json"
 # with open(pth, 'w', encoding='utf8') as f:
@@ -73,7 +74,7 @@ ppp(model_directly_res)
 
 pth = "big_res_experiment4.json"
 with open(pth, 'w', encoding='utf8') as f:
-    json.dump(model_directly_res, f, ensure_ascii=False, indent=4)
+    json.dump(all_dict, f, ensure_ascii=False, indent=4)
 
 # running entry
 if __name__ == "__main__":

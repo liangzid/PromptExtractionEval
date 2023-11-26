@@ -90,7 +90,7 @@ def plot_box_figures():
     alpha_list = [1, 1, 1, 1., 1, 1.,]*10
     font_size = 21
 
-    fig_1to4 = [4, 7, 10, 13]
+    fig_1to4 = [12, 24, 36, 48]
     fig_5to8 = [70, 80, 90, 100]
 
     j = 0
@@ -100,68 +100,73 @@ def plot_box_figures():
         cnt = 0
         ylabel = f"{n}-gram UR"
         for model in Prompt_res_dict.keys():
+            o_model = model
+            if o_model.split("#")[1] == "E":
+                continue
             model = name_convert[model.split("#")[0]]
 
-            interval_ls = list(Prompt_res_dict.keys())
-            xvls = [float(x) for x in interval_ls]
+            interval_ls = list(Prompt_res_dict[o_model]
+                               [list(Prompt_res_dict[o_model].keys())[0]].keys())
+            xvls = [int(float((x))) for x in interval_ls]
+            print(xvls)
 
             big_x = []
             big_y = []
-            for prompt in Prompt_res_dict[model].keys():
+            for prompt in Prompt_res_dict[o_model].keys():
                 x = []
                 x_s = []
                 y = []
-                # axs[0][j].set_xscale("log")
                 for k in interval_ls:
                     x.append(float(k))
                     x_s.append(k)
-                    y.append(Prompt_res_dict[model][prompt][k]["ngram"][n])
+                    y.append(Prompt_res_dict[o_model][prompt][str(k)]
+                             ["ngram"][str(n)])
 
                 model_name = model
 
-                # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
-                # axs[j].fill_between(x, y1, y2, alpha=0.3)  # 透明度
                 axs[0][j].set_xlabel("# of Tokens", fontsize=font_size)
                 axs[0][j].set_ylabel(ylabel, fontsize=font_size-5)
-                # axs[j].set_ylim([0, 5000])  # 设置纵轴大小范围
                 axs[0][j].tick_params(axis='y', labelsize=font_size-6,
                                       rotation=65,
                                       width=2, length=2,
                                       pad=0, direction="in",
-                                      which="both")  # 设置纵轴坐标轴刻度（70-100，每隔5个单位绘制刻度），文字大小为20
-                # axs[j].spines['right'].set_visible(False)
-                # axs[j].spines['top'].set_visible(False)
-                # axs[j].grid(True)  # 不显示网格线
+                                      which="both")
+                # axs[0][j].set_xscale("log")
                 cnt += 1
                 big_x.append(x)
                 big_y.append(y)
             big_y = np.array(big_y)
-            # print(big_y.shape)
-            # here begin drawing
+
             cr = color_map[model]
             kr = marker_map[model]
-            axs[0][j].boxplot(big_y,
-                              positions=xvls,
-                              boxprops={"color": cr,
-                                        "linewidth": 1.5,
-                                        },
-                              capprops={"color": cr,
-                                        "linewidth": 1.5,
-                                        },
-                              whiskerprops={"color": cr,
-                                            "linewidth": 1.5,
-                                            },
-                              flierprops={
-                                  "markeredgecolor": cr,
-                                  "marker": kr,
-                              },
-                              showmeans=True,
-                              meanline=True,
-                              widths=5.5,
-                              )
-            axs[0][j].set_xticks(range(0, 200, 50), range(0, 200, 50),
-                                 fontsize=font_size-6)
+            print([len(x) for x in big_y])
+            boxes = axs[0][j].boxplot(big_y,
+                                      positions=xvls,
+                                      widths=15.5,
+                                      boxprops={"color": cr,
+                                                "linewidth": 1.5,
+                                                # "gid":5.5,
+                                                },
+                                      capprops={"color": cr,
+                                                "linewidth": 1.5,
+                                                },
+                                      whiskerprops={"color": cr,
+                                                    "linewidth": 1.5,
+                                                    },
+                                      flierprops={
+                                          "markeredgecolor": cr,
+                                          "marker": kr,
+                                      },
 
+                                      showmeans=True,
+                                      meanline=True,
+                                      showfliers=False,
+                                      # patch_artist=True,
+                                      )
+
+            # axs[0][j].set_xticks(range(40, 700, 100),
+            #                      range(40, 700, 100),
+            #                      fontsize=font_size-6)
         j += 1
 
     j = 0
@@ -172,60 +177,45 @@ def plot_box_figures():
             ylabel = r"$\mathbf{100\%}$"+" Fuzzy\nMatch UR"
 
         for model in Prompt_res_dict.keys():
+            o_model = model
+            if o_model.split("#")[1] == "E":
+                continue
             model = name_convert[model.split("#")[0]]
 
-            interval_ls = list(Prompt_res_dict.keys())
-            xvls = [float(x) for x in interval_ls]
+            interval_ls = list(Prompt_res_dict[o_model]
+                               [list(Prompt_res_dict[o_model].keys())[0]].keys())
+            xvls = [int(float(x)) for x in interval_ls]
 
             big_x = []
             big_y = []
-            for prompt in Prompt_res_dict[model].keys():
+            for prompt in Prompt_res_dict[o_model].keys():
                 x = []
                 x_s = []
                 y = []
                 for k in interval_ls:
                     x.append(float(k))
                     x_s.append(k)
-                    y.append(Prompt_res_dict[model][prompt][k]["fuzzy"][ratio])
+                    y.append(Prompt_res_dict[o_model][prompt][k]
+                             ["fuzzy"][str(ratio)])
 
                 model_name = model
-
-                # axs[1][j].plot(x, y, label=model_name,
-                #                linewidth=1.5,
-                #                marker=marker_map[model],
-                #                markevery=1, markersize=15,
-                #                markeredgewidth=1.5,
-                #                markerfacecolor='none',
-                #                alpha=alpha_list[cnt],
-                #                linestyle=model_line_style[model_name],
-                #                color=model_colors_map[model_name]
-                #                [prompt_labels.index(prompt)]
-                #                )  # 绘制当前模型的曲线
-
-                # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
-                # axs[j].fill_between(x, y1, y2, alpha=0.3)  # 透明度
                 axs[1][j].set_xlabel("# of Tokens", fontsize=font_size)
                 axs[1][j].set_ylabel(ylabel, fontsize=font_size-5)
-                # axs[j].set_ylim([0, 5000])  # 设置纵轴大小范围
-                # axs[1][j].set_xscale("log")
                 axs[1][j].tick_params(axis='y', labelsize=font_size-6,
                                       rotation=65,
                                       width=2, length=2,
                                       pad=0, direction="in",
-                                      which="both")  # 设置纵轴坐标轴刻度（70-100，每隔5个单位绘制刻度），文字大小为20
-                # axs[j].spines['right'].set_visible(False)
-                # axs[j].spines['top'].set_visible(False)
-                # axs[j].grid(True)  # 不显示网格线
+                                      which="both")
                 cnt += 1
                 big_x.append(x)
                 big_y.append(y)
             big_y = np.array(big_y)
-            print(big_y.shape)
 
             cr = color_map[model]
             kr = marker_map[model]
             axs[1][j].boxplot(big_y,
                               positions=xvls,
+                              widths=15.5,
                               boxprops={"color": cr,
                                         "linewidth": 1.5,
                                         },
@@ -241,10 +231,8 @@ def plot_box_figures():
                               },
                               showmeans=True,
                               meanline=True,
-                              widths=5.5,
+                              showfliers=False,
                               )
-            axs[1][j].set_xticks(range(0, 200, 50), range(0, 200, 50),
-                                 fontsize=font_size-6)
 
         j += 1
 
@@ -332,7 +320,6 @@ def plot_line_figures():
                 x = []
                 x_s = []
                 y = []
-                # axs[0][j].set_xscale("log")
                 for k in interval_ls:
                     x.append(x_value[k])
                     x_s.append(k)
