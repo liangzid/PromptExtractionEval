@@ -11,3 +11,7 @@ tokenizers
 torch
 tqdm
 transformers
+matplotlib
+scikit-learn
+thefuzz
+einops
