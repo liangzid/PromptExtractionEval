@@ -41,33 +41,49 @@ model_ls = [
 
 model_directly_res = {}
 
+# from collections import OrderedDict
+with open(target_dir+"overall.json", 'r', encoding='utf8') as f:
+    all_data = json.load(f, object_pairs_hook=OrderedDict)
+big_res = {}
 for m in model_ls:
-    fpth = target_dir+"model_size-----"+m+"smallres.json"
-    with open(fpth, 'r', encoding='utf8') as f:
-        data = json.load(f, object_pairs_hook=OrderedDict)
+    # Evaluation Explicit Attacks
+    data = all_data[m]["E"]
+    explicit_dict = {}
+    for ap in data.keys():
+        ins, gens = zip(* data[ap])
 
-    # evaluation
-    ins, gens = zip(*data)
+        gram_matchrate_dict = {}
+        ratio_matchrate_dict = {}
+        for n in range(3, 13, 3):
+            gram_matchrate_dict[n] = ngram_recall_evaluate(gens, ins, n=n)
+        for ratio in range(70, 101, 10):
+            ratio_matchrate_dict[ratio] = fuzzy_match_recall(gens, ins,
+                                                             ratio=ratio)
 
-    gram_matchrate_dict = {}
-    ratio_matchrate_dict = {}
-    for n in range(3, 8):
-        gram_matchrate_dict[n] = ngram_recall_evaluate(gens, ins, n=n)
-    for ratio in range(60, 101, 10):
-        ratio_matchrate_dict[ratio] = fuzzy_match_recall(gens, ins,
-                                                         ratio=ratio)
-    ppp(gram_matchrate_dict)
-    ppp(ratio_matchrate_dict)
-    model_directly_res[m] = {"ngram": gram_matchrate_dict,
+        explicit_dict[ap] = {"ngram": gram_matchrate_dict,
                              "fuzzy": ratio_matchrate_dict}
 
-    for sample in data:
-        label = sample[0]
-        extracted = sample[1]
-        if "\n" in extracted:
-            es = list(set(extracted.split("\n")))
+    data = all_data[m]["I"]
+    implicit_dict = {}
+    for ap in data.keys():
+        ins, gens = zip(* data[ap])
 
-ppp(model_directly_res)
+        gram_matchrate_dict = {}
+        ratio_matchrate_dict = {}
+        for n in range(3, 13, 3):
+            gram_matchrate_dict[n] = ngram_recall_evaluate(gens, ins, n=n)
+        for ratio in range(70, 101, 10):
+            ratio_matchrate_dict[ratio] = fuzzy_match_recall(gens, ins,
+                                                             ratio=ratio)
+
+        implicit_dict[ap] = {"ngram": gram_matchrate_dict,
+                             "fuzzy": ratio_matchrate_dict}
+    big_res[m] = {"E": explicit_dict, "I": implicit_dict}
+
+
+with open(target_dir+"scores.json", 'w', encoding='utf8') as f:
+    json.dump(big_res, f, ensure_ascii=False, indent=4)
+
 
 # running entry
 if __name__ == "__main__":
