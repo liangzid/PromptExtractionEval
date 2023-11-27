@@ -179,7 +179,8 @@ for i, m in enumerate(model_ls):
             # break
 
         big_res[query] = interval_generated_prompt_dict
-        with open(f"./vary_sl/{mp}-{i}-res_perquery.json", 'w', encoding='utf8') as f:
+        with open(f"./vary_sl/{mp}-{i}-res_perquery.json",
+                  'w', encoding='utf8') as f:
             json.dump(interval_generated_prompt_dict,
                       f, ensure_ascii=False, indent=4)
         # break
