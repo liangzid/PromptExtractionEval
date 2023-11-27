@@ -247,7 +247,7 @@ def plot_box_figures():
                prop=font1, ncol=6, frameon=False,
                handletextpad=0., handlelength=1.2)  # 设置信息框
     plt.subplots_adjust(bottom=0.33, top=0.85)
-    plt.show()
+    # plt.show()
     plt.savefig("./vary_sl.pdf",
                 pad_inches=0.1)
 

@@ -205,12 +205,12 @@ def mean_ppl_eval2(pth, eva_type="input_ppl-ur"):
 def scatter_of_two_ppls():
     eva_type = "ppl_input-output"
 
-    res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5-res.json",
+    res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5#E-res.json",
                                       eva_type=eva_type,
                                       ),
-           # "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf-res.json",
-           # eva_type=eva_type,
-           # )
+           "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf#E-res.json",
+           eva_type=eva_type,
+           )
 
            }
     with open(f"evaluate.6--{eva_type}.json", 'w', encoding='utf8') as f:
@@ -218,7 +218,8 @@ def scatter_of_two_ppls():
     with open(f"evaluate.6--{eva_type}.json", 'r', encoding='utf8') as f:
         res = json.load(f, object_pairs_hook=OrderedDict)
 
-    matplotlib.use('TkAgg')
+    # matplotlib.use('TkAgg')
+    
     color_map = {"Phi-1.5B": "red",
                  "Llama2-7B": "blue",
                  "llama2-finetuning-test": "orange",
@@ -294,13 +295,14 @@ def draw_scatter():
     #     res = json.load(f, object_pairs_hook=OrderedDict)
     # ==============================================================
 
-    eva_type = "output_ppl-ur"
+    eva_type = "input_ppl-ur"
+    # eva_type = "output_ppl-ur"
     # eva_type = "ppl_input-output"
 
-    res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5-res.json",
+    res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5#E-res.json",
                                       eva_type=eva_type,
                                       ),
-           "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf-res.json",
+           "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf#E-res.json",
                                                     eva_type=eva_type,
                                                     )
 
@@ -312,7 +314,6 @@ def draw_scatter():
 
     # ================================================ gen-PPL UR
 
-    matplotlib.use('TkAgg')
     color_map = {"Phi-1.5B": "red",
                  "Llama2-7B": "blue",
                  "llama2-finetuning-test": "orange",
