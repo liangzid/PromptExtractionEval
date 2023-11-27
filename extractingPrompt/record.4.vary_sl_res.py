@@ -101,7 +101,7 @@ def plot_box_figures():
         ylabel = f"{n}-gram UR"
         for model in Prompt_res_dict.keys():
             o_model = model
-            if o_model.split("#")[1] == "E":
+            if o_model.split("#")[1] == "I":
                 continue
             model = name_convert[model.split("#")[0]]
 
@@ -178,7 +178,7 @@ def plot_box_figures():
 
         for model in Prompt_res_dict.keys():
             o_model = model
-            if o_model.split("#")[1] == "E":
+            if o_model.split("#")[1] == "I":
                 continue
             model = name_convert[model.split("#")[0]]
 
