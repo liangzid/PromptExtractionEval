@@ -33,7 +33,7 @@ model_ls = [
     "Llama-2-7b-chat-hf#I",
 ]
 
-all_dict={}
+all_dict = {}
 for m in model_ls:
     fpth = target_dir+m+"-res.json"
     with open(fpth, 'r', encoding='utf8') as f:
@@ -49,7 +49,7 @@ for m in model_ls:
 
             gram_matchrate_dict = {}
             ratio_matchrate_dict = {}
-            for n in range(12, 128,12):
+            for n in range(12, 128, 12):
                 gram_matchrate_dict[n] = ngram_recall_evaluate(gens, ins, n=n)
             for ratio in range(60, 101, 10):
                 ratio_matchrate_dict[ratio] = fuzzy_match_recall(gens, ins,
@@ -64,7 +64,7 @@ for m in model_ls:
             #     if "\n" in extracted:
             #         es = list(set(extracted.split("\n")))
         model_directly_res[query] = q_dict
-    all_dict[m]=model_directly_res
+    all_dict[m] = model_directly_res
 
 ppp(all_dict)
 
