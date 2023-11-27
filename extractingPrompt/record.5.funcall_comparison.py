@@ -204,8 +204,10 @@ def box_curves():
             ylabel = f"{n}-gram UR"
             yls = []
             for interval_str in interval_str_ls:
+                ys = []
                 for ap in new_dict[interval_str]:
-                    yls.append(new_dict[interval_str][ap]["ngram"][n])
+                    ys.append(new_dict[interval_str][ap]["ngram"][n])
+                yls.append(ys)
 
             axs[0][i_n].set_xlabel("# of Tokens", fontsize=font_size)
             axs[0][i_n].set_ylabel(ylabel, fontsize=font_size-5)
@@ -217,29 +219,73 @@ def box_curves():
 
             cr = color_map[pth]
             kr = marker_map[pth]
-            boxes = axs[0][j].boxplot(yls,
-                                      positions=interval_value_ls,
-                                      widths=15.5,
-                                      boxprops={"color": cr,
-                                                "linewidth": 1.5,
-                                                # "gid":5.5,
-                                                },
-                                      capprops={"color": cr,
-                                                "linewidth": 1.5,
-                                                },
-                                      whiskerprops={"color": cr,
-                                                    "linewidth": 1.5,
-                                                    },
-                                      flierprops={
-                                          "markeredgecolor": cr,
-                                          "marker": kr,
-                                      },
+            boxes = axs[0][i_n].boxplot(yls,
+                                        positions=interval_value_ls,
+                                        widths=15.5,
+                                        boxprops={"color": cr,
+                                                  "linewidth": 1.5,
+                                                  # "gid":5.5,
+                                                  },
+                                        capprops={"color": cr,
+                                                  "linewidth": 1.5,
+                                                  },
+                                        whiskerprops={"color": cr,
+                                                      "linewidth": 1.5,
+                                                      },
+                                        flierprops={
+                                            "markeredgecolor": cr,
+                                            "marker": kr,
+                                        },
 
-                                      showmeans=True,
-                                      meanline=True,
-                                      showfliers=False,
-                                      # patch_artist=True,
-                                      )
+                                        showmeans=True,
+                                        meanline=True,
+                                        showfliers=False,
+                                        # patch_artist=True,
+                                        )
+        for i_n, n in enumerate(fuzzy_ls):
+            ylabel = f"{n}% Fuzzy\nMatch UR"
+            if n == 100:
+                ylabel = r"$\mathbf{100\%}$"+" Fuzzy\nMatch UR"
+            yls = []
+            for interval_str in interval_str_ls:
+                ys = []
+                for ap in new_dict[interval_str]:
+                    ys.append(new_dict[interval_str][ap]["fuzzy"][n])
+                yls.append(ys)
+
+            axs[1][i_n].set_xlabel("# of Tokens", fontsize=font_size)
+            axs[1][i_n].set_ylabel(ylabel, fontsize=font_size-5)
+            axs[1][i_n].tick_params(axis='y', labelsize=font_size-6,
+                                    rotation=65,
+                                    width=2, length=2,
+                                    pad=0, direction="in",
+                                    which="both")
+
+            cr = color_map[pth]
+            kr = marker_map[pth]
+            boxes = axs[1][i_n].boxplot(yls,
+                                        positions=interval_value_ls,
+                                        widths=15.5,
+                                        boxprops={"color": cr,
+                                                  "linewidth": 1.5,
+                                                  # "gid":5.5,
+                                                  },
+                                        capprops={"color": cr,
+                                                  "linewidth": 1.5,
+                                                  },
+                                        whiskerprops={"color": cr,
+                                                      "linewidth": 1.5,
+                                                      },
+                                        flierprops={
+                                            "markeredgecolor": cr,
+                                            "marker": kr,
+                                        },
+
+                                        showmeans=True,
+                                        meanline=True,
+                                        showfliers=False,
+                                        # patch_artist=True,
+                                        )
 
     fig.subplots_adjust(wspace=0.30, hspace=1.1)
     font1 = {

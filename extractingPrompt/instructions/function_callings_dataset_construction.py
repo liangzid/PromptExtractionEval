@@ -171,6 +171,15 @@ def obtain_vanilla_prompts_for_function_calling_comparison():
     for xxx in glue_prompts:
         prompt_ls.append(xxx["text"])
 
+    with open("./dirty_dir/gpts_prompts.jsonl",
+              "r",encoding="utf8") as f:
+        lines=f.readlines()
+        for l in lines:
+            if l.endswith("\n"):
+                l=l[:-1]
+            print(l)
+            prompt_ls.append(json.loads(l)["text"])
+
     # # then load awsome chatgpt list.
     # awsome_prompts = load_dataset(
     #     "fka/awesome-chatgpt-prompts")["train"].to_list()
@@ -182,6 +191,7 @@ def obtain_vanilla_prompts_for_function_calling_comparison():
     for x in prompt_ls:
         # seqlen_ls.append(len(x.split(" ")))
         seqlen_ls.append(len(t(x).input_ids))
+        # print("----->", len(t(x).input_ids[0]))
 
     # construct the distribution dict
     from collections import Counter
@@ -234,8 +244,8 @@ def obtain_vanilla_prompts_for_function_calling_comparison():
 
 # running entry
 if __name__ == "__main__":
-    # arrange_func_callings()
-    # selection_stage2()
+    arrange_func_callings()
+    selection_stage2()
     analysis_and_postprocess_stage3()
     # main()
     print("EVERYTHING DONE.")
