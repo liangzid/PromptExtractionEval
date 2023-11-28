@@ -8,15 +8,14 @@
 ======================================================================
 """
 
-
 # ------------------------ Code --------------------------------------
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
 import logging
 import json
 from test_llama2_extracting import InferPromptExtracting
 from tqdm import tqdm
 import torch
-import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
 
 
 print = logging.info
@@ -99,12 +98,15 @@ for i, m in tqdm(enumerate(model_ls), desc="Model Type"):
             res = res[0]["generated_text"]
             res = res.split(q)[1]
             res_ls.append([p, res])
+            break
         res1_dict[ap] = res_ls
+        break
     if not os.path.exists("./model_eval_res"):
         os.makedirs("./model_eval_res")
     with open(f"./model_eval_res/gluprompt_val_{name_ls[i]}#E.json",
               "w", encoding="utf8") as f:
         json.dump(res1_dict, f, ensure_ascii=False, indent=4)
+    print(f"Save {m} with #E done.")
 
     res2_dict = {}
     for ap in tqdm(att_query_ls2, desc="#I-attack_Num"):
