@@ -18,7 +18,7 @@ import json
 from typing import List, Tuple, Dict
 import random
 from pprint import pprint as ppp
-
+import os
 
 from datasets import load_dataset
 import torch
@@ -69,11 +69,11 @@ def filter_targeted_samples(pth, selected_num=12):
             for pair in pps:
                 p, gen_p = pair
                 if fuzzy_match_recall([gen_p], [p], ratio=100) == 1:
-                    if len(p.split(" "))>15:
+                    if len(p.split(" ")) > 15:
                         continue
                     pos_ls.append((p, ap, gen_p))
                 elif fuzzy_match_recall([gen_p], [p], ratio=20) == 0:
-                    if len(p.split(" "))>100:
+                    if len(p.split(" ")) > 150:
                         continue
                     neg_ls.append((p, ap, gen_p))
 
@@ -89,7 +89,8 @@ def filter_targeted_samples(pth, selected_num=12):
     return pos_ls, neg_ls
 
 
-def visualize_attention_matrix(model, tokenizer, text, device):
+def visualize_attention_matrix(model, tokenizer, text, device,
+                               pth="res.pdf"):
 
     model.eval()
     inps = tokenizer(text,
@@ -100,35 +101,38 @@ def visualize_attention_matrix(model, tokenizer, text, device):
     # print(outputs)
     attentions = model.forward(**inps,
                                output_attentions=True).attentions
-    # shape of attentions: [num_layers, batchsize, num_heads, sl, sl]
-    print(len(attentions))
-    attentions = (attentions[1][:, 30:, :, :], attentions[23][:, 30:, :, :])
 
-    print(attentions)
+    # # shape of attentions: [num_layers, batchsize, num_heads, sl, sl]
+    # print(len(attentions))
+    # attentions = (attentions[1][:, 30:, :, :], attentions[23][:, 30:, :, :])
 
-    # # attention_weights = attentions[0].cpu().squeeze().detach().numpy()
-    # # attention_weights = np.transpose(attention_weights, (1, 2, 0))
+    # print(attentions)
 
-    # n_layer = len(attentions) # 24
-    # n_head = attentions[0].shape[1] #3 2
-    # fig, axs = plt.subplots(n_layer, n_head, figsize=(20, 20))
-    # for nl in range(n_layer):
-    #     for nh in range(n_head):
-    #         per_att = attentions[nl][:, nh, :,
-    #                                  :].squeeze().cpu().detach().numpy()
-    #         res = axs[nl][nh].imshow(per_att, cmap=plt.cm.Blues,
-    #                                  # interpolation="nearest"
-    #                                  )
-    #         axs[nl][nh].set_xlabel('To')
-    #         axs[nl][nh].set_ylabel('From')
-    #         plt.colorbar(res, ax=axs[nl][nh])
-    #         axs[nl][nh].title.set_text(f'Layer {nl+1} Head {nh+1}')
-    # plt.show()
+    # attention_weights = attentions[0].cpu().squeeze().detach().numpy()
+    # attention_weights = np.transpose(attention_weights, (1, 2, 0))
+
+    n_layer = len(attentions)  # 24
+    n_head = attentions[0].shape[1]  # 3 2
+    for nl in range(n_layer):
+        for nh in range(n_head):
+            fig, axs = plt.subplots(1, 1, figsize=(7, 7))
+            per_att = attentions[nl][:, nh, :,
+                                     :].squeeze().cpu().detach().numpy()
+            res = axs.imshow(per_att, cmap=plt.cm.Blues,
+                             # interpolation="nearest"
+                             )
+            axs.set_xlabel('Attention From')
+            axs.set_ylabel('Attention To')
+            plt.colorbar(res, ax=axs[nl][nh])
+            axs.title.set_text(f'Layer {nl+1} Head {nh+1}')
+            plt.savefig(pth+f"layer{nl}_head{nh}.pdf",
+                        pad_inches=0.1)
+            print(f"Save to {pth}layer{nl}_head{nh}.pdf DONE.")
 
 
 def main1():
     pth = "./vary_sl/Llama-2-7b-chat-hf-res.json"
-    model_name="NousResearch/Llama-2-7b-chat-hf"
+    model_name = "NousResearch/Llama-2-7b-chat-hf"
 
     # pth = "./vary_sl/phi-1_5-res.json"
     # model_name = "microsoft/phi-1_5"
@@ -136,7 +140,7 @@ def main1():
     # device = "cuda:0"
     device = "auto"
 
-    poss, negs = filter_targeted_samples(pth, selected_num=12)
+    poss, negs = filter_targeted_samples(pth, selected_num=30)
 
     # model = AutoModelForCausalLM.from_pretrained(
     #     model_name,
@@ -169,14 +173,22 @@ def main1():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"
 
-    text = f"Instruction: {poss[0][0]} User: {poss[0][1]} Assistant: {poss[0][2]}"
+    if not os.path.exists("./attention_viz"):
+        os.makedirs("./attention_viz")
 
-    # print(ids)
-    visualize_attention_matrix(model,
-                               tokenizer,
-                               text,
-                               "cuda:0"
-                               )
+    with open("./attention_viz/samples.json", 'w', encoding='utf8') as f:
+        json.dump([poss, negs], f, ensure_ascii=False, indent=4)
+
+    for i, pos in enumerate(poss):
+        text = f"Instruction: {pos[0]} User: {pos[1]} Assistant: {pos[2]}"
+        # print(ids)
+        pth = f"./attention_viz/{i}_img---"
+        visualize_attention_matrix(model,
+                                   tokenizer,
+                                   text,
+                                   "cuda:0",
+                                   pth=pth,
+                                   )
 
 
 # running entry
