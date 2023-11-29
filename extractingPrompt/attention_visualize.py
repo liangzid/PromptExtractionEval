@@ -89,7 +89,10 @@ def filter_targeted_samples(pth, selected_num=12):
     return pos_ls, neg_ls
 
 
-def visualize_attention_matrix(model, tokenizer, text, device,
+def visualize_attention_matrix(model, tokenizer, text,
+                               inps_p_tokens,
+                               text_tokens,
+                               device,
                                pth="res.pdf"):
 
     model.eval()
@@ -113,11 +116,18 @@ def visualize_attention_matrix(model, tokenizer, text, device,
 
     n_layer = len(attentions)  # 24
     n_head = attentions[0].shape[1]  # 3 2
+    score_dict = {}
     for nl in range(n_layer):
+        score_dict[nl] = {}
         for nh in range(n_head):
-            fig, axs = plt.subplots(1, 1, figsize=(7, 7))
             per_att = attentions[nl][:, nh, :,
                                      :].squeeze().cpu().detach().numpy()
+
+            score_dict[nl][nh] = compute_metric_of_attentions(text_tokens,
+                                                              inps_p_tokens,
+                                                              per_att,
+                                                              )
+            fig, axs = plt.subplots(1, 1, figsize=(7, 7))
             res = axs.imshow(per_att, cmap=plt.cm.Blues,
                              # interpolation="nearest"
                              )
@@ -128,6 +138,87 @@ def visualize_attention_matrix(model, tokenizer, text, device,
             plt.savefig(pth+f"layer{nl}_head{nh}.pdf",
                         pad_inches=0.1)
             print(f"Save to {pth}layer{nl}_head{nh}.pdf DONE.")
+    with open(f"{pth}metricsRes_layer{nl}_head{nh}.json",
+              'w', encoding='utf8') as f:
+        json.dump(score_dict, f, ensure_ascii=False, indent=4)
+
+
+# only for good cases
+def compute_metric_of_attentions(tokens, inp_p_tokens, atts):
+    """
+    tokens: a list of token, len(tokens)=sl
+    shape of atts: [sl, sl]
+    """
+    # at first, find the beginning token of prompts.
+
+    idx_first_token_in_inps = -1
+    for i, t in enumerate(tokens):
+        if t == inp_p_tokens[0] and tokens[i+1] == inp_p_tokens[1]:
+            idx_first_token_in_inps = i
+            break
+    assert idx_first_token_in_inps != -1
+    idx_last_token_in_inps = -1
+    for i, t in enumerate(tokens):
+        if t == " User":
+            idx_last_token_in_inps = i
+
+    idxes_prompts = [idx_first_token_in_inps,
+                     idx_last_token_in_inps]
+
+    offset = 0
+    while True:
+        if tokens[idx_last_token_in_inps+offset] == inp_p_tokens[0]\
+           and tokens[idx_last_token_in_inps+offset +
+                      len(inp_p_tokens)-1] == inp_p_tokens[-1]:
+            break
+        offset += 1
+        if offset > 10000:
+            return -5
+
+    # idxes_user_attacks = [-1, -1]
+    # idxes_system_responses = [-1, -1]
+    idxes_system_gen_p = [idx_last_token_in_inps+offset,
+                          idx_last_token_in_inps+offset+len(inp_p_tokens)]
+
+    # calculate \alpha_p
+    alpha_p = 0.
+    alpha_n = 0.
+
+    beta_p = 0.
+    gammar_p = 0.
+    gammar_n = 0.
+    num = 0
+    for i, ii in enumerate(list(range(idxes_system_gen_p[0]+1,
+                                      idxes_system_gen_p[1]))):
+        idx_its_preivous_token_in_inps = idxes_prompts[i-1]
+        att_valuep = atts[ii, idx_its_preivous_token_in_inps]
+        alpha_p += att_valuep
+
+        idx_its_current_token_in_inps = idxes_prompts[i]
+        att_valuen = atts[ii, idx_its_current_token_in_inps]
+        alpha_n += att_valuen
+
+        gens_token_preivous = idxes_system_gen_p[ii-1]
+        beta_p += atts[ii, gens_token_preivous]
+        num += 1
+
+        gammar_sum = sum(atts[ii,
+                              idxes_prompts[0]:idxes_prompts[1]]
+                         .to_list())
+
+        gammar_p += att_valuep/gammar_sum
+        gammar_n += att_valuen/gammar_sum
+
+    alpha_p /= num
+    alpha_n /= num
+    beta_p = beta_p/num + alpha_p
+
+    gammar_p /= num
+    gammar_n /= num
+
+    return {"alpha_p": alpha_p, "alpha_n": alpha_n,
+            "beta_p": beta_p,
+            "gammar_p": gammar_p, "gammar_n": gammar_n}
 
 
 def main1():
@@ -181,11 +272,15 @@ def main1():
 
     for i, pos in enumerate(poss):
         text = f"Instruction: {pos[0]} User: {pos[1]} Assistant: {pos[2]}"
+        inps_p_tokens = tokenizer.tokenize(pos[0])
+        text_tokens = tokenizer.tokenizer(text)
         # print(ids)
         pth = f"./attention_viz/{i}_img---"
         visualize_attention_matrix(model,
                                    tokenizer,
                                    text,
+                                   inps_p_tokens,
+                                   text_tokens,
                                    "cuda:0",
                                    pth=pth,
                                    )
