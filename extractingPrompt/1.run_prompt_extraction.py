@@ -98,9 +98,9 @@ for i, m in tqdm(enumerate(model_ls), desc="Model Type"):
             res = res[0]["generated_text"]
             res = res.split(q)[1]
             res_ls.append([p, res])
-            break
+            # break
         res1_dict[ap] = res_ls
-        break
+        # break
     if not os.path.exists("./model_eval_res"):
         os.makedirs("./model_eval_res")
     with open(f"./model_eval_res/gluprompt_val_{name_ls[i]}#E.json",
