@@ -192,15 +192,26 @@ def visualizeSampled(model, tokenizer, text,
         # per_att = per_att*inps.attention_mask
         per_att = per_att.numpy()
 
-        score_dict[nl][nh] = compute_metric_of_attentions(text_tokens,
-                                                          inps_p_tokens,
-                                                          per_att,
-                                                          )
+        res, end_p, bgn_genp, \
+            end_genp = compute_metric_of_attentions(text_tokens,
+                                                    inps_p_tokens,
+                                                    per_att,
+                                                    )
+        score_dict[nl][nh] = res
+
         fig, axs = plt.subplots(1, 1, figsize=(7, 7))
         res = axs.imshow(per_att,
                          cmap=plt.cm.Blues,
-                         # interpolation="nearest"
                          )
+
+        axs.axhline(y=end_p, color="red")
+        axs.axhline(y=bgn_genp, color="red")
+        axs.axhline(y=end_genp, color="red")
+
+        axs.axvline(y=end_p, color="red")
+        axs.axvline(y=bgn_genp, color="red")
+        axs.axvline(y=end_genp, color="red")
+
         axs.set_xlabel('Attention From')
         axs.set_ylabel('Attention To')
         plt.colorbar(res, ax=axs)
@@ -318,7 +329,8 @@ def compute_metric_of_attentions(tokens, inp_p_tokens, atts,
     res = {"alpha_p": alpha_p, "alpha_n": alpha_n,
            "beta_p": beta_p,
            "gammar_p": gammar_p, "gammar_n": gammar_n}
-    return res, idx_last_token_in_inps, idxes_system_gen_p[0], idxes_system_gen_p[1]
+    return res, idx_last_token_in_inps, idxes_system_gen_p[0], \
+        idxes_system_gen_p[1]
 
 
 def main1():
