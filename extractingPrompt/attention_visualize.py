@@ -157,18 +157,15 @@ def visualizeSampled(model, tokenizer, text,
                      pth="res.pdf"):
 
     model.eval()
-    inps = tokenizer(text,
-                     return_tensors="pt",
-                     truncation=True).to(device)
-
-    sl = inps.input_ids.shape[1]
+    input_ids = tokenizer(text,
+                          return_tensors="pt",
+                          truncation=True).input_ids.to(device)
 
     # attention_mask = torch.triu(torch.ones(sl,
     #                                        sl,
     #                                        )).to(device).unsqueeze(0).unsqueeze(0)
     # print(attention_mask, inps.input_ids)
     # print(attention_mask.shape, inps.input_ids.shape)
-    input_ids=inps.input_ids
     attentions = model.forward(input_ids,
                                # attention_mask=attention_mask,
                                output_attentions=True).attentions
@@ -200,7 +197,8 @@ def visualizeSampled(model, tokenizer, text,
                                                           per_att,
                                                           )
         fig, axs = plt.subplots(1, 1, figsize=(7, 7))
-        res = axs.imshow(per_att, cmap=plt.cm.Blues,
+        res = axs.imshow(per_att,
+                         cmap=plt.cm.Blues,
                          # interpolation="nearest"
                          )
         axs.set_xlabel('Attention From')
@@ -215,9 +213,11 @@ def visualizeSampled(model, tokenizer, text,
         json.dump(score_dict, f, ensure_ascii=False, indent=4)
     print(f"Save to `{pth}metricsRes_layer{nl+1}_head{nh+1}.json` DONE.")
 
-
 # only for good cases
-def compute_metric_of_attentions(tokens, inp_p_tokens, atts):
+
+
+def compute_metric_of_attentions(tokens, inp_p_tokens, atts,
+                                 is_negtive=False):
     """
     tokens: a list of token, len(tokens)=sl
     shape of atts: [sl, sl]
@@ -230,29 +230,53 @@ def compute_metric_of_attentions(tokens, inp_p_tokens, atts):
             idx_first_token_in_inps = i
             break
     assert idx_first_token_in_inps != -1
-    idx_last_token_in_inps = -1
-    for i, t in enumerate(tokens):
-        if t == " User":
-            idx_last_token_in_inps = i
+    idx_last_token_in_inps = idx_first_token_in_inps+len(inp_p_tokens)
 
     idxes_prompts = [idx_first_token_in_inps,
                      idx_last_token_in_inps]
-
-    offset = 0
-    while True:
-        if tokens[idx_last_token_in_inps+offset] == inp_p_tokens[0]\
-           and tokens[idx_last_token_in_inps+offset +
-                      len(inp_p_tokens)-1] == inp_p_tokens[-1]:
-            break
-        offset += 1
-        if offset > 10000:
-            return -5
-
-    # idxes_user_attacks = [-1, -1]
-    # idxes_system_responses = [-1, -1]
-    idxes_system_gen_p = [idx_last_token_in_inps+offset,
-                          idx_last_token_in_inps+offset+len(inp_p_tokens)]
     print(f"idxes_prmpts: {idxes_prompts}")
+
+    if is_negtive:
+        # for negtive samples, we use the system response as the target
+        # atttentions.
+
+        bgn_idx = -1
+        end_idx = -1
+        for i, t in enumerate(tokens):
+            if t == "istant" and tokens[i+1] == ":":
+                bgn_idx = i+2
+                break
+        for i, t in enumerate(tokens):
+            if i <= bgn_idx:
+                continue
+            if "User" in t:
+                end_idx = i
+                break
+        if end_idx == -1:
+            end_idx = len(tokens)
+            if end_idx-bgn_idx > len(inp_p_tokens):
+                end_idx = bgn_idx+len(inp_p_tokens)
+
+        idxes_system_gen_p = [bgn_idx,
+                              end_idx]
+    else:
+        offset = 0
+        while True:
+            bgn = idx_last_token_in_inps+offset
+            if tokens[bgn:bgn+len(inp_p_tokens)-1] == inp_p_tokens[:-1]:
+                break
+            offset += 1
+            if offset > 1500 or idx_last_token_in_inps+offset == len(tokens):
+                print(inp_p_tokens)
+                print(tokens)
+                print("111111111111111111111111111 Error triggered")
+                return -5
+
+        # idxes_user_attacks = [-1, -1]
+        # idxes_system_responses = [-1, -1]
+        idxes_system_gen_p = [idx_last_token_in_inps+offset,
+                              idx_last_token_in_inps+offset+len(inp_p_tokens)]
+
     print(f"idxes_sysgen_prmpts: {idxes_system_gen_p}")
 
     # calculate \alpha_p
@@ -294,7 +318,7 @@ def compute_metric_of_attentions(tokens, inp_p_tokens, atts):
     res = {"alpha_p": alpha_p, "alpha_n": alpha_n,
            "beta_p": beta_p,
            "gammar_p": gammar_p, "gammar_n": gammar_n}
-    return res
+    return res, idx_last_token_in_inps, idxes_system_gen_p[0], idxes_system_gen_p[1]
 
 
 def main1():
@@ -393,7 +417,7 @@ def main1():
                          text,
                          inps_p_tokens,
                          text_tokens,
-                         "cuda:0",
+                         "cuda:1",
                          pth=pth,
                          )
 
