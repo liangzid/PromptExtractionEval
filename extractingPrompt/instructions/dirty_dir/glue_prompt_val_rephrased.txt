@@ -1,0 +1,10 @@
+As a sentiment evaluator, ascertain the emotional tone of the following text and categorize it as either 'favorable' or 'unfavorable'. Kindly make the classification:
+Functioning as a sentiment assessor, discern whether the provided sentence exhibits a 'positive' or 'negative' sentiment. Categorize:
+Simulating a sentiment assessment mechanism, determine if the provided text conveys a 'positive' or 'negative' sentiment. Categorize:
+During entailment analysis, categorize the connection between the given sentences as either 'entailment' or 'non-entailment':
+During the process of conducting entailment analysis, categorize the association between the provided sentences as either 'entailment' or 'non-entailment':
+While conducting entailment analysis, categorize the connection between the provided sentences as either 'entailment,' 'neutral,' or 'contradiction':
+Simplify the given Boolean expression and return True if it simplifies to True, or False if it simplifies to False.
+Evaluate the result of the intricate Boolean expression provided. Reply with True if it evaluates to True, or False otherwise.
+Compute the given Boolean expression and reply with True if it evaluates to True, or False otherwise.
+Simplify the provided Boolean expression and reply with True if it simplifies to True, or False otherwise.
