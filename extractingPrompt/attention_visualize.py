@@ -154,7 +154,8 @@ def visualizeSampled(model, tokenizer, text,
                      inps_p_tokens,
                      text_tokens,
                      device,
-                     pth="res.pdf"):
+                     pth="res.pdf",
+                     is_negtive=False):
 
     model.eval()
     input_ids = tokenizer(text,
@@ -192,11 +193,16 @@ def visualizeSampled(model, tokenizer, text,
         # per_att = per_att*inps.attention_mask
         per_att = per_att.numpy()
 
+        sl = per_att.shape[1]
+
         res, end_p, bgn_genp, \
             end_genp = compute_metric_of_attentions(text_tokens,
                                                     inps_p_tokens,
                                                     per_att,
+                                                    is_negtive=is_negtive
                                                     )
+        newlen = min(sl, end_genp+2)
+        per_att = per_att[:newlen, :newlen]
         score_dict[nl][nh] = res
 
         fig, axs = plt.subplots(1, 1, figsize=(7, 7))
@@ -204,13 +210,20 @@ def visualizeSampled(model, tokenizer, text,
                          cmap=plt.cm.Blues,
                          )
 
-        axs.axhline(y=end_p, color="red")
-        axs.axhline(y=bgn_genp, color="red")
-        axs.axhline(y=end_genp, color="red")
+        lw=0.8
+        axs.axhline(y=end_p, color="red", xmin=0, xmax=end_p,
+                    linewidth=lw)
+        axs.axhline(y=bgn_genp, color="red", xmin=0, xmax=bgn_genp,
+                    linewidth=lw)
+        axs.axhline(y=end_genp, color="red", xmin=0, xmax=end_genp,
+                    linewidth=lw)
 
-        axs.axvline(y=end_p, color="red")
-        axs.axvline(y=bgn_genp, color="red")
-        axs.axvline(y=end_genp, color="red")
+        axs.axvline(x=end_p, color="red", ymin=newlen-end_p, ymax=newlen,
+                    linewidth=lw)
+        axs.axvline(x=bgn_genp, color="red", ymin=newlen-bgn_genp, ymax=newlen,
+                    linewidth=lw)
+        axs.axvline(x=end_genp, color="red", ymin=newlen-end_genp, ymax=newlen,
+                    linewidth=lw)
 
         axs.set_xlabel('Attention From')
         axs.set_ylabel('Attention To')
@@ -431,6 +444,7 @@ def main1():
                          text_tokens,
                          "cuda:1",
                          pth=pth,
+                         is_negtive=True,
                          )
 
 
