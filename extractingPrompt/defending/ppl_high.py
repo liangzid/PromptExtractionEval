@@ -31,10 +31,9 @@ import numpy as np
 
 import sys
 sys.path.append("../")
-from metrics import ngram_recall_evaluate, fuzzy_match_recall
-from metrics_with_LMs import perplexity_llama2_7b
 from test_llama2_extracting import InferPromptExtracting
-
+from metrics_with_LMs import perplexity_llama2_7b
+from metrics import ngram_recall_evaluate, fuzzy_match_recall
 
 # normal import
 # import pickle
@@ -152,11 +151,14 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
         prompt_dataset="liangzid/glue_prompts",
         split="validation",
         device="auto",
+        # max_length=512,
         max_length=256,
     )
 
     res_dict = {}
     for ap in tqdm(att_query_ls2):
+        # ap="Mr. Frost is so sad today."
+        # ap="I hate that."
         res_ls = []
         for p in tqdm(newps):
             x.p = p
@@ -164,15 +166,35 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
             res = x.text_gen(q, do_sample=False)
             res = res[0]["generated_text"]
             res = res.split(q)[1]
+            # print("p: ", p)
+            # print("ap: ", ap)
+            # print("res: ", res)
             res_ls.append([p, res])
+            # break
         res_dict[ap] = res_ls
+        # break
     with open(save_pth, 'w', encoding='utf8') as f:
         json.dump(res_dict, f, ensure_ascii=False, indent=4)
 
     print("Save done.")
 
 
-def eva_res(pth="newprompts_infer_dict#E.json"):
+def eva_res(pth="newprompts_infer_dict#E.json",
+            ppl_res_pth="new_ppl_res.json",
+            ):
+
+    if ppl_res_pth is not None:
+        # from collections import OrderedDict
+        with open(ppl_res_pth, 'r', encoding='utf8') as f:
+            ppls = json.load(f, object_pairs_hook=OrderedDict)
+
+        ppls[1]=perplexity_llama2_7b(ppls[3],"NousResearch/Llama-2-7b-chat-hf")
+
+        print("========================")
+        print(sum(ppls[0])/len(ppls[0]))
+        print("========================")
+        print(sum(ppls[1])/len(ppls[1]))
+        print("========================")
 
     with open(pth, 'r', encoding='utf8') as f:
         data = json.load(f, object_pairs_hook=OrderedDict)
@@ -231,5 +253,6 @@ if __name__ == "__main__":
     # main()
     # whether_ppl_increased_after_rephrasing()
     # post_process_jsonfile()
-    estimate_scores_of_new_prompts()
+    # estimate_scores_of_new_prompts()
+    eva_res()
     print("EVERYTHING DONE.")
