@@ -130,9 +130,9 @@ class InferPromptExtracting:
         logging.info("Prompt file loading done.")
 
         self.meta_instruct = ""
-        with open(meta_prompt_pth, 'r', encoding="utf8") as f:
-            self.meta_instruct = f.read()
-        logging.info("Meta prompt file loading done.")
+        # with open(meta_prompt_pth, 'r', encoding="utf8") as f:
+        #     self.meta_instruct = f.read()
+        # logging.info("Meta prompt file loading done.")
 
         # self.update_prompt()
         self.eos = "### User"

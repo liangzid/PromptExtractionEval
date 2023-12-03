@@ -210,7 +210,7 @@ def visualizeSampled(model, tokenizer, text,
                          cmap=plt.cm.Blues,
                          )
 
-        lw=0.8
+        lw = 0.8
         axs.axhline(y=end_p, color="red", xmin=0, xmax=end_p,
                     linewidth=lw)
         axs.axhline(y=bgn_genp, color="red", xmin=0, xmax=bgn_genp,
