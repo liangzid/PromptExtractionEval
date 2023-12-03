@@ -27,11 +27,13 @@ import random
 from typing import List, Tuple, Dict
 import json
 from tqdm import tqdm
+import numpy as np
 
 import sys
 sys.path.append("../")
-from test_llama2_extracting import InferPromptExtracting
+from metrics import ngram_recall_evaluate, fuzzy_match_recall
 from metrics_with_LMs import perplexity_llama2_7b
+from test_llama2_extracting import InferPromptExtracting
 
 
 # normal import
@@ -150,21 +152,76 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json"):
         max_length=256,
     )
 
-    res_dict={}
+    res_dict = {}
     for ap in tqdm(att_query_ls2):
-        res_ls=[]
+        res_ls = []
         for p in tqdm(newps):
-            x.p=p
+            x.p = p
             q = f"Instruction: {p}" + f" User: {ap} Assistant: "
             res = x.text_gen(q, do_sample=False)
             res = res[0]["generated_text"]
             res = res.split(q)[1]
             res_ls.append([p, res])
         res_dict[ap] = res_ls
-    with open("newprompts_infer_dict#E.json", 'w',encoding='utf8') as f:
-        json.dump(res_dict,f,ensure_ascii=False,indent=4)
+    with open("newprompts_infer_dict#E.json", 'w', encoding='utf8') as f:
+        json.dump(res_dict, f, ensure_ascii=False, indent=4)
 
     print("Save done.")
+
+
+def eva_res(pth="newprompts_infer_dict#E.json"):
+
+    with open(pth, 'r', encoding='utf8') as f:
+        data = json.load(f, object_pairs_hook=OrderedDict)
+
+    n_ls = list(range(3, 13, 3))
+    r_ls = list(range(70, 101, 10))
+
+    n_res_dict_ls = {}
+    r_res_dict_ls = {}
+    for n in n_ls:
+        n_res_dict_ls[n] = []
+    for r in r_ls:
+        r_res_dict_ls[r] = []
+
+    for ap in data:
+        inp_ps, genps = zip(* data[ap])
+        for n in n_ls:
+            n_res_dict_ls[n].append(
+                ngram_recall_evaluate(genps, inp_ps, n=n)
+            )
+        for r in r_ls:
+            r_res_dict_ls[r].append(
+                fuzzy_match_recall(genps, inp_ps, ratio=r)
+            )
+    resI = {"ngram": n_res_dict_ls, "fuzzy": r_res_dict_ls}
+
+    iaveraged_models_res_dict = {}
+    iinterval_models_res_dict = {}
+
+    iaveraged_models_res_dict = {"ngram": {},
+                                 "fuzzy": {}}
+    iinterval_models_res_dict = {"ngram": {},
+                                 "fuzzy": {}}
+    for n in n_ls:
+        els = resI["ngram"][n]
+        v = sum(els)/len(els)
+        iaveraged_models_res_dict["ngram"][n] = v
+        iinterval_models_res_dict["ngram"][n] = np.std(els, ddof=1)
+    for r in r_ls:
+        els = resI["fuzzy"][r]
+        v = sum(els)/len(els)
+        iaveraged_models_res_dict["fuzzy"][r] = v
+        iinterval_models_res_dict["fuzzy"][r] = np.std(els, ddof=1)
+
+    # Now format and print the results.
+
+    print("IIIIIIIIIIIIIIIIIIII")
+    print("-----Mean Scores----------")
+    ppp(iaveraged_models_res_dict)
+    print("-----interval Scores----------")
+    ppp(iinterval_models_res_dict)
+
 
 # running entry
 if __name__ == "__main__":
