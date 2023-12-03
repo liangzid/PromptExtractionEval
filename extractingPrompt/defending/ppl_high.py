@@ -108,7 +108,8 @@ def whether_ppl_increased_after_rephrasing(dn="liangzid/glue_prompts"):
     return original_ppl, new_ppl
 
 
-def post_process_jsonfile(pth="./PPL_res.json"):
+def post_process_jsonfile(pth="./PPL_res.json",
+                          save_pth="new_ppl_res.json"):
     # from collections import OrderedDict
     with open(pth, 'r', encoding='utf8') as f:
         data = json.load(f, object_pairs_hook=OrderedDict)
@@ -130,13 +131,15 @@ def post_process_jsonfile(pth="./PPL_res.json"):
 
     newnewppl = perplexity_llama2_7b(newnew_ps,
                                      "NousResearch/Llama-2-7b-chat-hf")
-    with open("new_ppl_res.json", 'w', encoding='utf8') as f:
+    with open(save_pth, 'w', encoding='utf8') as f:
         json.dump([data[0], newnewppl, data[2], newnew_ps],
                   f, ensure_ascii=False, indent=4)
     print("Save new results DONE.")
 
 
-def estimate_scores_of_new_prompts(pth="./new_ppl_res.json"):
+def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
+                                   save_pth="newprompts_infer_dict#E.json",
+                                   ):
     # from collections import OrderedDict
     with open(pth, 'r', encoding='utf8') as f:
         data = json.load(f, object_pairs_hook=OrderedDict)
@@ -163,7 +166,7 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json"):
             res = res.split(q)[1]
             res_ls.append([p, res])
         res_dict[ap] = res_ls
-    with open("newprompts_infer_dict#E.json", 'w', encoding='utf8') as f:
+    with open(save_pth, 'w', encoding='utf8') as f:
         json.dump(res_dict, f, ensure_ascii=False, indent=4)
 
     print("Save done.")
