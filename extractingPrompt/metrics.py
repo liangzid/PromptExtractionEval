@@ -31,6 +31,9 @@ def _to_ngram(t, n=3, stride=1):
     return n_gram_ls
 
 
+to_ngram = _to_ngram
+
+
 def _ngram_match(gen_p, original_p, n=3, stride=1):
     frags = _to_ngram(gen_p, n=n, stride=stride)
     for frag in frags:

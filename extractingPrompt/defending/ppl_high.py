@@ -31,9 +31,10 @@ import numpy as np
 
 import sys
 sys.path.append("../")
-from test_llama2_extracting import InferPromptExtracting
-from metrics_with_LMs import perplexity_llama2_7b
 from metrics import ngram_recall_evaluate, fuzzy_match_recall
+from metrics import to_ngram
+from metrics_with_LMs import perplexity_llama2_7b
+from test_llama2_extracting import InferPromptExtracting
 
 # normal import
 # import pickle
@@ -153,6 +154,7 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
         device="auto",
         # max_length=512,
         max_length=256,
+        # max_length=128,
     )
 
     res_dict = {}
@@ -181,6 +183,7 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
 
 def eva_res(pth="newprompts_infer_dict#E.json",
             ppl_res_pth="new_ppl_res.json",
+            fake_replaced_ls=None
             ):
 
     if ppl_res_pth is not None:
@@ -188,7 +191,8 @@ def eva_res(pth="newprompts_infer_dict#E.json",
         with open(ppl_res_pth, 'r', encoding='utf8') as f:
             ppls = json.load(f, object_pairs_hook=OrderedDict)
 
-        ppls[1]=perplexity_llama2_7b(ppls[3],"NousResearch/Llama-2-7b-chat-hf")
+        ppls[1] = perplexity_llama2_7b(
+            ppls[3], "NousResearch/Llama-2-7b-chat-hf")
 
         print("========================")
         print(sum(ppls[0])/len(ppls[0]))
@@ -211,6 +215,24 @@ def eva_res(pth="newprompts_infer_dict#E.json",
 
     for ap in data:
         inp_ps, genps = zip(* data[ap])
+        if fake_replaced_ls is not None:
+            new_inpps = []
+            for inp in inp_ps:
+                for fake_str in fake_replaced_ls:
+                    if fake_str in inp:
+                        inp = inp.replace(fake_str, "")
+                new_inpps.append(inp)
+            inp_ps = new_inpps
+
+            newgenps = []
+            for genp in genps:
+                for fss in fake_replaced_ls:
+                    for fs in to_ngram(fss,n=4):
+                        if fs in genp:
+                            genp = genp.replace(fs, "")
+                newgenps.append(genp)
+            genps = newgenps
+
         for n in n_ls:
             n_res_dict_ls[n].append(
                 ngram_recall_evaluate(genps, inp_ps, n=n)
