@@ -154,9 +154,10 @@ def box_curves():
     funcpth = prefix+"#Func-res.json"
     normpth = prefix+"#Norm-res.json"
 
-    model_types = {funcpth: "Json format Function Callings",
+    model_types = OrderedDict({funcpth: "Json format Function Callings",
                    normpth: "Normal prompts",
-                   }
+                   })
+    line_map = {funcpth: "-", normpth: "-."}
     color_map = {funcpth: "red",
                  normpth: "blue", }
     marker_map = {
@@ -172,7 +173,8 @@ def box_curves():
     font_size = 21
 
     j = 0
-    fig, axs = plt.subplots(2, 4, figsize=(20, 9.3))
+    fig, axs = plt.subplots(2, 4, figsize=(20, 8.5))
+    interval_value_ls_bp=None
     for pth, m in model_types.items():
         with open(pth, 'r', encoding='utf8') as f:
             data = json.load(f, object_pairs_hook=OrderedDict)
@@ -195,10 +197,19 @@ def box_curves():
                     "ngram": n_gram_dict,
                     "fuzzy": fuzzy_dict,
                 }
-
+        
         # now plot the box plot.
         interval_str_ls = list(new_dict.keys())
         interval_value_ls = [int(float(x)) for x in interval_str_ls]
+        if interval_value_ls_bp is None:
+            interval_value_ls_bp = interval_value_ls
+        else:
+            new_interval_ls=[]
+            for num in interval_value_ls:
+                for x in interval_value_ls_bp:
+                    if x <= num+10 and x>= num-10:
+                        new_interval_ls.append(x)
+            interval_value_ls=new_interval_ls
 
         for i_n, n in enumerate(n_ls):
             ylabel = f"{n}-gram UR"
@@ -292,9 +303,25 @@ def box_curves():
         'weight': 'normal',
         'size': font_size-1,
     }
-    plt.legend(loc=(-4.18, 1.05),
+
+    from matplotlib.lines import Line2D
+    legend_elements = [Line2D([0], [0],
+                              color=color_map[funcpth],
+                              linestyle=line_map[funcpth],
+                              lw=3,
+                              label=model_types[funcpth]),
+                       Line2D([0], [0],
+                              color=color_map[normpth],
+                              linestyle=line_map[normpth],
+                              lw=3,
+                              label=model_types[normpth]),
+                       ]
+
+    plt.legend(loc=(-3.48, 1.55),
+               handles=legend_elements,
                prop=font1, ncol=6, frameon=False,
                handletextpad=0., handlelength=1.2)  # 设置信息框
+
     plt.subplots_adjust(bottom=0.33, top=0.85)
     # plt.show()
     plt.savefig("./funcalling_boxes.pdf",
