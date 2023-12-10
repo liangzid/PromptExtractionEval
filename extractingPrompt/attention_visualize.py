@@ -211,19 +211,19 @@ def visualizeSampled(model, tokenizer, text,
                          )
 
         lw = 0.8
-        axs.axhline(y=end_p, color="red", xmin=0, xmax=end_p,
-                    linewidth=lw)
-        axs.axhline(y=bgn_genp, color="red", xmin=0, xmax=bgn_genp,
-                    linewidth=lw)
-        axs.axhline(y=end_genp, color="red", xmin=0, xmax=end_genp,
-                    linewidth=lw)
+        # axs.axhline(y=end_p, color="red", xmin=0, xmax=end_p,
+        #             linewidth=lw)
+        # axs.axhline(y=bgn_genp, color="red", xmin=0, xmax=bgn_genp,
+        #             linewidth=lw)
+        # axs.axhline(y=end_genp, color="red", xmin=0, xmax=end_genp,
+        #             linewidth=lw)
 
-        axs.axvline(x=end_p, color="red", ymin=newlen-end_p, ymax=newlen,
-                    linewidth=lw)
-        axs.axvline(x=bgn_genp, color="red", ymin=newlen-bgn_genp, ymax=newlen,
-                    linewidth=lw)
-        axs.axvline(x=end_genp, color="red", ymin=newlen-end_genp, ymax=newlen,
-                    linewidth=lw)
+        # axs.axvline(x=end_p, color="red", ymin=newlen-end_p, ymax=newlen,
+        #             linewidth=lw)
+        # axs.axvline(x=bgn_genp, color="red", ymin=newlen-bgn_genp, ymax=newlen,
+        #             linewidth=lw)
+        # axs.axvline(x=end_genp, color="red", ymin=newlen-end_genp, ymax=newlen,
+        #             linewidth=lw)
 
         axs.set_xlabel('Attention From')
         axs.set_ylabel('Attention To')
