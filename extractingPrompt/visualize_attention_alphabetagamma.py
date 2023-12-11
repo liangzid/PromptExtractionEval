@@ -25,7 +25,9 @@ from collections import OrderedDict
 
 
 def plot_heatmap(data_neg_pth="./attention_viz/Sampled__NEGIVE_0_img---metricsRes_layer24_head32.json",
-                 data_pos_pth="./attention_viz/Sampled__POSITIVE_0_img---metricsRes_layer24_head32.json"):
+                 data_pos_pth="./attention_viz/Sampled__POSITIVE_0_img---metricsRes_layer24_head32.json",
+                 save_path="./attention_viz/indicators_comparison_singleSample.pdf",
+                 ):
 
     with open(data_pos_pth, 'r', encoding='utf8') as f:
         datap = json.load(f, object_pairs_hook=OrderedDict)
@@ -133,12 +135,25 @@ def plot_heatmap(data_neg_pth="./attention_viz/Sampled__NEGIVE_0_img---metricsRe
             axs[a, b].title.set_text(p2_map[b]+" of " + p1,
                                      )
 
-    plt.savefig(f"./attention_viz/indicators_comparison_singleSample.pdf",
+    plt.savefig(save_path,
                 pad_inches=0.1)
     print("save done.")
 
 
 # running entry
 if __name__ == "__main__":
-    plot_heatmap()
+    # plot_heatmap()
+    n=2
+    plot_heatmap(data_neg_pth=f"./attention_viz/Sampled__NEGIVE_{n}_img---metricsRes_layer24_head32.json",
+                 data_pos_pth=f"./attention_viz/Sampled__POSITIVE_{n}_img---metricsRes_layer24_head32.json",
+                 save_path=f"./attention_viz/{n}indicators_comparison_singleSample.pdf")
+
+
+
+
+    for n in range(3):
+        plot_heatmap(data_neg_pth=f"./attention_viz/Sampled__NEGIVE_{n}_img---metricsRes_layer24_head32.json",
+                 data_pos_pth=f"./attention_viz/Sampled__POSITIVE_{n}_img---metricsRes_layer24_head32.json",
+                 save_path=f"./attention_viz/{n}indicators_comparison_singleSample.pdf")
+        
     print("EVERYTHING DONE.")

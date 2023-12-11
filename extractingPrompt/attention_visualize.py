@@ -150,6 +150,108 @@ def visualize_attention_matrix(model, tokenizer, text,
         json.dump(score_dict, f, ensure_ascii=False, indent=4)
 
 
+def visualizeSampled2(model, tokenizer, text,
+                      inps_p_tokens,
+                      text_tokens,
+                      device,
+                      pth="res.pdf",
+                      is_negtive=False):
+
+    model.eval()
+    input_ids = tokenizer(text,
+                          return_tensors="pt",
+                          truncation=True).input_ids.to(device)
+
+    # attention_mask = torch.triu(torch.ones(sl,
+    #                                        sl,
+    #                                        )).to(device).unsqueeze(0).unsqueeze(0)
+    # print(attention_mask, inps.input_ids)
+    # print(attention_mask.shape, inps.input_ids.shape)
+    attentions = model.forward(input_ids,
+                               # attention_mask=attention_mask,
+                               output_attentions=True).attentions
+
+    # # shape of attentions: [num_layers, batchsize, num_heads, sl, sl]
+    # print(len(attentions))
+    # attentions = (attentions[1][:, 30:, :, :], attentions[23][:, 30:, :, :])
+
+    # selected_layer_head_pairs = [
+    #     (5, 4),
+    #     (5, 13),
+    #     (6, 9),
+    #     (6, 16),
+    #     (7, 6),
+    #     (8, 29),
+    # ]
+
+    selected_layer_head_pairs = [
+        (7, 6),
+        (6, 12),
+        (3, 26),
+        (3, 31),
+    ]
+    selected_layer_head_pairs = [
+        (5, 15),
+        (7, 9),
+        (23, 1),
+        (18, 5),
+    ]
+
+    score_dict = {}
+    for nl, nh in selected_layer_head_pairs:
+        if nl not in score_dict:
+            score_dict[nl] = {}
+        per_att = attentions[nl][:, nh, :,
+                                 :].squeeze().cpu().detach()
+        # per_att = per_att*inps.attention_mask
+        per_att = per_att.numpy()
+
+        sl = per_att.shape[1]
+
+        res, end_p, bgn_genp, \
+            end_genp = compute_metric_of_attentions(text_tokens,
+                                                    inps_p_tokens,
+                                                    per_att,
+                                                    is_negtive=is_negtive
+                                                    )
+        newlen = min(sl, end_genp+2)
+        per_att = per_att[:newlen, :newlen]
+        score_dict[nl][nh] = res
+
+        fig, axs = plt.subplots(1, 1, figsize=(7, 7))
+        res = axs.imshow(per_att,
+                         cmap=plt.cm.Blues,
+                         )
+
+        lw = 0.8
+        # axs.axhline(y=end_p, color="red", xmin=0, xmax=end_p,
+        #             linewidth=lw)
+        # axs.axhline(y=bgn_genp, color="red", xmin=0, xmax=bgn_genp,
+        #             linewidth=lw)
+        # axs.axhline(y=end_genp, color="red", xmin=0, xmax=end_genp,
+        #             linewidth=lw)
+
+        # axs.axvline(x=end_p, color="red", ymin=newlen-end_p, ymax=newlen,
+        #             linewidth=lw)
+        # axs.axvline(x=bgn_genp, color="red", ymin=newlen-bgn_genp, ymax=newlen,
+        #             linewidth=lw)
+        # axs.axvline(x=end_genp, color="red", ymin=newlen-end_genp, ymax=newlen,
+        #             linewidth=lw)
+
+        axs.set_xlabel('Attention From')
+        axs.set_ylabel('Attention To')
+        plt.colorbar(res, ax=axs)
+        axs.title.set_text(f'Layer {nl+1} Head {nh+1}')
+        plt.savefig(pth+f"layer{nl+1}_head{nh+1}.pdf",
+                    pad_inches=0.1)
+        print(f"Save to {pth}layer{nl+1}_head{nh+1}.pdf DONE.")
+
+    # with open(f"{pth}metricsRes_layer{nl+1}_head{nh+1}.json",
+    #           'w', encoding='utf8') as f:
+    #     json.dump(score_dict, f, ensure_ascii=False, indent=4)
+    # print(f"Save to `{pth}metricsRes_layer{nl+1}_head{nh+1}.json` DONE.")
+
+
 def visualizeSampled(model, tokenizer, text,
                      inps_p_tokens,
                      text_tokens,
@@ -175,22 +277,30 @@ def visualizeSampled(model, tokenizer, text,
     # print(len(attentions))
     # attentions = (attentions[1][:, 30:, :, :], attentions[23][:, 30:, :, :])
 
+    # selected_layer_head_pairs = [
+    #     (5, 4),
+    #     (5, 13),
+    #     (6, 9),
+    #     (6, 16),
+    #     (7, 6),
+    #     (8, 29),
+    # ]
+
     selected_layer_head_pairs = [
-        (5, 4),
-        (5, 13),
-        (6, 9),
-        (6, 16),
         (7, 6),
-        (8, 29),
+        (6, 12),
+        (3, 26),
+        (3, 32),
     ]
 
     score_dict = {}
     for nl in tqdm(range(24)):
         for nh in tqdm(range(32)):
+            # for nl,nh in selected_layer_head_pairs:
             if nl not in score_dict:
                 score_dict[nl] = {}
             per_att = attentions[nl][:, nh, :,
-                                    :].squeeze().cpu().detach()
+                                     :].squeeze().cpu().detach()
             # per_att = per_att*inps.attention_mask
             per_att = per_att.numpy()
 
@@ -304,41 +414,86 @@ def compute_metric_of_attentions(tokens, inp_p_tokens, atts,
 
     print(f"idxes_sysgen_prmpts: {idxes_system_gen_p}")
 
-    # calculate \alpha_p
-    alpha_p = 0.
-    alpha_n = 0.
+    mean_type = "*"
+    # mean_type = "+"
 
-    beta_p = 0.
-    gammar_p = 0.
-    gammar_n = 0.
-    num = 0
-    for i, ii in enumerate(list(range(idxes_system_gen_p[0]+1,
-                                      idxes_system_gen_p[1]))):
-        idx_its_preivous_token_in_inps = idxes_prompts[0]+i-1
-        att_valuep = atts[ii, idx_its_preivous_token_in_inps]
-        alpha_p += att_valuep
+    if mean_type == "+":
+        # calculate \alpha_p
+        alpha_p = 0.
+        alpha_n = 0.
 
-        idx_its_current_token_in_inps = idxes_prompts[0]+i
-        att_valuen = atts[ii, idx_its_current_token_in_inps]
-        alpha_n += att_valuen
+        beta_p = 0.
+        gammar_p = 0.
+        gammar_n = 0.
 
-        gens_token_preivous = ii-1
-        beta_p += atts[ii, gens_token_preivous]
-        num += 1
+        num = 0
+        for i, ii in enumerate(list(range(idxes_system_gen_p[0]+1,
+                                          idxes_system_gen_p[1]))):
+            idx_its_preivous_token_in_inps = idxes_prompts[0]+i
+            att_valuep = atts[ii, idx_its_preivous_token_in_inps]
+            alpha_p += att_valuep
 
-        gammar_sum = sum(atts[ii,
-                              idxes_prompts[0]:idxes_prompts[1]]
-                         .tolist())
+            idx_its_current_token_in_inps = idxes_prompts[0]+i+1
+            att_valuen = atts[ii, idx_its_current_token_in_inps]
+            alpha_n += att_valuen
 
-        gammar_p += att_valuep/gammar_sum
-        gammar_n += att_valuen/gammar_sum
+            gens_token_preivous = ii-1
+            beta_p += atts[ii, gens_token_preivous]
+            num += 1
 
-    alpha_p /= num
-    alpha_n /= num
-    beta_p = beta_p/num + alpha_p
+            gammar_sum = sum(atts[ii,
+                                  idxes_prompts[0]:idxes_prompts[1]-1]
+                             .tolist())
 
-    gammar_p /= num
-    gammar_n /= num
+            gammar_p += att_valuep/gammar_sum
+            gammar_n += att_valuen/gammar_sum
+
+        alpha_p /= num
+        alpha_n /= num
+        beta_p = beta_p/num + alpha_p
+
+        gammar_p /= num
+        gammar_n /= num
+    elif mean_type == "*":
+        # calculate \alpha_p
+        alpha_p = 1.
+        alpha_n = 1.
+
+        beta_p = 1.
+        gammar_p = 1.
+        gammar_n = 1.
+
+        num = 0
+        for i, ii in enumerate(list(range(idxes_system_gen_p[0]+1,
+                                          idxes_system_gen_p[1]))):
+            idx_its_preivous_token_in_inps = idxes_prompts[0]+i
+            att_valuep = atts[ii, idx_its_preivous_token_in_inps]
+            alpha_p += att_valuep
+
+            idx_its_current_token_in_inps = idxes_prompts[0]+i+1
+            att_valuen = atts[ii, idx_its_current_token_in_inps]
+            alpha_n *= att_valuen
+
+            gens_token_preivous = ii-1
+            beta_p *= atts[ii, gens_token_preivous]
+            num += 1
+
+            gammar_sum = 0
+            for ele in atts[ii,
+                            idxes_prompts[0]:idxes_prompts[1]-1].tolist():
+                gammar_sum += ele
+
+            gammar_p *= att_valuep/gammar_sum
+            gammar_n *= att_valuen/gammar_sum
+
+        import math
+        alpha_p = math.pow(alpha_p, 1/num)
+        alpha_n = math.pow(alpha_n, 1/num)
+        beta_p = math.pow(beta_p, 1/num)
+        beta_p = beta_p*alpha_p
+
+        gammar_p = math.pow(gammar_p, 1/num)
+        gammar_n = math.pow(gammar_n, 1/num)
 
     res = {"alpha_p": alpha_p, "alpha_n": alpha_n,
            "beta_p": beta_p,
@@ -397,7 +552,7 @@ def main1():
         json.dump([poss, negs], f, ensure_ascii=False, indent=4)
 
     for i, pos in tqdm(enumerate(poss), desc="Samples"):
-        if i > 0:
+        if i > 2:
             break
         text = f"Instruction: {pos[0]} User: {pos[1]} Assistant: {pos[2]}"
         inps_p_tokens = tokenizer.tokenize(pos[0])
@@ -412,19 +567,30 @@ def main1():
         #                            "cuda:0",
         #                            pth=pth,
         #                            )
-        visualizeSampled(model,
-                         tokenizer,
-                         text,
-                         inps_p_tokens,
-                         text_tokens,
-                         "cuda:0",
-                         pth=pth,
-                         )
+
+        # visualizeSampled(model,
+        #                  tokenizer,
+        #                  text,
+        #                  inps_p_tokens,
+        #                  text_tokens,
+        #                  "cuda:0",
+        #                  pth=pth,
+        #                  )
+
+        visualizeSampled2(model,
+                          tokenizer,
+                          text,
+                          inps_p_tokens,
+                          text_tokens,
+                          "cuda:0",
+                          pth=pth,
+                          )
 
     for i, neg in tqdm(enumerate(negs), desc="Samples"):
-        if i > 0:
+        if i > 2:
             break
         text = f"Instruction: {neg[0]} User: {neg[1]} Assistant: {neg[2]}"
+        print(i, text)
         inps_p_tokens = tokenizer.tokenize(neg[0])
         text_tokens = tokenizer.tokenize(text)
         # print(ids)
@@ -438,15 +604,25 @@ def main1():
         #                            pth=pth,
         #                            )
 
-        visualizeSampled(model,
-                         tokenizer,
-                         text,
-                         inps_p_tokens,
-                         text_tokens,
-                         "cuda:1",
-                         pth=pth,
-                         is_negtive=True,
-                         )
+        # visualizeSampled(model,
+        #                  tokenizer,
+        #                  text,
+        #                  inps_p_tokens,
+        #                  text_tokens,
+        #                  "cuda:1",
+        #                  pth=pth,
+        #                  is_negtive=True,
+        #                  )
+
+        visualizeSampled2(model,
+                          tokenizer,
+                          text,
+                          inps_p_tokens,
+                          text_tokens,
+                          "cuda:1",
+                          pth=pth,
+                          is_negtive=True,
+                          )
 
 
 # running entry
