@@ -185,53 +185,54 @@ def visualizeSampled(model, tokenizer, text,
     ]
 
     score_dict = {}
-    for nl, nh in tqdm(selected_layer_head_pairs):
-        if nl not in score_dict:
-            score_dict[nl] = {}
-        per_att = attentions[nl][:, nh, :,
-                                 :].squeeze().cpu().detach()
-        # per_att = per_att*inps.attention_mask
-        per_att = per_att.numpy()
+    for nl in tqdm(range(24)):
+        for nh in tqdm(range(32)):
+            if nl not in score_dict:
+                score_dict[nl] = {}
+            per_att = attentions[nl][:, nh, :,
+                                    :].squeeze().cpu().detach()
+            # per_att = per_att*inps.attention_mask
+            per_att = per_att.numpy()
 
-        sl = per_att.shape[1]
+            sl = per_att.shape[1]
 
-        res, end_p, bgn_genp, \
-            end_genp = compute_metric_of_attentions(text_tokens,
-                                                    inps_p_tokens,
-                                                    per_att,
-                                                    is_negtive=is_negtive
-                                                    )
-        newlen = min(sl, end_genp+2)
-        per_att = per_att[:newlen, :newlen]
-        score_dict[nl][nh] = res
+            res, end_p, bgn_genp, \
+                end_genp = compute_metric_of_attentions(text_tokens,
+                                                        inps_p_tokens,
+                                                        per_att,
+                                                        is_negtive=is_negtive
+                                                        )
+            newlen = min(sl, end_genp+2)
+            per_att = per_att[:newlen, :newlen]
+            score_dict[nl][nh] = res
 
-        fig, axs = plt.subplots(1, 1, figsize=(7, 7))
-        res = axs.imshow(per_att,
-                         cmap=plt.cm.Blues,
-                         )
+            # fig, axs = plt.subplots(1, 1, figsize=(7, 7))
+            # res = axs.imshow(per_att,
+            #                  cmap=plt.cm.Blues,
+            #                  )
 
-        lw = 0.8
-        # axs.axhline(y=end_p, color="red", xmin=0, xmax=end_p,
-        #             linewidth=lw)
-        # axs.axhline(y=bgn_genp, color="red", xmin=0, xmax=bgn_genp,
-        #             linewidth=lw)
-        # axs.axhline(y=end_genp, color="red", xmin=0, xmax=end_genp,
-        #             linewidth=lw)
+            # lw = 0.8
+            # # axs.axhline(y=end_p, color="red", xmin=0, xmax=end_p,
+            # #             linewidth=lw)
+            # # axs.axhline(y=bgn_genp, color="red", xmin=0, xmax=bgn_genp,
+            # #             linewidth=lw)
+            # # axs.axhline(y=end_genp, color="red", xmin=0, xmax=end_genp,
+            # #             linewidth=lw)
 
-        # axs.axvline(x=end_p, color="red", ymin=newlen-end_p, ymax=newlen,
-        #             linewidth=lw)
-        # axs.axvline(x=bgn_genp, color="red", ymin=newlen-bgn_genp, ymax=newlen,
-        #             linewidth=lw)
-        # axs.axvline(x=end_genp, color="red", ymin=newlen-end_genp, ymax=newlen,
-        #             linewidth=lw)
+            # # axs.axvline(x=end_p, color="red", ymin=newlen-end_p, ymax=newlen,
+            # #             linewidth=lw)
+            # # axs.axvline(x=bgn_genp, color="red", ymin=newlen-bgn_genp, ymax=newlen,
+            # #             linewidth=lw)
+            # # axs.axvline(x=end_genp, color="red", ymin=newlen-end_genp, ymax=newlen,
+            # #             linewidth=lw)
 
-        axs.set_xlabel('Attention From')
-        axs.set_ylabel('Attention To')
-        plt.colorbar(res, ax=axs)
-        axs.title.set_text(f'Layer {nl+1} Head {nh+1}')
-        plt.savefig(pth+f"layer{nl+1}_head{nh+1}.pdf",
-                    pad_inches=0.1)
-        print(f"Save to {pth}layer{nl+1}_head{nh+1}.pdf DONE.")
+            # axs.set_xlabel('Attention From')
+            # axs.set_ylabel('Attention To')
+            # plt.colorbar(res, ax=axs)
+            # axs.title.set_text(f'Layer {nl+1} Head {nh+1}')
+            # plt.savefig(pth+f"layer{nl+1}_head{nh+1}.pdf",
+            #             pad_inches=0.1)
+            # print(f"Save to {pth}layer{nl+1}_head{nh+1}.pdf DONE.")
     with open(f"{pth}metricsRes_layer{nl+1}_head{nh+1}.json",
               'w', encoding='utf8') as f:
         json.dump(score_dict, f, ensure_ascii=False, indent=4)
