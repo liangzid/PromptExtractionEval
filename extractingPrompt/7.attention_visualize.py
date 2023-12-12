@@ -2,7 +2,7 @@
 ======================================================================
 7.ATTENTION_VISUALIZE ---
 
-Visualization of the attention matrices, to 
+after `attention_visulaize.py`
 
     Author: Zi Liang <frost.liang@polyu.edu.hk>
     Copyright © 2023, ZiLiang, all rights reserved.
@@ -14,12 +14,14 @@ Visualization of the attention matrices, to
 # ------------------------ Code --------------------------------------
 
 # normal import
+from attention_visualize import compute_metric_of_attentions
+from attention_visualize import filter_targeted_samples
 import json
 from typing import List, Tuple, Dict
 import random
 from pprint import pprint as ppp
 
-
+import os
 from datasets import load_dataset
 import torch
 import json
@@ -50,92 +52,11 @@ from metrics import fuzzy_match_recall, ngram_recall_evaluate
 
 torch.cuda.empty_cache()
 
-# logging.basicConfig(format='%(asctime)s %(message)s',
-#                     datefmt='%m/%d/%Y %I:%M:%S %p', level=logging.DEBUG)
 
+def draw_multiple_imgs():
 
-def filter_targeted_samples(pth, selected_num=12):
-
-    pos_ls = []
-    neg_ls = []
-
-    # from collections import OrderedDict
-    with open(pth, 'r', encoding='utf8') as f:
-        data = json.load(f, object_pairs_hook=OrderedDict)
-    for ap in data:
-        intervals = data[ap]
-        for inter in intervals:
-            pps = intervals[inter]
-            for pair in pps:
-                p, gen_p = pair
-                if fuzzy_match_recall([gen_p], [p], ratio=100) == 1:
-                    if len(p.split(" "))>15:
-                        continue
-                    pos_ls.append((p, ap, gen_p))
-                elif fuzzy_match_recall([gen_p], [p], ratio=20) == 0:
-                    if len(p.split(" "))>15:
-                        continue
-                    neg_ls.append((p, ap, gen_p))
-
-    random.seed(11242113)
-    random.shuffle(pos_ls)
-    random.shuffle(neg_ls)
-
-    if len(pos_ls) > selected_num:
-        pos_ls = pos_ls[selected_num:]
-    if len(neg_ls) > selected_num:
-        neg_ls = neg_ls[selected_num:]
-
-    print(f"______Lens: {pos_ls} {neg_ls}")
-    return pos_ls, neg_ls
-
-
-def visualize_attention_matrix(model, tokenizer, text, device):
-
-    model.eval()
-    inps = tokenizer(text,
-                     return_tensors="pt",
-                     truncation=True).to(device)
-
-    # outputs = model(ids, output_attentions=True)
-    # print(outputs)
-    attentions = model.forward(**inps,
-                               output_attentions=True).attentions
-    # shape of attentions: [num_layers, batchsize, num_heads, sl, sl]
-    print(len(attentions))
-    # attentions = (attentions[1][:, 30:, :, :], attentions[23][:, 30:, :, :])
-
-    print(attentions)
-
-    # # attention_weights = attentions[0].cpu().squeeze().detach().numpy()
-    # # attention_weights = np.transpose(attention_weights, (1, 2, 0))
-
-    n_layer = len(attentions) # 24
-    n_head = attentions[0].shape[1] #3 2
-    # fig, axs = plt.subplots(n_layer, n_head, figsize=(20, 20))
-    fig, axs = plt.subplots(1, 1, figsize=(5, 5))
-    for nl in range(n_layer):
-        for nh in range(n_head):
-            fig, axs = plt.subplots(1, 1, figsize=(5, 5))
-            per_att = attentions[nl][:, nh, :,
-                                     :].squeeze().cpu().detach().numpy()
-            # res = axs[nl][nh].imshow(per_att, cmap=plt.cm.Blues,
-            #                          # interpolation="nearest"
-            #                          )
-            res = axs.imshow(per_att, cmap=plt.cm.Blues,
-                                     # interpolation="nearest"
-                                     )
-            axs.set_xlabel('To')
-            axs.set_ylabel('From')
-            plt.colorbar(res, ax=axs)
-            axs.title.set_text(f'Layer {nl+1} Head {nh+1}')
-            plt.show()
-    plt.show()
-
-
-def main1():
     pth = "./vary_sl/Llama-2-7b-chat-hf-res.json"
-    model_name="NousResearch/Llama-2-7b-chat-hf"
+    model_name = "NousResearch/Llama-2-7b-chat-hf"
 
     # pth = "./vary_sl/phi-1_5-res.json"
     # model_name = "microsoft/phi-1_5"
@@ -143,7 +64,7 @@ def main1():
     # device = "cuda:0"
     device = "auto"
 
-    poss, negs = filter_targeted_samples(pth, selected_num=12)
+    poss, negs = filter_targeted_samples(pth, selected_num=30)
 
     # model = AutoModelForCausalLM.from_pretrained(
     #     model_name,
@@ -176,19 +97,194 @@ def main1():
     tokenizer.pad_token = tokenizer.eos_token
     tokenizer.padding_side = "right"
 
-    # text = f"Instruction: {poss[0][0]} User: {poss[0][1]} Assistant: {poss[0][2]}"
-    text = f"Instruction: {negs[0][0]} User: {negs[0][1]} Assistant: {negs[0][2]}"
+    if not os.path.exists("./attention_viz"):
+        os.makedirs("./attention_viz")
 
-    # print(ids)
-    visualize_attention_matrix(model,
-                               tokenizer,
-                               text,
-                               "cuda:0"
+    with open("./attention_viz/samples.json", 'w', encoding='utf8') as f:
+        json.dump([poss, negs], f, ensure_ascii=False, indent=4)
+
+    model.eval()
+
+    selected_layer_head_pairs = [
+        (7, 6),
+        (3, 31),
+        # (6, 12),
+        # (3, 26),
+    ]
+
+    fig, axs = plt.subplots(3, 4, figsize=(15, 10.5))
+    fig.subplots_adjust(wspace=0.01, hspace=0.5)
+    fs=13
+
+    for i in range(2):
+        # for positive
+        pos = poss[i]
+        device = "cuda:0"
+        is_negtive = False
+        text = f"Instruction: {pos[0]} User: {pos[1]} Assistant: {pos[2]}"
+        inps_p_tokens = tokenizer.tokenize(pos[0])
+        text_tokens = tokenizer.tokenize(text)
+
+        input_ids = tokenizer(text,
+                              return_tensors="pt",
+                              truncation=True).input_ids.to(device)
+
+        attentions = model.forward(input_ids,
+                                   # attention_mask=attention_mask,
+                                   output_attentions=True).attentions
+        for j, (nl, nh) in enumerate(selected_layer_head_pairs):
+            per_att = attentions[nl][:, nh, :, :].squeeze().cpu().detach()
+
+            sl = per_att.shape[1]
+
+            res, end_p, bgn_genp, \
+                end_genp = compute_metric_of_attentions(text_tokens,
+                                                        inps_p_tokens,
+                                                        per_att,
+                                                        is_negtive=is_negtive
+                                                        )
+            newlen = min(sl, end_genp+2)
+            per_att = per_att[:newlen, :newlen]
+
+            res = axs[i, j].imshow(per_att,
+                                   cmap=plt.cm.Blues,
+                                   )
+            axs[i, j].set_xlabel('Attention From', fontsize=fs)
+            axs[i, j].set_ylabel('Attention To', fontsize=fs)
+            # plt.colorbar(res, ax=axs[i, j])
+            axs[i, j].title.set_text(
+                f'Pos. Cases {i+1} Layer {nl+1} Head {nh+1}')
+            axs[i, j].title.set_fontsize(fs)
+
+        # for negtive
+        neg = negs[i]
+        device = "cuda:1"
+        is_negtive = True
+        text = f"Instruction: {neg[0]} User: {neg[1]} Assistant: {neg[2]}"
+        inps_p_tokens = tokenizer.tokenize(neg[0])
+        text_tokens = tokenizer.tokenize(text)
+
+        input_ids = tokenizer(text,
+                              return_tensors="pt",
+                              truncation=True).input_ids.to(device)
+
+        attentions = model.forward(input_ids,
+                                   # attention_mask=attention_mask,
+                                   output_attentions=True).attentions
+        for j, (nl, nh) in enumerate(selected_layer_head_pairs):
+            per_att = attentions[nl][:, nh, :, :].squeeze().cpu().detach()
+
+            sl = per_att.shape[1]
+
+            res, end_p, bgn_genp, \
+                end_genp = compute_metric_of_attentions(text_tokens,
+                                                        inps_p_tokens,
+                                                        per_att,
+                                                        is_negtive=is_negtive
+                                                        )
+            newlen = min(sl, end_genp+2)
+            per_att = per_att[:newlen, :newlen]
+
+            res = axs[i, len(selected_layer_head_pairs)+j]\
+                .imshow(per_att,
+                        cmap=plt.cm.Blues,
+                        )
+            axs[i, j+2].set_xlabel('Attention From', fontsize=fs)
+            axs[i, j+2].set_ylabel('Attention To', fontsize=fs)
+            # plt.colorbar(res, ax=axs[i, j])
+            axs[i, j+2].title.set_text(
+                f'Neg. Cases {i+1} Layer {nl+1} Head {nh+1}')
+            axs[i, j+2].title.set_fontsize(fs)
+
+    # for positive
+    pos = poss[1]
+    device = "cuda:0"
+    is_negtive = False
+    text = f"Instruction: {pos[0]} User: {pos[1]} Assistant: {pos[2]}"
+    inps_p_tokens = tokenizer.tokenize(pos[0])
+    text_tokens = tokenizer.tokenize(text)
+
+    input_ids = tokenizer(text,
+                          return_tensors="pt",
+                          truncation=True).input_ids.to(device)
+
+    attentions = model.forward(input_ids,
+                               # attention_mask=attention_mask,
+                               output_attentions=True).attentions
+    for j, (nl, nh) in enumerate(selected_layer_head_pairs):
+        per_att = attentions[nl][:, nh, :, :].squeeze().cpu().detach()
+
+        sl = per_att.shape[1]
+
+        res, end_p, bgn_genp, \
+            end_genp = compute_metric_of_attentions(text_tokens,
+                                                    inps_p_tokens,
+                                                    per_att,
+                                                    is_negtive=is_negtive
+                                                    )
+        newlen = min(sl, end_genp+2)
+        per_att = per_att[:newlen, :newlen]
+        per_att = per_att[bgn_genp:newlen, :newlen-bgn_genp]
+
+        res = axs[2, j].imshow(per_att,
+                               cmap=plt.cm.Blues,
+                               extent=[bgn_genp, newlen, bgn_genp, newlen]
                                )
+        axs[2, j].set_xlabel('Attention From', fontsize=fs)
+        axs[2, j].set_ylabel('Attention To', fontsize=fs)
+        # plt.colorbar(res, ax=axs[i, j])
+        axs[2, j].title.set_text(
+            f'Pos. Cases {2} Local Zoom in\n of Layer {nl+1} Head {nh+1}')
+        axs[2, j].title.set_fontsize(fs)
+
+    # for negtive
+    neg = negs[1]
+    device = "cuda:1"
+    is_negtive = True
+    text = f"Instruction: {neg[0]} User: {neg[1]} Assistant: {neg[2]}"
+    inps_p_tokens = tokenizer.tokenize(neg[0])
+    text_tokens = tokenizer.tokenize(text)
+
+    input_ids = tokenizer(text,
+                          return_tensors="pt",
+                          truncation=True).input_ids.to(device)
+
+    attentions = model.forward(input_ids,
+                               # attention_mask=attention_mask,
+                               output_attentions=True).attentions
+    for j, (nl, nh) in enumerate(selected_layer_head_pairs):
+        per_att = attentions[nl][:, nh, :, :].squeeze().cpu().detach()
+
+        sl = per_att.shape[1]
+
+        res, end_p, bgn_genp, \
+            end_genp = compute_metric_of_attentions(text_tokens,
+                                                    inps_p_tokens,
+                                                    per_att,
+                                                    is_negtive=is_negtive
+                                                    )
+        newlen = min(sl, end_genp+2)
+        per_att = per_att[:newlen, :newlen]
+        per_att = per_att[bgn_genp:newlen, :newlen-bgn_genp]
+
+        res = axs[2, len(selected_layer_head_pairs)+j]\
+            .imshow(per_att,
+                    cmap=plt.cm.Blues,
+                    extent=[bgn_genp, newlen, bgn_genp, newlen]
+                    )
+        # axs[2, j+2].set_xticks(range(bgn_genp,newlen,5),range(bgn_genp,newlen,5),)
+        axs[2, j+2].set_xlabel('Attention From', fontsize=fs)
+        axs[2, j+2].set_ylabel('Attention To', fontsize=fs)
+        # plt.colorbar(res, ax=axs[i, j])
+        axs[2, j+2].title.set_text(
+            f'Neg. Cases {1+1} Local Zoom in\n of Layer {nl+1} Head {nh+1}')
+        axs[2, j+2].title.set_fontsize(fs)
+
+    plt.savefig(f"./attention_viz/visualization_4x4.pdf",
+                pad_inches=0.1)
+
+    print(f"Save to XXX DONE.")
 
 
-# running entry
 if __name__ == "__main__":
-    # main()
-    main1()
-    print("EVERYTHING DONE.")
+    draw_multiple_imgs()

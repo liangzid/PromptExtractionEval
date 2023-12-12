@@ -364,7 +364,13 @@ def compute_metric_of_attentions(tokens, inp_p_tokens, atts,
         if t == inp_p_tokens[0] and tokens[i+1] == inp_p_tokens[1]:
             idx_first_token_in_inps = i
             break
-    assert idx_first_token_in_inps != -1
+    try: 
+        assert idx_first_token_in_inps != -1
+    except Exception:
+        print("text:", tokens)
+        print("inp_p", inp_p_tokens)
+        raise Exception
+        
     idx_last_token_in_inps = idx_first_token_in_inps+len(inp_p_tokens)
 
     idxes_prompts = [idx_first_token_in_inps,
