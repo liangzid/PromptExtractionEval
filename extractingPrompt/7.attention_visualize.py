@@ -228,7 +228,7 @@ def draw_multiple_imgs():
 
         res = axs[2, j].imshow(per_att,
                                cmap=plt.cm.Blues,
-                               extent=[bgn_genp, newlen, bgn_genp, newlen]
+                               extent=[bgn_genp, newlen, newlen, bgn_genp]
                                )
         axs[2, j].set_xlabel('Attention From', fontsize=fs)
         axs[2, j].set_ylabel('Attention To', fontsize=fs)
@@ -270,7 +270,7 @@ def draw_multiple_imgs():
         res = axs[2, len(selected_layer_head_pairs)+j]\
             .imshow(per_att,
                     cmap=plt.cm.Blues,
-                    extent=[bgn_genp, newlen, bgn_genp, newlen]
+                    extent=[bgn_genp, newlen, newlen, bgn_genp]
                     )
         # axs[2, j+2].set_xticks(range(bgn_genp,newlen,5),range(bgn_genp,newlen,5),)
         axs[2, j+2].set_xlabel('Attention From', fontsize=fs)
