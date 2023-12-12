@@ -161,7 +161,7 @@ def draw_2x8():
                                        cmap=plt.cm.Blues,
                                        extent=[
                                            0, newlen-bgn_genp,
-                                           bgn_genp, newlen,
+                                           newlen, bgn_genp,
                                                ]
                                        )
             axs[1, i*2+j].set_xlabel('Attentions From', fontsize=fs)
@@ -216,7 +216,7 @@ def draw_2x8():
                                          cmap=plt.cm.Blues,
                                          extent=[
                                              0, newlen-bgn_genp,
-                                             bgn_genp, newlen,
+                                             newlen, bgn_genp,
                                              ]
                                          )
             axs[1, 4+i*2+j].set_xlabel('Attentions From', fontsize=fs)
