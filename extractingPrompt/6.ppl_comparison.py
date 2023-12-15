@@ -73,7 +73,7 @@ def mean_ppl_eval2(pth, eva_type="input_ppl-ur"):
     ]
 
     for ap in data.keys():
-        if ap in att_query_ls2:
+        if ap in att_query_ls1:
             continue
         interval_m = data[ap]
         for per_interval in interval_m:
@@ -172,7 +172,7 @@ def mean_ppl_eval2(pth, eva_type="input_ppl-ur"):
                                         model_name=model_name)
         ppl_short = perplexity_llama2_7b(short_part,
                                          model_name=model_name)
-        res_ppl = [ppl_long[i]/ppl_short[i] for i in range(len(ppl_long))]
+        res_ppl = [ppl_long[i]-ppl_short[i] for i in range(len(ppl_long))]
 
         # averaged gen-p
         p_genppl_map = {}
@@ -197,6 +197,7 @@ def mean_ppl_eval2(pth, eva_type="input_ppl-ur"):
             ppl_scores_ls.append([
                 p_ppl_map[p],
                 p_genppl_map[p],
+                fuzzy_res[p],
             ])
 
     return ppl_scores_ls
@@ -205,16 +206,15 @@ def mean_ppl_eval2(pth, eva_type="input_ppl-ur"):
 def scatter_of_two_ppls():
     eva_type = "ppl_input-output"
 
-    res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5#E-res.json",
+    res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5#I-res.json",
                                       eva_type=eva_type,
                                       ),
-           "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf#E-res.json",
+           "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf#I-res.json",
            eva_type=eva_type,
-           )
-
-           }
+                                                    )}
     with open(f"evaluate.6--{eva_type}.json", 'w', encoding='utf8') as f:
         json.dump(res, f, ensure_ascii=False, indent=4)
+
     with open(f"evaluate.6--{eva_type}.json", 'r', encoding='utf8') as f:
         res = json.load(f, object_pairs_hook=OrderedDict)
 
@@ -236,7 +236,8 @@ def scatter_of_two_ppls():
     font_size = 21
 
     j = 0
-    fig, axs = plt.subplots(1, 1, figsize=(20, 19.3))
+    # fig, axs = plt.subplots(1, 1, figsize=(20, 19.3))
+    fig, axs = plt.subplots(1, 1, figsize=(7, 7))
 
     for m in res:
         ylabel = "PPL of Uncovered Contents"
@@ -299,16 +300,17 @@ def draw_scatter():
     # eva_type = "output_ppl-ur"
     # eva_type = "ppl_input-output"
 
-    res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5#E-res.json",
-                                      eva_type=eva_type,
-                                      ),
-           "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf#E-res.json",
-                                                    eva_type=eva_type,
-                                                    )
+    # res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5#I-res.json",
+    #                                   eva_type=eva_type,
+    #                                   ),
+    #        "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf#I-res.json",
+    #                                                 eva_type=eva_type,
+    #                                                 )
 
-           }
-    with open(f"evaluate.6--{eva_type}.json", 'w', encoding='utf8') as f:
-        json.dump(res, f, ensure_ascii=False, indent=4)
+    #        }
+    # with open(f"evaluate.6--{eva_type}.json", 'w', encoding='utf8') as f:
+    #     json.dump(res, f, ensure_ascii=False, indent=4)
+
     with open(f"evaluate.6--{eva_type}.json", 'r', encoding='utf8') as f:
         res = json.load(f, object_pairs_hook=OrderedDict)
 
@@ -333,7 +335,7 @@ def draw_scatter():
     ratio_range = list(range(70, 101, 10))
 
     j = 0
-    fig, axs = plt.subplots(2, 4, figsize=(20, 9.3))
+    fig, axs = plt.subplots(2, 4, figsize=(20, 7.1))
     for m in res:
         j = 0
         res_ls = res[m]
@@ -395,18 +397,19 @@ def draw_scatter():
                                   which="both")
             j += 1
 
-    fig.subplots_adjust(wspace=0.30, hspace=1.1)
+    fig.subplots_adjust(wspace=0.33, hspace=0.5)
     # plt.legend(loc=(3.4, 5.8), prop=font1, ncol=6)  # 设置信息框
     # plt.legend(loc=(20, 1.5), prop=font1, ncol=6)  # 设置信息框
     font1 = {
         'weight': 'normal',
         'size': font_size-1,
     }
-    plt.legend(loc=(-4.18, 1.05),
+    plt.legend(loc=(-2.48, 2.50),
                prop=font1, ncol=6, frameon=False,
-               handletextpad=0., handlelength=1.2)  # 设置信息框
+               handletextpad=0.01, handlelength=1.2)  # 设置信息框
+
     plt.subplots_adjust(bottom=0.33, top=0.85)
-    plt.show()
+    # plt.show()
     plt.savefig(f"./PPL_eval1{eva_type}.pdf",
                 pad_inches=0.1)
 
