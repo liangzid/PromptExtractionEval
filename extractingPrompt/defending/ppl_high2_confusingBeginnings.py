@@ -75,6 +75,47 @@ def mixup(p1, ws):
     return " ".join(p1)
 
 
+def defense_reshape(pls, method="prefix"):
+    prompts=pls
+    newprompts=[]
+    skip_list_on_eva=[]
+
+    if method == "prefix":
+        for p in prompts:
+            r_p = highh_ppl_phrase_ls[random.randint(0,
+                                                     len(highh_ppl_phrase_ls)-1)]
+            newp = r_p+p
+            newprompts.append(newp)
+            skip_list_on_eva.extend(highh_ppl_phrase_ls)
+    elif method == "fakeone":
+        for p in prompts:
+            r_p = fakeone_phrase_ls[random.randint(0,
+                                                   len(fakeone_phrase_ls)-1)]
+            newp = r_p+p
+            newprompts.append(newp)
+            skip_list_on_eva.extend(fakeone_phrase_ls)
+    elif method == "insert":
+        for p in prompts:
+            newp = mixup(p, inserted_unfamiliar_words)
+            newprompts.append(newp)
+            skip_list_on_eva = inserted_unfamiliar_words
+    elif method == "donot":
+        for p in prompts:
+            r_p = donot_disclose[random.randint(0,
+                                                len(fakeone_phrase_ls)-1)]
+            newp = p+r_p
+            newprompts.append(newp)
+            skip_list_on_eva.extend(donot_disclose)
+    elif method == "locallook":
+        for p in prompts:
+            r_p = locallook_ls[random.randint(0,
+                                              len(fakeone_phrase_ls)-1)]
+            newp = r_p + p
+            newprompts.append(newp)
+            skip_list_on_eva.extend(locallook_ls)
+
+    return newprompts,skip_list_on_eva
+
 def eva_new_ppls(method="prefix"):
     dn = "liangzid/glue_prompts"
     dataset = load_dataset(dn)['validation'].to_list()

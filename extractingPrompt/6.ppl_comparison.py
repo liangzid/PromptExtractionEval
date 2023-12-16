@@ -256,6 +256,8 @@ def scatter_of_two_ppls():
 
         y = [-xxx for i, xxx in enumerate(y)]
 
+        print(f"Number of points: {len(x)}")
+
         # # this is the original y
         # y = [-xxx+x[i] for i, xxx in enumerate(y)]
 

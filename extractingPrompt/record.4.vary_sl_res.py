@@ -91,14 +91,14 @@ def plot_box_figures():
     #               "Llama2-7B": "#e67e22", }
 
     color_map2 = {"Phi-1.5B": "red",
-                 "Llama2-7B": "blue", }
+                  "Llama2-7B": "blue", }
     color_map = {"Phi-1.5B": "#be2edd",
-                  "Llama2-7B": "#130f40", }
+                 "Llama2-7B": "#130f40", }
 
     line_map2 = {"Phi-1.5B": "--",
-                  "Llama2-7B": "-", }
+                 "Llama2-7B": "-", }
     line_map = {"Phi-1.5B": "-.",
-                  "Llama2-7B": ":", }
+                "Llama2-7B": ":", }
 
     name_convert = {"phi-1_5": "Phi-1.5B",
                     "Llama-2-7b-chat-hf": "Llama2-7B", }
@@ -184,10 +184,10 @@ def plot_box_figures():
 
             if sn == 0:
                 cr = color_map[model]
-                ls=line_map[model]
+                ls = line_map[model]
             else:
                 cr = color_map2[model]
-                ls=line_map2[model]
+                ls = line_map2[model]
             kr = marker_map[model]
             axs[0+sn][j].set_xscale("log")
             # width = np.diff(np.append(xvls, xvls[-1]*2.71))/9.5
@@ -201,7 +201,7 @@ def plot_box_figures():
 
                                          boxprops={"color": cr,
                                                    "linewidth": 1.5,
-                                                   "linestyle":ls,
+                                                   "linestyle": ls,
                                                    },
                                          capprops={"color": cr,
                                                    "linewidth": 1.5,
@@ -209,7 +209,7 @@ def plot_box_figures():
                                                    },
                                          whiskerprops={"color": cr,
                                                        "linewidth": 1.5,
-                                                   "linestyle":ls,
+                                                       "linestyle": ls,
                                                        },
                                          flierprops={
                                              "markeredgecolor": cr,
@@ -298,10 +298,10 @@ def plot_box_figures():
 
             if sn == 0:
                 cr = color_map[model]
-                ls=line_map[model]
+                ls = line_map[model]
             else:
                 cr = color_map2[model]
-                ls=line_map2[model]
+                ls = line_map2[model]
             kr = marker_map[model]
             axs[1+sn][j].set_xscale("log")
             width = np.diff([2**x for x in range(5, 12)])/14.5
@@ -310,14 +310,14 @@ def plot_box_figures():
                                  widths=width,
                                  boxprops={"color": cr,
                                            "linewidth": 1.5,
-                                                   "linestyle":ls,
+                                           "linestyle": ls,
                                            },
                                  capprops={"color": cr,
                                            "linewidth": 1.5,
                                            },
                                  whiskerprops={"color": cr,
                                                "linewidth": 1.5,
-                                                   "linestyle":ls,
+                                               "linestyle": ls,
                                                },
                                  flierprops={
                                      "markeredgecolor": cr,
