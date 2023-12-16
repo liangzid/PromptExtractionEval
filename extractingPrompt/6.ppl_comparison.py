@@ -206,20 +206,20 @@ def mean_ppl_eval2(pth, eva_type="input_ppl-ur"):
 def scatter_of_two_ppls():
     eva_type = "ppl_input-output"
 
-    res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5#I-res.json",
-                                      eva_type=eva_type,
-                                      ),
-           "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf#I-res.json",
-           eva_type=eva_type,
-                                                    )}
-    with open(f"evaluate.6--{eva_type}.json", 'w', encoding='utf8') as f:
-        json.dump(res, f, ensure_ascii=False, indent=4)
+    # res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5#I-res.json",
+    #                                   eva_type=eva_type,
+    #                                   ),
+    #        "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf#I-res.json",
+    #        eva_type=eva_type,
+    #                                                 )}
+    # with open(f"evaluate.6--{eva_type}.json", 'w', encoding='utf8') as f:
+    #     json.dump(res, f, ensure_ascii=False, indent=4)
 
     with open(f"evaluate.6--{eva_type}.json", 'r', encoding='utf8') as f:
         res = json.load(f, object_pairs_hook=OrderedDict)
 
     # matplotlib.use('TkAgg')
-    
+
     color_map = {"Phi-1.5B": "red",
                  "Llama2-7B": "blue",
                  "llama2-finetuning-test": "orange",
@@ -229,10 +229,19 @@ def scatter_of_two_ppls():
         "llama2-finetuning-test": "^",
         "Phi-1.5B": "o",
     }
-    alpha = {
-        "llama2-finetuning-test": 0.5,
-        "Phi-1.5B": 0.5,
-    }
+    import matplotlib.cm as cm
+    import matplotlib.colors as colors
+    cmap_map={
+        "llama2-finetuning-test": cm.get_cmap("Oranges_r"),
+        "Phi-1.5B": cm.get_cmap("hot"),
+        }
+    norm=colors.Normalize(vmin=0,vmax=1)
+    
+    # alpha = {
+    #     "llama2-finetuning-test": 0.5,
+    #     "Phi-1.5B": 0.5,
+    # }
+
     font_size = 21
 
     j = 0
@@ -241,21 +250,43 @@ def scatter_of_two_ppls():
 
     for m in res:
         ylabel = "PPL of Uncovered Contents"
-        pre_p_ls, gen_p_ls = zip(*res[m])
+        pre_p_ls, gen_p_ls, fuzzy_scores = zip(*res[m])
         x = pre_p_ls
         y = gen_p_ls
 
+        y = [-xxx for i, xxx in enumerate(y)]
+
+        # # this is the original y
+        # y = [-xxx+x[i] for i, xxx in enumerate(y)]
+
+        # print(fuzzy_scores)
+        scores = [xxx["70"] for xxx in fuzzy_scores]
+        # print(scores)
+
         axs.scatter(x, y, label=m,
-                    linewidth=1.5,
+                    linewidth=0.5,
                     marker=marker[m],
-                    alpha=alpha[m],
+                    # alpha=scores,
+                    alpha=0.65,
                     color=color_map[m]
                     )  # 绘制当前模型的曲线
 
+        # ress=axs.scatter(x, y,
+        #             label=m,
+        #             linewidth=1.5,
+        #             marker=marker[m],
+        #             alpha=0.75,
+        #             c=scores,
+        #             cmap=cmap_map[m],
+        #             norm=norm
+        #             )  # 绘制当前模型的曲线
+
+        # plt.colorbar(ress)
+
         # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
         # axs[j].fill_between(x, y1, y2, alpha=0.3)  # 透明度
-        axs.set_xlabel("PPL of Input Prompts", fontsize=font_size)
-        axs.set_ylabel(ylabel, fontsize=font_size-5)
+        axs.set_xlabel("PPL of Input Prompts", fontsize=font_size-2)
+        axs.set_ylabel(ylabel, fontsize=font_size-2)
         # axs[j].set_ylim([0, 5000])  # 设置纵轴大小范围
 
         # axs[0][j].set_xticks(x, x_s,
@@ -272,13 +303,13 @@ def scatter_of_two_ppls():
     # plt.legend(loc=(20, 1.5), prop=font1, ncol=6)  # 设置信息框
     font1 = {
         'weight': 'normal',
-        'size': font_size-1,
+        'size': font_size-3,
     }
-    plt.legend(loc=(-4.18, 1.05),
-               prop=font1, ncol=6, frameon=False,
-               handletextpad=0., handlelength=1.2)  # 设置信息框
+    plt.legend(loc=(0.02, 0.75),
+               prop=font1, ncol=1, frameon=True,
+               handletextpad=0.1, handlelength=1.2)  # 设置信息框
     plt.subplots_adjust(bottom=0.33, top=0.85)
-    plt.show()
+    # plt.show()
     plt.savefig(f"./PPL_eval2{eva_type}.pdf",
                 pad_inches=0.1)
 
