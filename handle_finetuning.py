@@ -6,7 +6,7 @@ Handle fine-tuning procedure with OpenAI interfaces.
 
 reference: https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset
 
-    Author: Zi Liang <frost.liang@polyu.edu.hk>
+    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
     Copyright © 2023, ZiLiang, all rights reserved.
     Created: 11 November 2023
 ======================================================================

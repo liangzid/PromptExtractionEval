@@ -1,7 +1,7 @@
 #+title: Attacking GPTs: A Plan
 #+date: Wed Nov 15 17:18:15 2023
 #+author: Zi Liang
-#+email: frost.liang@polyu.edu.hk
+#+email: zi1415926.liang@connect.polyu.hk
 #+latex_class: elegantpaper
 #+filetags: ::
 

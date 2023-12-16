@@ -5,7 +5,7 @@ MAIN ---
 test the finetuning of LLaMA with LORA.
 reference: https://colab.research.google.com/drive/1vk8i01apaSp59GVV2yInxOV15QwCwMrg#scrollTo=n5kH6OUjdubg
 
-    Author: Zi Liang <frost.liang@polyu.edu.hk>
+    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
     Copyright © 2023, ZiLiang, all rights reserved.
     Created: 12 November 2023
 ======================================================================

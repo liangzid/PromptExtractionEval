@@ -5,7 +5,7 @@ PREPARE_FINETUNED ---
 Examples of data preparation and analysis of OpenAI's fine-tuning.
 Reference: https://cookbook.openai.com/examples/chat_finetuning_data_prep
 
-    Author: Zi Liang <frost.liang@polyu.edu.hk>
+    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
     Copyright © 2023, ZiLiang, all rights reserved.
     Created: 11 November 2023
 ======================================================================
