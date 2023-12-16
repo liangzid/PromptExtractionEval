@@ -6,3 +6,7 @@
 *save_models
 *train_results
 *.log
+*.json
+extractingPrompt/offload/
+*ipynb_checkpoints/
+*.pdf
