@@ -50,7 +50,6 @@ from pprint import pprint as ppp
 import os
 
 
-
 def myeval(task, res):
     predict_ls = []
     label_ls = []
@@ -153,15 +152,17 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
     for ttt in tasks_we_used:
         overall_res[ttt] = {}
         subset = temp_prompts[0][ttt]  # the prompt list
-        ress = oneDefense_oneTask_MultipleOriginalPrompts(
-            text_gen,
-            "vanilla",
-            ttt,
-            subset
-        )
-        overall_res[ttt]["vanilla"] = ress
+        # ress = oneDefense_oneTask_MultipleOriginalPrompts(
+        #     text_gen,
+        #     "vanilla",
+        #     ttt,
+        #     subset
+        # )
+        # overall_res[ttt]["vanilla"] = ress
+
         for ddd in defenses_methods:
-            newprompts = defense_reshape(subset, method=ddd)
+            newprompts,_ = defense_reshape(subset, method=ddd)
+            # print("Newprompts", newprompts)
             ress = oneDefense_oneTask_MultipleOriginalPrompts(
                 text_gen,
                 ddd,

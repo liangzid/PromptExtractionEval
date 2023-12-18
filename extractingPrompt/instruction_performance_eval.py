@@ -114,6 +114,10 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
             inps = d["sentence"]
             label = d["label"]
             label = task_label_map[task_name][str(label)]
+            # print("--------------------")
+            # print(prompt)
+            # print("--------------------")
+            # print(inps)
             res = gen_pipeline("Instruction: " + prompt +
                                " User: "+inps+" Assistant: ")
             res_ls.append((res, label))
