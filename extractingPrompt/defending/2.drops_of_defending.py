@@ -88,8 +88,8 @@ def oneDefense_oneTask_MultipleOriginalPrompts(
         os.makedirs(save_dir)
 
     all_res = []
-    for p in tqdm(pls, desc=f"Task: {task}  defense: {defense_method}"):
-        tmppth = save_dir+f"task___{task}-p___{p}.json"
+    for iii, p in tqdm(enumerate(pls), desc=f"Task: {task}  defense: {defense_method}"):
+        tmppth = save_dir+f"task___{task}-pindex___{iii}.json"
         res = o3(pipeline, p, task, save_pth=tmppth)
         scores = myeval(task, res)
         all_res.append(scores)
