@@ -129,7 +129,7 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
             label = task_label_map[task_name][str(label)]
             res = gen_pipeline("Instruction: " + prompt +
                                " User: "+inps+" Assistant: ")
-            res_ls.append(res, label)
+            res_ls.append((res, label))
     elif task_name in double_input_tasks:
         for d in dataset["validation"]:
             inps = d[task_key_map[task_name][0]]+"SEP" +\
@@ -137,8 +137,9 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
             label = d["label"]
             label = task_label_map[task_name][str(label)]
             res = gen_pipeline("Instruction: " + prompt +
-                               " User: "+inps+" Assistant: ")
-            res_ls.append(res, label)
+                               f" User: The sentence is '{inps}'. "
+                               + " Assistant: ")
+            res_ls.append((res, label))
     else:
         logging.error(f"task name: {task_name} not found.")
     with open(save_pth, 'w', encoding='utf8') as f:
