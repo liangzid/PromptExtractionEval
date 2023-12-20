@@ -141,9 +141,11 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
 
     # set experiment tasks
     tasks_we_used = [
-        "cola", "mnli",
-        "mrpc",
-        "qnli", "qqp", "rte", "sst2",
+        # "cola",
+        "qnli",
+        "qqp",
+        "rte",
+        "sst2",
         "wnli",]
     defenses_methods = ["prefix", "fakeone",
                         "insert", "donot", "locallook"]

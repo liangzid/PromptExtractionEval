@@ -162,7 +162,7 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
         axs[iii].title.set_text(f'{name_map[key]}')
         print(f"Save to {pth}layer{nl+1}_head{nh+1}.pdf DONE.")
         iii += 1
-    plt.show()
+    # plt.show()
     plt.savefig(spth+"4-attention-visualize.pdf", pad_inches=0.1)
 
 

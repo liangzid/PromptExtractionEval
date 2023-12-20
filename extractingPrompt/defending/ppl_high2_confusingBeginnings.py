@@ -116,6 +116,7 @@ def defense_reshape(pls, method="prefix"):
 
     return newprompts,skip_list_on_eva
 
+
 def eva_new_ppls(method="prefix"):
     dn = "liangzid/glue_prompts"
     dataset = load_dataset(dn)['validation'].to_list()
