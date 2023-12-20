@@ -17,8 +17,10 @@ import json
 # from typing import List, Tuple, Dict
 # import random
 # from pprint import pprint as ppp
+import os
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "4,5,6,7"
+# os.environ["CUDA_VISIBLE_DEVICES"] = "4,5,6,7"
+os.environ['TRANSFORMERS_CACHE'] = '/root/autodl-tmp/cache/'
 
 
 from test_llama2_extracting import InferPromptExtracting
