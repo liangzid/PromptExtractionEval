@@ -41,6 +41,8 @@ from transformers import (
     pipeline
 )
 import logging
+import os
+os.environ['TRANSFORMERS_CACHE'] = '/root/autodl-tmp/cache/'
 
 torch.cuda.empty_cache()
 
@@ -56,8 +58,8 @@ print("Dataset loading DONE.")
 
 
 model_ls = [
-    # "NousResearch/Llama-2-7b-chat-hf#Func",
-    "NousResearch/Llama-2-7b-chat-hf#Norm",
+    "NousResearch/Llama-2-7b-chat-hf#Func",
+    # "NousResearch/Llama-2-7b-chat-hf#Norm",
     #     "microsoft/phi-1_5#Func",
     #     "microsoft/phi-1_5#Norm",
 ]
