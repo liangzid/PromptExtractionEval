@@ -14,18 +14,8 @@ Rephrasing to higher PPL scores
 # ------------------------ Code --------------------------------------
 
 # normal import
-import json
 import sys
-from typing import List, Tuple, Dict
-import random
-from pprint import pprint as ppp
-
 sys.path.append("../")
-from metrics_with_LMs import perplexity_llama2_7b
-
-
-from datasets import load_dataset
-
 from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
@@ -33,6 +23,31 @@ from transformers import (
     TrainingArguments,
     pipeline
 )
+from datasets import load_dataset
+from metrics_with_LMs import perplexity_llama2_7b
+import json
+from typing import List, Tuple, Dict
+import random
+from pprint import pprint as ppp
+from openai import OpenAI as oa
+
+client = oa()
+
+
+def extract_prompt_interface(modelname="gpt-3.5-turbo-1106",
+                             prompt="",
+                             utter="",
+                             ):
+
+    res = client.chat.completions.create(
+        model=modelname,
+        # prompt=f"Instruction: {prompt}. User: {utter}. System: ",
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": utter}
+        ]
+    )
+    return res.choices[0].message.content
 
 
 def higher_rephrasing():
@@ -42,42 +57,26 @@ def higher_rephrasing():
     for d in dataset:
         prompts.append(d["text"])
 
-    prompts=prompts[:5]
+    # prompts = prompts[:5]
 
-    original_ppl = perplexity_llama2_7b(prompts,
-                                        "NousResearch/Llama-2-7b-chat-hf")
-
-    # load model
-    model_name = "NousResearch/Llama-2-7b-chat-hf"
-    device = "auto"
-
-    model = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        # quantization_config=quant_config,
-        device_map=device,
-        # load_in_8bit=True,
-        trust_remote_code=True,
-        offload_folder="offload",
-    )
-    tokenizer = AutoTokenizer.from_pretrained(model_name,
-                                              trust_remote_code=True)
-    tokenizer.pad_token = tokenizer.eos_token
-    tokenizer.padding_side = "right"
-    # max_length = 128
-    max_new_tokens = 15
-
-    text_gen = pipeline(task="text-generation",
-                        model=model,
-                        tokenizer=tokenizer,
-                        max_new_tokens=max_new_tokens)
+    original_ppl = perplexity_llama2_7b(
+        prompts,
+        "NousResearch/Llama-2-7b-chat-hf")
 
     new_prompts = []
     for p in prompts:
-        query = f"User: Please rephrase this sentence into a unfamiliar way: \"{p}\".\nAssistant: "
-        newgen = text_gen(query, do_sample=False)[0]["generated_text"]
-        newgen = newgen.split(query)[1]
+        query = "Kindly express this statement utilizing an unconventional manner of articulation. Donot change the label in the statement, such as negative, positive, acceptable, unacceptable, neutral, entailment, contradiction, equivalent, duplicate, entailment, positive, and so on. Refrain from providing any additional information."
+        newgen = extract_prompt_interface(
+            prompt=query,
+            utter=f"The sentence is:<{p}>.")
         print(newgen)
         new_prompts.append(newgen)
+
+    with open("High-PPL-Prompts.json",
+              'w', encoding='utf8') as f:
+        json.dump([prompts,
+                   new_prompts,
+                   ], f, ensure_ascii=False, indent=4)
 
     new_ppl = perplexity_llama2_7b(new_prompts,
                                    "NousResearch/Llama-2-7b-chat-hf")

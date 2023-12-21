@@ -14,7 +14,6 @@ For API experiments.
 # ------------------------ Code --------------------------------------
 
 # normal import
-from openai import OpenAI as oa
 import json
 from typing import List, Tuple, Dict
 from collections import OrderedDict
@@ -26,7 +25,24 @@ from datasets import load_dataset
 sys.path.append("../")
 
 
+from openai import OpenAI as oa
 client = oa()
+
+
+def extract_prompt_interface(modelname="gpt-3.5-turbo-1106",
+                             prompt="",
+                             utter="",
+                             ):
+
+    res = client.chat.completions.create(
+        model=modelname,
+        # prompt=f"Instruction: {prompt}. User: {utter}. System: ",
+        messages=[
+            {"role": "system", "content": "Instruction: " + prompt},
+            {"role": "user", "content": utter}
+        ]
+    )
+    return res.choices[0].message.content
 
 
 def test_openai(modelname="gpt-3.5-turbo-1106",
@@ -71,22 +87,6 @@ def test_openai(modelname="gpt-3.5-turbo-1106",
 #         ]
 #     )
 #     return res.choices[0].message.content
-
-
-def extract_prompt_interface(modelname="gpt-3.5-turbo-1106",
-                             prompt="",
-                             utter="",
-                             ):
-
-    res = client.chat.completions.create(
-        model=modelname,
-        # prompt=f"Instruction: {prompt}. User: {utter}. System: ",
-        messages=[
-            {"role": "system", "content": "Instruction: " + prompt},
-            {"role": "user", "content": utter}
-        ]
-    )
-    return res.choices[0].message.content
 
 
 def script():

@@ -13,6 +13,8 @@ Add confusing beginning phrase to imporve the PPL of words.
 
 # ------------------------ Code --------------------------------------
 
+import sys
+sys.path.append("../")
 from ppl_high import eva_res, att_query_ls2
 from ppl_high import estimate_scores_of_new_prompts
 from metrics import ngram_recall_evaluate, fuzzy_match_recall
@@ -23,8 +25,7 @@ from typing import List, Tuple, Dict
 import random
 from pprint import pprint as ppp
 from datasets import load_dataset
-import sys
-sys.path.append("../")
+from collections import OrderedDict
 
 # normal import
 
@@ -76,9 +77,9 @@ def mixup(p1, ws):
 
 
 def defense_reshape(pls, method="prefix"):
-    prompts=pls
-    newprompts=[]
-    skip_list_on_eva=[]
+    prompts = pls
+    newprompts = []
+    skip_list_on_eva = []
 
     if method == "prefix":
         for p in prompts:
@@ -114,7 +115,7 @@ def defense_reshape(pls, method="prefix"):
             newprompts.append(newp)
             skip_list_on_eva.extend(locallook_ls)
 
-    return newprompts,skip_list_on_eva
+    return newprompts, skip_list_on_eva
 
 
 def eva_new_ppls(method="prefix"):
@@ -159,6 +160,13 @@ def eva_new_ppls(method="prefix"):
             newp = r_p + p
             newprompts.append(newp)
             skip_list_on_eva.extend(locallook_ls)
+    elif method == "high-ppl":
+        hppl_pth = "./High-PPL-Prompts.json"
+        with open(hppl_pth,
+                  'r', encoding='utf8') as f:
+            data = json.load(f, object_pairs_hook=OrderedDict)
+        newprompts = data[1]
+        assert data[0] == prompts
 
     print("Now evaluate the old PPL and new PPLs.")
 
@@ -183,8 +191,7 @@ def eva_new_ppls(method="prefix"):
                    ], f, ensure_ascii=False, indent=4)
 
     infer_res_pth = f"confuse_prompts_extracted{method}.json"
-
-    # estimate_scores_of_new_prompts(save_pth, infer_res_pth)
+    estimate_scores_of_new_prompts(save_pth, infer_res_pth)
 
     print("==========================================================")
     print("Compared to the pure response.")
@@ -202,6 +209,7 @@ if __name__ == "__main__":
     # eva_new_ppls(method="prefix")
     # eva_new_ppls(method="fakeone")
     # eva_new_ppls(method="donot")
-    eva_new_ppls(method="locallook")
-    eva_new_ppls(method="insert")
+    # eva_new_ppls(method="locallook")
+    # eva_new_ppls(method="insert")
+    eva_new_ppls(method="high-ppl")
     print("EVERYTHING DONE.")
