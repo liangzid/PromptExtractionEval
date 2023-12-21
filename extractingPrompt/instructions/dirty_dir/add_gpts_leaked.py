@@ -22,38 +22,74 @@ from pprint import pprint as ppp
 from datasets import load_dataset
 
 
-glue_prompts = load_dataset("liangzid/prompts")["train"].to_list()
-prompt_ls = []
-for xxx in glue_prompts:
-    prompt_ls.append(xxx["text"])
+def main1():
+    glue_prompts = load_dataset("liangzid/prompts")["train"].to_list()
+    prompt_ls = []
+    for xxx in glue_prompts:
+        prompt_ls.append(xxx["text"])
+
+    # new evaluation dataset.
+    prefix_dir = "./GPTs-prompts/"
+
+    new_prompts = []
+    for filename in os.listdir(prefix_dir):
+        pth = prefix_dir+filename
+        if os.path.isfile(pth) and ".md" in pth and "README" not in pth:
+            with open(pth, 'r', encoding="utf8") as f:
+                data = f.read()
+                if "```\n" in data:
+                    data1 = data.split("```\n")[0]
+                    data = data.split(data1)[1]
+                    data = data.replace("```", "")
+                    if data.endswith("\n```"):
+                        data = data[:-4]
+            new_prompts.append(data)
+
+    # save as jsonl
+    with open("gpts_prompts.jsonl", 'w', encoding='utf8') as f:
+        for np in new_prompts:
+            nps = json.dumps({"text": np}, ensure_ascii=False)
+            f.write(nps+"\n")
+
+    print("save done.")
 
 
-# new evaluation dataset.
-prefix_dir = "./GPTs-prompts/"
+def main2():
+    command = "git clone https://github.com/liangzid/chatgpt_system_prompt/"
+    os.system(command)
+    # new evaluation dataset.
+    prefix_dir = "./chatgpt_system_prompt/prompts/gpts/"
 
-new_prompts = []
-for filename in os.listdir(prefix_dir):
-    pth = prefix_dir+filename
-    if os.path.isfile(pth) and ".md" in pth and "README" not in pth:
-        with open(pth, 'r', encoding="utf8") as f:
-            data = f.read()
-            if "```\n" in data:
-                data1 = data.split("```\n")[0]
-                data = data.split(data1)[1]
-                data = data.replace("```", "")
-                if data.endswith("\n```"):
-                    data=data[:-4]
-        new_prompts.append(data)
+    new_prompts = []
+    for filename in os.listdir(prefix_dir):
+        if ".md" not in filename:
+            continue
+        pth = prefix_dir+filename
+        if os.path.isfile(pth) and ".md" in pth and "README" not in pth:
+            with open(pth, 'r', encoding="utf8") as f:
+                data = f.read()
+                if "```markdown" in data:
+                    data=data.split("```markdown\n")[1]\
+                        .split("\n```")[0]
+                else:
+                    if "```\n" in data:
+                        data1 = data.split("```\n")[0]
+                        data = data.split(data1)[1]
+                        data = data.replace("```", "")
+                        if data.endswith("\n```"):
+                            data = data[:-4]
+            new_prompts.append(data)
 
-# save as jsonl
-with open("gpts_prompts.jsonl", 'w', encoding='utf8') as f:
-    for np in new_prompts:
-        nps = json.dumps({"text": np}, ensure_ascii=False)
-        f.write(nps+"\n")
+    # save as jsonl
+    with open("leaked_prompts.jsonl", 'w', encoding='utf8') as f:
+        for np in new_prompts:
+            nps = json.dumps({"text": np}, ensure_ascii=False)
+            f.write(nps+"\n")
 
-print("save done.")
+    print("save done.")
 
 
 # running entry
 if __name__ == "__main__":
+    main2()
     print("EVERYTHING DONE.")
