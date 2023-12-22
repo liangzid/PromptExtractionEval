@@ -14,6 +14,7 @@ Curves of funcation calling.
 # ------------------------ Code --------------------------------------
 
 # normal import
+import time
 import json
 from typing import List, Tuple, Dict
 import random
@@ -135,7 +136,6 @@ def plot_curves():
                                 color=color_map[pth],
                                 )  # 绘制当前模型的曲线
 
-    fig.subplots_adjust(wspace=0.30, hspace=1.1)
     font1 = {
         'weight': 'normal',
         'size': font_size-1,
@@ -143,7 +143,8 @@ def plot_curves():
     plt.legend(loc=(-4.18, 1.05),
                prop=font1, ncol=6, frameon=False,
                handletextpad=0., handlelength=1.2)  # 设置信息框
-    plt.subplots_adjust(bottom=0.33, top=0.85)
+    fig.subplots_adjust(wspace=0.50, hspace=1.5)
+    # plt.subplots_adjust(bottom=0.33, top=0.85)
     # plt.show()
     plt.savefig("./func_call_scatter.pdf",
                 pad_inches=0.1)
@@ -171,9 +172,10 @@ def box_curves():
     fuzzy_ls = [70, 80, 90, 100]
 
     font_size = 21
+    t1=time.time()
 
     j = 0
-    fig, axs = plt.subplots(2, 4, figsize=(20, 8.5))
+    fig, axs = plt.subplots(2, 4, figsize=(20, 7.1))
     interval_value_ls_bp=None
     for pth, m in model_types.items():
         with open(pth, 'r', encoding='utf8') as f:
@@ -201,15 +203,19 @@ def box_curves():
         # now plot the box plot.
         interval_str_ls = list(new_dict.keys())
         interval_value_ls = [int(float(x)) for x in interval_str_ls]
+        interval_value_ls = sorted(interval_value_ls)
+
         if interval_value_ls_bp is None:
             interval_value_ls_bp = interval_value_ls
         else:
-            new_interval_ls=[]
-            for num in interval_value_ls:
-                for x in interval_value_ls_bp:
-                    if x <= num+10 and x>= num-10:
-                        new_interval_ls.append(x)
-            interval_value_ls=new_interval_ls
+            interval_value_ls=interval_value_ls_bp
+
+            # new_interval_ls=[]
+            # for num in interval_value_ls:
+            #     for x in interval_value_ls_bp:
+            #         if x <= num+10 and x>= num-10:
+            #             new_interval_ls.append(x)
+            # interval_value_ls=new_interval_ls
 
         for i_n, n in enumerate(n_ls):
             ylabel = f"{n}-gram UR"
@@ -228,6 +234,9 @@ def box_curves():
                                     pad=0, direction="in",
                                     which="both")
 
+            print("==================")
+            print(yls)
+            print(interval_value_ls)
             cr = color_map[pth]
             kr = marker_map[pth]
             boxes = axs[0][i_n].boxplot(yls,
@@ -247,12 +256,12 @@ def box_curves():
                                             "markeredgecolor": cr,
                                             "marker": kr,
                                         },
-
                                         showmeans=True,
                                         meanline=True,
                                         showfliers=False,
                                         # patch_artist=True,
                                         )
+            axs[0][i_n].set_xlim(200, 1000)
         for i_n, n in enumerate(fuzzy_ls):
             ylabel = f"{n}% Fuzzy\nMatch UR"
             if n == 100:
@@ -297,8 +306,8 @@ def box_curves():
                                         showfliers=False,
                                         # patch_artist=True,
                                         )
+            axs[0][i_n].set_xlim(200, 1000)
 
-    fig.subplots_adjust(wspace=0.30, hspace=1.1)
     font1 = {
         'weight': 'normal',
         'size': font_size-1,
@@ -317,15 +326,19 @@ def box_curves():
                               label=model_types[normpth]),
                        ]
 
-    plt.legend(loc=(-3.48, 1.55),
+    plt.legend(loc=(-2.88, 2.50),
                handles=legend_elements,
                prop=font1, ncol=6, frameon=False,
                handletextpad=0., handlelength=1.2)  # 设置信息框
 
-    plt.subplots_adjust(bottom=0.33, top=0.85)
     # plt.show()
+    fig.subplots_adjust(wspace=0.33, hspace=0.5)
+    plt.subplots_adjust(bottom=0.33, top=0.85)
+    # plt.tight_layout()
     plt.savefig("./funcalling_boxes.pdf",
                 pad_inches=0.1)
+    t2=time.time()
+    print("Time:", t2-t1)
 
 
 # running entry
