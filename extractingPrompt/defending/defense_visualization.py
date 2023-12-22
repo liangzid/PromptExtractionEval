@@ -11,6 +11,11 @@ Visualize the results after defending.
 """
 
 # ------------------------ Code --------------------------------------
+import sys
+sys.path.append("../")
+from attention_visualize import compute_metric_of_attentions
+from attention_visualize import visualizeSampled, visualizeSampled2
+from attention_visualize import filter_targeted_samples
 from ppl_high2_confusingBeginnings import defense_reshape
 import json
 from typing import List, Tuple, Dict
@@ -19,6 +24,7 @@ from pprint import pprint as ppp
 from tqdm import tqdm
 import os
 from matplotlib import pyplot as plt
+from collections import OrderedDict
 from transformers import (
     AutoModelForCausalLM,
     AutoModel,
@@ -29,23 +35,21 @@ from transformers import (
     TrainingArguments,
     pipeline
 )
-import sys
-sys.path.append("../")
-from attention_visualize import filter_targeted_samples
-from attention_visualize import visualizeSampled, visualizeSampled2
-from attention_visualize import compute_metric_of_attentions
 
 
 def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
                            spth="./attention_viz/cases---"):
 
-    name_map = {
+    name_map = OrderedDict({
         "none": "Vanilla",
         "donot": "Directly Defense",
-        "fakeone": "Fake Prompt",
         "prefix": "Repeated Prefix",
-    }
-    negls = [False,]*4
+        "fakeone": "Fake Prompt",
+        "insert": "Random Insertion",
+        "locallook": "Directly Defense",
+    })
+    methodls = list(name_map.keys())
+    negls = [False,]*len(methodls)
     pth = "../vary_sl/Llama-2-7b-chat-hf-res.json"
     model_name = "NousResearch/Llama-2-7b-chat-hf"
     device = "auto"
@@ -102,7 +106,7 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
         json.dump(pos_dict, f, ensure_ascii=False, indent=4)
 
     model.eval()
-    fig, axs = plt.subplots(1, 4, figsize=(20, 3.5))
+    fig, axs = plt.subplots(1, 6, figsize=(26, 3.5))
     iii = 0
     for key, pos in pos_dict.items():
         device = "cuda:0"
@@ -160,7 +164,6 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
         axs[iii].set_ylabel('Attention To')
         # plt.colorbar(res, ax=axs[iii])
         axs[iii].title.set_text(f'{name_map[key]}')
-        print(f"Save to {pth}layer{nl+1}_head{nh+1}.pdf DONE.")
         iii += 1
     # plt.show()
     plt.savefig(spth+"4-attention-visualize.pdf", pad_inches=0.1)
