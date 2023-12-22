@@ -51,9 +51,15 @@ model_xname_map = OrderedDict({
 })
 
 marker = ['o', 's', 'o', 's',]  # 曲线标记
+marker = {
+    "E": "o",
+    "I": "s",
+}
 model_color_dict = {
-    "E": "#FF0202",
-    "I": "#008000",
+    # "E": "#FF0202",
+    # "I": "#008000",
+    "E": "red",
+    "I": "green",
 }
 model_line_style = {
     "E": "-",
@@ -80,64 +86,126 @@ def plot_figures():
     fig, axs = plt.subplots(2, 4, figsize=(20, 9.3))
     # the first 4 images.
     for i_n, n in enumerate(fig_1to4_ls):
+        axs[0][i_n].set_xscale("log")
         ylabel = f"{n}-gram UR"
-        ngram_dict = {"E": {},
-                      "I": {},
-                      }
+        ngram_dict = {}
         for m in Prompt_res_dict.keys():
-            ngram_dict["E"][m] = {}
-            ngram_dict["I"][m] = {}
+            ngram_dict[m] = {"E": {},
+                             "I": {},
+                             }
             for mode in Prompt_res_dict[m]:
                 y = []
-                axs[0][i_n].set_xscale("log")
                 for ap in Prompt_res_dict[m][mode]:
-                    y.append(Prompt_res_dict[m][mode][ap]["ngram"][n])
+                    y.append(Prompt_res_dict[m][mode]
+                             [ap]["ngram"][str(n)])
                 ngram_dict[m][mode]["mean"] = sum(y)/len(y)
                 ngram_dict[m][mode]["max"] = max(y)
                 ngram_dict[m][mode]["min"] = min(y)
 
+        print("ngram dict: ", ngram_dict)
         mode = "E"
-        xs = list(model_xname_map.values())
-        yls = [ngram_dict[mx][mode]["mean"] for mx in ngram_dict]
-        ymin = [ngram_dict[mx][mode]["min"] for mx in ngram_dict]
-        ymax = [ngram_dict[mx][mode]["max"] for mx in ngram_dict]
-        axs[0][i_n].plot(xs,
-                         yls,
-                         label="Explicit Attacking",
-                         linewidth=1.5,
-                         marker=marker[mode],
-                         markevery=1, markersize=15,
-                         markeredgewidth=1.5,
-                         markerfacecolor='none',
-                         alpha=1.,
-                         linestyle=model_line_style[mode],
-                         color=model_color_dict[mode]
-                         )  # 绘制当前模型的曲线
-        # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
-        axs[j].fill_between(xs, ymin, ymax, alpha=0.3)  # 透明度
+        for mode in ["E", "I"]:
+            xs = list(model_xname_map.values())
+            xvls = list(model_parameter_map.values())
+            yls = [ngram_dict[mx][mode]["mean"] for mx in ngram_dict]
+            ymin = [ngram_dict[mx][mode]["min"] for mx in ngram_dict]
+            ymax = [ngram_dict[mx][mode]["max"] for mx in ngram_dict]
+            print("xs and yls: ", xs, yls)
+            axs[0][i_n].plot(xvls,
+                             yls,
+                             label="Explicit Attacking",
+                             linewidth=1.5,
+                             marker=marker[mode],
+                             markevery=1, markersize=15,
+                             markeredgewidth=1.5,
+                             markerfacecolor='none',
+                             alpha=1.,
+                             linestyle=model_line_style[mode],
+                             color=model_color_dict[mode]
+                             )  # 绘制当前模型的曲线
+            # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
+            axs[0][i_n].fill_between(xvls, ymin, ymax,
+                                        alpha=0.3,
+                                        color=model_color_dict[mode])  # 透明度
         axs[0][i_n].set_xlabel("Model Parameters", fontsize=font_size)
         axs[0][i_n].set_ylabel(ylabel, fontsize=font_size-5)
-        x_s = list(model_xname_map.values())
-        axs[0][i_n].set_xticks(xs, x_s,
-                               rotation=48, size=font_size-4)
+        axs[0][i_n].set_xticks(xvls, xs,
+                                rotation=48, size=font_size-4)
         axs[0][i_n].tick_params(axis='y', labelsize=font_size-6,
                                 rotation=65,
                                 width=2, length=2,
                                 pad=0, direction="in",
                                 which="both")
+    for i_n, n in enumerate(fig_5to8_ls):
+        axs[1][i_n].set_xscale("log")
+        ylabel = f"{n}% Fuzzy\nMatch UR"
+        if n == 100:
+            ylabel = r"$\mathbf{100\%}$"+" Fuzzy\nMatch UR"
+        ngram_dict = {}
+        for m in Prompt_res_dict.keys():
+            ngram_dict[m] = {"E": {},
+                             "I": {},
+                             }
+            for mode in Prompt_res_dict[m]:
+                y = []
+                axs[0][i_n].set_xscale("log")
+                for ap in Prompt_res_dict[m][mode]:
+                    y.append(Prompt_res_dict[m][mode]
+                             [ap]["fuzzy"][str(n)])
+                ngram_dict[m][mode]["mean"] = sum(y)/len(y)
+                ngram_dict[m][mode]["max"] = max(y)
+                ngram_dict[m][mode]["min"] = min(y)
 
-    fig.subplots_adjust(wspace=0.30, hspace=1.1)
+        print("ngram dict: ", ngram_dict)
+        mode = "E"
+        for mode in ["E", "I"]:
+            xs = list(model_xname_map.values())
+            xvls = list(model_parameter_map.values())
+            yls = [ngram_dict[mx][mode]["mean"] for mx in ngram_dict]
+            ymin = [ngram_dict[mx][mode]["min"] for mx in ngram_dict]
+            ymax = [ngram_dict[mx][mode]["max"] for mx in ngram_dict]
+            print("xs and yls: ", xs, yls)
+            axs[1][i_n].plot(xvls,
+                             yls,
+                             label="Explicit Attacking",
+                             linewidth=1.5,
+                             marker=marker[mode],
+                             markevery=1, markersize=15,
+                             markeredgewidth=1.5,
+                             markerfacecolor='none',
+                             alpha=1.,
+                             linestyle=model_line_style[mode],
+                             color=model_color_dict[mode]
+                             )  # 绘制当前模型的曲线
+            # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
+            axs[1][i_n].fill_between(xvls, ymin, ymax,
+                                     alpha=0.3,
+                                     color=model_color_dict[mode],
+                                     )  # 透明度
+        axs[1][i_n].set_xlabel("Model Parameters", fontsize=font_size)
+        axs[1][i_n].set_ylabel(ylabel, fontsize=font_size-5)
+        axs[1][i_n].set_xticks(xvls, xs,
+                                rotation=48, size=font_size-4)
+        axs[0][i_n].set_xticks(xvls, xs,
+                                rotation=48, size=font_size-4)
+        axs[1][i_n].tick_params(axis='y', labelsize=font_size-6,
+                                rotation=65,
+                                width=2, length=2,
+                                pad=0, direction="in",
+                                which="both")
+
     # plt.legend(loc=(3.4, 5.8), prop=font1, ncol=6)  # 设置信息框
     # plt.legend(loc=(20, 1.5), prop=font1, ncol=6)  # 设置信息框
     font1 = {
         'weight': 'normal',
         'size': font_size-1,
     }
-    plt.legend(loc=(-4.18, 1.05),
+    plt.legend(loc=(-2.41, 2.60),
                prop=font1, ncol=6, frameon=False,
                handletextpad=0., handlelength=1.2)  # 设置信息框
+    fig.subplots_adjust(wspace=0.26, hspace=0.6)
     plt.subplots_adjust(bottom=0.33, top=0.85)
-    plt.show()
+    # plt.show()
     plt.savefig("./vary_params.pdf",
                 pad_inches=0.1)
 

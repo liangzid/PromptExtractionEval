@@ -42,12 +42,16 @@ model_ls = [
 model_directly_res = {}
 
 # from collections import OrderedDict
-with open(target_dir+"overall.json", 'r', encoding='utf8') as f:
-    all_data = json.load(f, object_pairs_hook=OrderedDict)
+# with open(target_dir+"overall.json", 'r', encoding='utf8') as f:
+#     all_data = json.load(f, object_pairs_hook=OrderedDict)
+
 big_res = {}
 for m in model_ls:
     # Evaluation Explicit Attacks
-    data = all_data[m]["E"]
+    # from collections import OrderedDict
+    with open(target_dir+f"{m}.json", 'r',encoding='utf8') as f:
+        data_dict=json.load(f,object_pairs_hook=OrderedDict)
+    data = data_dict["E"]
     explicit_dict = {}
     for ap in data.keys():
         ins, gens = zip(* data[ap])
@@ -63,7 +67,8 @@ for m in model_ls:
         explicit_dict[ap] = {"ngram": gram_matchrate_dict,
                              "fuzzy": ratio_matchrate_dict}
 
-    data = all_data[m]["I"]
+    # data = all_data[m]["I"]
+    data = data_dict["I"]
     implicit_dict = {}
     for ap in data.keys():
         ins, gens = zip(* data[ap])
