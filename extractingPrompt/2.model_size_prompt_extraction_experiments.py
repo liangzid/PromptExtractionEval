@@ -31,13 +31,13 @@ torch.cuda.empty_cache()
 
 prefix = "EleutherAI/pythia-"
 past_model_sized_ls = [
-    "70m-deduped",
-    "160m-deduped",
-    "410m-deduped",
-    "1b-deduped",
-    "1.4b-deduped",
-    "2.8b-deduped",
-    "6.9b-deduped",
+#    "70m-deduped",
+#    "160m-deduped",
+#    "410m-deduped",
+#    "1b-deduped",
+#    "1.4b-deduped",
+#    "2.8b-deduped",
+#    "6.9b-deduped",
     "12b-deduped",
 ]
 

@@ -74,7 +74,7 @@ class InferPromptExtracting:
                  load_in_8_bit=False,
                  ):
         self.tokenizer = AutoTokenizer.from_pretrained(model_name,
-                                                       trust_remote_code=True)
+                                                       trust_remote_code=True,)
         self.tokenizer.pad_token = self.tokenizer.eos_token
         self.tokenizer.padding_side = "right"
 
