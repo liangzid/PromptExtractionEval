@@ -156,8 +156,8 @@ def box_curves():
     normpth = prefix+"#Norm-res.json"
 
     model_types = OrderedDict({funcpth: "Json format Function Callings",
-                   normpth: "Normal prompts",
-                   })
+                               normpth: "Normal prompts",
+                               })
     line_map = {funcpth: "-", normpth: "-."}
     color_map = {funcpth: "red",
                  normpth: "blue", }
@@ -172,11 +172,11 @@ def box_curves():
     fuzzy_ls = [70, 80, 90, 100]
 
     font_size = 21
-    t1=time.time()
+    t1 = time.time()
 
     j = 0
     fig, axs = plt.subplots(2, 4, figsize=(20, 7.1))
-    interval_value_ls_bp=None
+    interval_value_ls_bp = None
     for pth, m in model_types.items():
         with open(pth, 'r', encoding='utf8') as f:
             data = json.load(f, object_pairs_hook=OrderedDict)
@@ -199,7 +199,7 @@ def box_curves():
                     "ngram": n_gram_dict,
                     "fuzzy": fuzzy_dict,
                 }
-        
+
         # now plot the box plot.
         interval_str_ls = list(new_dict.keys())
         interval_value_ls = [int(float(x)) for x in interval_str_ls]
@@ -208,7 +208,7 @@ def box_curves():
         if interval_value_ls_bp is None:
             interval_value_ls_bp = interval_value_ls
         else:
-            interval_value_ls=interval_value_ls_bp
+            interval_value_ls = interval_value_ls_bp
 
             # new_interval_ls=[]
             # for num in interval_value_ls:
@@ -337,7 +337,7 @@ def box_curves():
     # plt.tight_layout()
     plt.savefig("./funcalling_boxes.pdf",
                 pad_inches=0.1)
-    t2=time.time()
+    t2 = time.time()
     print("Time:", t2-t1)
 
 
