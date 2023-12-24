@@ -67,8 +67,8 @@
         "Assess if the two given sentences have equivalent meanings by selecting 'equivalent' or 'not_equivalent'. "
     ],
     [
-        "Sure, I can help you with that. But first, I need to know the text you want me to classify as 'positive' or 'negative'.",
-        "Sorry, I can't do that.",
+        "As a sentiment classifier, determine whether the following text is 'positive' or 'negative'. Please classify: ",
+        "Acting as a sentiment evaluator, identify if the given sentence is 'positive' or 'negative'. Classify: ",
         "Aping a vibe-sorting structure, determine if the given text is 'positive' or 'negative'. Categorize: >.",
         "Categorize the connection between the given sentences as 'entailment' or 'not_entailment' during entailment analysis.",
         "Please determine if the provided sentences entail each other or not. Thank you.",
