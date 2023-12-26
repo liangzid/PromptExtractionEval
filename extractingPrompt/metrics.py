@@ -20,13 +20,31 @@ import random
 from pprint import pprint as ppp
 import torch
 
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    TrainingArguments,
+    pipeline
+)
+
+global_tokenizer = AutoTokenizer.from_pretrained(
+    "NousResearch/Llama-2-7b-chat-hf")
+
 
 def _to_ngram(t, n=3, stride=1):
-    tls = t.split(" ")
+    t = t.replace("\n\n", " ")
+    t = t.replace("\n", " ")
+    tls = global_tokenizer.tokenize(t)
+    # print(tls)
+    # tls = t.split(" ")
     n_gram_ls = []
     bgin_idx = 0
     while bgin_idx+n < len(tls):
-        n_gram_ls.append(" ".join(tls[bgin_idx:bgin_idx+n]))
+        # n_gram_ls.append(" ".join(tls[bgin_idx:bgin_idx+n]))
+        ids=global_tokenizer.convert_tokens_to_ids(tls[bgin_idx:bgin_idx+n])
+        text=global_tokenizer.decode(ids)
+        n_gram_ls.append(text)
         bgin_idx += stride
     return n_gram_ls
 
@@ -61,7 +79,9 @@ def fuzzy_match_recall(gens, ps, ratio=80):
     from thefuzz import fuzz
     hit_num = 0.
     for i, g in enumerate(gens):
-        if fuzz.partial_ratio(ps[i], g) >= ratio:
+        
+        if fuzz.partial_ratio(g, ps[i]) >= ratio:
+        # if fuzz.ratio(g, ps[i]) >= ratio:
             # print("++++++++")
             # print(ps[i],g)
             # print("++++++++")

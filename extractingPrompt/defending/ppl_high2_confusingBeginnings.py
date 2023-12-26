@@ -15,17 +15,17 @@ Add confusing beginning phrase to imporve the PPL of words.
 
 import sys
 sys.path.append("../")
-from ppl_high import eva_res, att_query_ls2
-from ppl_high import estimate_scores_of_new_prompts
-from metrics import ngram_recall_evaluate, fuzzy_match_recall
-from metrics_with_LMs import perplexity_llama2_7b
-from test_llama2_extracting import InferPromptExtracting
-import json
-from typing import List, Tuple, Dict
-import random
-from pprint import pprint as ppp
-from datasets import load_dataset
 from collections import OrderedDict
+from datasets import load_dataset
+from pprint import pprint as ppp
+import random
+from typing import List, Tuple, Dict
+import json
+from test_llama2_extracting import InferPromptExtracting
+from metrics_with_LMs import perplexity_llama2_7b
+from metrics import ngram_recall_evaluate, fuzzy_match_recall
+from ppl_high import estimate_scores_of_new_prompts
+from ppl_high import eva_res, att_query_ls2
 
 # normal import
 
@@ -189,6 +189,11 @@ def eva_new_ppls(method="prefix"):
         json.dump([old_ppl, new_ppl,
                    prompts, newprompts,
                    ], f, ensure_ascii=False, indent=4)
+    # from collections import OrderedDict
+    with open(save_pth, 'r', encoding='utf8') as f:
+        old_ppl, new_ppl, prompts, newprompts = json.load(
+            f,
+            object_pairs_hook=OrderedDict)
 
     infer_res_pth = f"confuse_prompts_extracted{method}.json"
     estimate_scores_of_new_prompts(save_pth, infer_res_pth)
