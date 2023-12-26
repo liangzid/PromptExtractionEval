@@ -175,8 +175,8 @@ def eva_new_ppls(method="prefix"):
     old_ppl = [0]
     new_ppl = [0]
 
-    # old_ppl = perplexity_llama2_7b(prompts, llamapth)
-    # new_ppl = perplexity_llama2_7b(newprompts, llamapth)
+    old_ppl = perplexity_llama2_7b(prompts, llamapth)
+    new_ppl = perplexity_llama2_7b(newprompts, llamapth)
 
     print("----------------")
     print(sum(old_ppl)/len(old_ppl))
