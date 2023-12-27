@@ -12,6 +12,10 @@ Soft extraction of large language models.
 
 
 # ------------------------ Code --------------------------------------
+import matplotlib.pyplot as plt
+import seaborn as sns
+import pandas as pd
+import numpy as np
 from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_score
 from thefuzz import fuzz
 from datasets import load_dataset
@@ -410,6 +414,132 @@ def compute_score(big_result_pth):
         res_dict[task] = current_scores
     print("All result scores: ")
     ppp(res_dict)
+    return res_dict
+
+
+def mean(ls):
+    return sum(ls)/len(ls)
+
+
+def std(ls):
+    return np.std(ls, ddof=1)
+
+
+def show_as_histgram(res_dict):
+    acc_dict = OrderedDict({})
+    pre_dict = OrderedDict({})
+    rec_dict = OrderedDict({})
+    f1_dict = OrderedDict({})
+    all_data_dict = {}
+
+    fig, axs = plt.subplots(1, 4, figsize=(20, 4))
+    temp_dict = {}
+    temp_dict_max = {}
+    temp_dict_min = {}
+    metric_name_ls = [
+        "Accuracy",
+        "Precision",
+        "Recall",
+        "F1 Score",
+    ]
+
+    for index in range(4):
+        temp_dict[index] = {}
+        temp_dict_max[index] = {}
+        temp_dict_min[index] = {}
+        all_data_dict[index] = []
+        for task in res_dict.keys():
+            temp_dict[index][task] = {}
+            temp_dict_max[index][task] = {}
+            temp_dict_min[index][task] = {}
+            ls = list(zip(*res_dict[task]["original"]))
+            resls = [
+                {"Task": task,
+                 "Prompt Type": "Original-Min",
+                 metric_name_ls[index]: min(ls[index]),
+                 "std": std(ls[index]),
+                 },
+                {"Task": task,
+                 "Prompt Type": "Original-Mean",
+                 metric_name_ls[index]: mean(ls[index]),
+                 "std": std(ls[index]),
+                 },
+                {"Task": task,
+                 "Prompt Type": "Original-Max",
+                 metric_name_ls[index]: max(ls[index]),
+                 "std": std(ls[index]),
+                 },
+            ]
+            all_data_dict[index].extend(resls)
+            temp_dict[index][task]["original"] = mean(ls[index])
+            temp_dict_max[index][task]["original"] = max(ls[index])
+            temp_dict_min[index][task]["original"] = min(ls[index])
+            ls = list(zip(*res_dict[task]["new"]))
+            resls = [
+                {"Task": task,
+                 "Prompt Type": "Extracted-Min",
+                 metric_name_ls[index]: min(ls[index]),
+                 "std": std(ls[index]),
+                 },
+                {"Task": task,
+                 "Prompt Type": "Extracted-Mean",
+                 metric_name_ls[index]: mean(ls[index]),
+                 "std": std(ls[index]),
+                 },
+                {"Task": task,
+                 "Prompt Type": "Extracted-Max",
+                 metric_name_ls[index]: max(ls[index]),
+                 "std": std(ls[index]),
+                 },
+            ]
+            all_data_dict[index].extend(resls)
+            temp_dict[index][task]["new"] = mean(ls[index])
+            temp_dict_max[index][task]["new"] = max(ls[index])
+            temp_dict_min[index][task]["new"] = min(ls[index])
+
+        all_data_dict[index] = pd.DataFrame(all_data_dict[index])
+    print(all_data_dict)
+    # x = np.arange(len(temp_dict))
+    color = ["#2ecc71", "#1abc9c", "green",
+             "#f39c12", "#d35400", "#c23616",]
+    hatches = [
+        "/", "\\", "|",
+        "-", "+", "x",
+    ]
+    font_size = 21.
+    # sns.set(font_scale=font_size/10)
+    for idx in range(4):
+        sns.barplot(
+            all_data_dict[idx],
+            x="Task",
+            y=metric_name_ls[idx],
+            hue="Prompt Type",
+            ax=axs[idx],
+            errorbar="sd",
+            palette=sns.set_palette(color),
+        )
+        if idx!=10:
+            axs[idx].legend().remove()
+        # for j, bar in enumerate(axs[idx].patches):
+        #     bar.set_hatch(hatches[j % len(hatches)])
+
+    font1 = {
+        'weight': 'normal',
+        'size': font_size-7,
+    }
+    axs[0].legend(
+        loc=(0.50, 0.98),
+        prop=font1, ncol=6, frameon=False,
+        handletextpad=0.,
+        handlelength=1.2,
+        fontsize=font_size-12,
+    )  # 设置信息框
+    plt.subplots_adjust(bottom=0.33, top=0.85)
+    plt.tight_layout()
+
+    # plt.show()
+    plt.savefig("./soft_extraction.pdf",
+                pad_inches=0.1)
 
 
 def main():
@@ -420,7 +550,8 @@ def main():
     #                 gpt4_prompt_dict)
 
     big_result_pth = "./soft_extraction/gpt-3.5-turbo-1106---BIGRESULT.json"
-    compute_score(big_result_pth)
+    res_dict = compute_score(big_result_pth)
+    show_as_histgram(res_dict)
 
 
 # running entry
