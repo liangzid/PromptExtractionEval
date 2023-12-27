@@ -12,6 +12,7 @@ Soft extraction of large language models.
 
 
 # ------------------------ Code --------------------------------------
+from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_score
 from thefuzz import fuzz
 from datasets import load_dataset
 from tqdm import tqdm
@@ -294,11 +295,132 @@ def soft_eva_script(
         json.dump(big_res_dict, f, ensure_ascii=False, indent=4)
 
 
+def compute_score(big_result_pth):
+    # from collections import OrderedDict
+    with open(big_result_pth, 'r', encoding='utf8') as f:
+        data = json.load(f, object_pairs_hook=OrderedDict)
+
+    task_label_map = {
+        # "cola": {"1": "acceptable", "0": "unacceptable"},
+        # "mnli": {"1": "neutral", "0": "entailment", "2": "contradiction"},
+        # "mrpc": {"1": "equivalent", "2": "not_equivalent"},
+        # "qnli": {"1": "not_entailment", "0": "entailment"},
+        "qqp": OrderedDict({"1": "duplicate", "0": "not_duplicate"}),
+        "rte": OrderedDict({"0": "entailment", "1": "not_entailment"}),
+        "sst2": OrderedDict({"1": "positive", "0": "negative"}),
+        "wnli": OrderedDict({"1": "entailment", "0": "not_entailment"}),
+    }
+    label_text_map = {}
+    for t in task_label_map:
+        label_text_map[t] = {v: k for k, v in task_label_map[t].items()}
+    text_dict = {}
+    for t in task_label_map:
+        text_dict[t] = [v for k, v in task_label_map[t].items()]
+
+    res_dict = OrderedDict({})
+    for task in data.keys():
+        current_scores = {
+            "original": [],
+            "new": [],
+        }
+        tmp_data = data[task]
+        for origin_prompt_res in tmp_data["original"]:
+            preds, labels = zip(*origin_prompt_res)
+            label_ls = []
+            for l in labels:
+                label_ls.append(float(label_text_map[task][l]))
+            pred_ls = []
+            for p in preds:
+                if "not" in text_dict[task][0] or\
+                   "not" in text_dict[task][1]:
+                    if "not" in text_dict[task][0]:
+                        if "not" in p or "Not" in p:
+                            value = float(label_text_map[task]
+                                          [text_dict[task][0]])
+                        else:
+                            value = float(label_text_map[task]
+                                          [text_dict[task][1]])
+                    else:
+                        if "not" in p or "Not" in p:
+                            value = float(label_text_map[task]
+                                          [text_dict[task][1]])
+                        else:
+                            value = float(label_text_map[task]
+                                          [text_dict[task][0]])
+                else:
+                    if text_dict[task][0] in p\
+                            and text_dict[task][1] not in p:
+                        value = float(label_text_map[task]
+                                      [text_dict[task][0]])
+                    else:
+                        value = float(label_text_map[task]
+                                      [text_dict[task][1]])
+                pred_ls.append(value)
+
+            metric_ls = [accuracy_score,
+                         precision_score,
+                         recall_score,
+                         f1_score]
+            original_scores = []
+            for m in metric_ls:
+                original_scores.append(m(label_ls, pred_ls))
+            current_scores["original"].append(original_scores)
+        for origin_prompt_res in tmp_data["new"]:
+            preds, labels = zip(*origin_prompt_res)
+            label_ls = []
+            for l in labels:
+                label_ls.append(float(label_text_map[task][l]))
+            pred_ls = []
+            for p in preds:
+                if "not" in text_dict[task][0] or\
+                   "not" in text_dict[task][1]:
+                    if "not" in text_dict[task][0]:
+                        if "not" in p or "Not" in p:
+                            value = float(label_text_map[task]
+                                          [text_dict[task][0]])
+                        else:
+                            value = float(label_text_map[task]
+                                          [text_dict[task][1]])
+                    else:
+                        if "not" in p or "Not" in p:
+                            value = float(label_text_map[task]
+                                          [text_dict[task][1]])
+                        else:
+                            value = float(label_text_map[task]
+                                          [text_dict[task][0]])
+                else:
+                    if text_dict[task][0] in p\
+                            and text_dict[task][1] not in p:
+                        value = float(label_text_map[task]
+                                      [text_dict[task][0]])
+                    else:
+                        value = float(label_text_map[task]
+                                      [text_dict[task][1]])
+                pred_ls.append(value)
+
+            metric_ls = [accuracy_score,
+                         precision_score,
+                         recall_score,
+                         f1_score]
+
+            new_scores = []
+            for m in metric_ls:
+                new_scores.append(m(label_ls, pred_ls))
+            current_scores["new"].append(new_scores)
+        res_dict[task] = current_scores
+    print("All result scores: ")
+    ppp(res_dict)
+
+
 def main():
     # extraction_attack_withLowFuzzy()
     # extraction_attack_HumanCheck()
-    soft_eva_script(gpt35turbo_prompt_dict,
-                    gpt4_prompt_dict)
+
+    # soft_eva_script(gpt35turbo_prompt_dict,
+    #                 gpt4_prompt_dict)
+
+    big_result_pth = "./soft_extraction/gpt-3.5-turbo-1106---BIGRESULT.json"
+    compute_score(big_result_pth)
 
 
 # running entry
