@@ -14,10 +14,27 @@ evaluate the performance drops of defending prompts
 
 import sys
 sys.path.append("../")
+import os
+from pprint import pprint as ppp
+import random
+from typing import List, Tuple, Dict
+import json
+from transformers import (
+    AutoModelForCausalLM,
+    AutoTokenizer,
+    BitsAndBytesConfig,
+    TrainingArguments,
+    pipeline
+)
+from collections import OrderedDict
+import numpy as np
+from datasets import load_dataset
+from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_score
+from ppl_high2_confusingBeginnings import defense_reshape
+from instruction_performance_eval import one_prompt_one_task_one_model as o3
+from tqdm import tqdm
 
 # normal import
-from tqdm import tqdm
-from instruction_performance_eval import one_prompt_one_task_one_model as o3
 task_label_map = {
     "cola": {"1": "acceptable", "0": "unacceptable"},
     "mnli": {"1": "neutral", "0": "entailment", "2": "contradiction"},
@@ -28,26 +45,6 @@ task_label_map = {
     "sst2": {"1": "positive", "0": "negative"},
     "wnli": {"0": "not_entailment", "1": "entailment"},
 }
-from ppl_high2_confusingBeginnings import defense_reshape
-
-from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_score
-from datasets import load_dataset
-import numpy as np
-from collections import OrderedDict
-
-from transformers import (
-    AutoModelForCausalLM,
-    AutoTokenizer,
-    BitsAndBytesConfig,
-    TrainingArguments,
-    pipeline
-)
-
-import json
-from typing import List, Tuple, Dict
-import random
-from pprint import pprint as ppp
-import os
 
 
 def myeval(task, res):
@@ -142,7 +139,8 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
     # set experiment tasks
     tasks_we_used = [
         # "cola",
-        "qnli",
+
+        # "qnli",
         "qqp",
         "rte",
         "sst2",
@@ -154,6 +152,9 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
     for ttt in tasks_we_used:
         overall_res[ttt] = {}
         subset = temp_prompts[0][ttt]  # the prompt list
+        if len(subset) > 5:
+            subset = subset[:5]
+
         # ress = oneDefense_oneTask_MultipleOriginalPrompts(
         #     text_gen,
         #     "vanilla",
@@ -163,7 +164,7 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
         # overall_res[ttt]["vanilla"] = ress
 
         for ddd in defenses_methods:
-            newprompts,_ = defense_reshape(subset, method=ddd)
+            newprompts, _ = defense_reshape(subset, method=ddd)
             # print("Newprompts", newprompts)
             ress = oneDefense_oneTask_MultipleOriginalPrompts(
                 text_gen,
@@ -172,6 +173,7 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
                 newprompts
             )
             overall_res[ttt][ddd] = ress
+            # break
         with open(f"./glue_res/FOR-TASK{ttt}.json",
                   'w', encoding='utf8') as f:
             json.dump(overall_res[ttt],

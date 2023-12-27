@@ -31,6 +31,7 @@ from transformers import (
     TrainingArguments,
     pipeline
 )
+import time
 
 import json
 import logging
@@ -99,7 +100,12 @@ def one_prompt_one_task_one_model(model_name, prompt,
     dataset = load_dataset("glue", task_name)
     res_ls = []
     if task_name in single_input_tasks:
-        for d in dataset["validation"]:
+        if len(dataset["validation"]) > 1000:
+            sets = dataset["validation"]\
+            .to_iterable_dataset().take(1000)
+        else:
+            sets = dataset["validation"]
+        for d in sets:
             inps = d["sentence"]
             label = d["label"]
             label = task_label_map[task_name][str(label)]
@@ -108,10 +114,16 @@ def one_prompt_one_task_one_model(model_name, prompt,
                 prompt=prompt,
                 utter=inps,
             )
+            time.sleep(1.2)
             res_ls.append((res, label))
             # break
     elif task_name == "mnli":
-        for d in dataset["validation_matched"]:
+        if len(dataset["validation_matched"]) > 1000:
+            sets = dataset["validation_matched"]\
+            .to_iterable_dataset().take(1000)
+        else:
+            sets = dataset["validation_matched"]
+        for d in sets:
             inps = f"Premise: {d['premise']}."\
                 + f"Hypothesis: {d['hypothesis']}"
             label = d["label"]
@@ -121,10 +133,19 @@ def one_prompt_one_task_one_model(model_name, prompt,
                 prompt=prompt,
                 utter=inps,
             )
+            time.sleep(1.2)
             res_ls.append((res, label))
             # break
     elif task_name in double_input_tasks:
-        for d in dataset["validation"]:
+        if len(dataset["validation"]) > 1000:
+            # print(type(dataset["validation"]))
+            sets = dataset["validation"]\
+            .to_iterable_dataset().take(1000)
+            # print(type(sets))
+        else:
+            sets = dataset["validation"]
+        for d in sets:
+            # print(d)
             inps = "Sentence 1: "+d[task_key_map[task_name][0]]\
                 + " Sentence 2: "+d[task_key_map[task_name][1]]
             label = d["label"]
@@ -134,6 +155,7 @@ def one_prompt_one_task_one_model(model_name, prompt,
                 prompt=prompt,
                 utter=inps,
             )
+            time.sleep(1.2)
             res_ls.append((res, label))
             # break
     else:

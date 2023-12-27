@@ -88,7 +88,7 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
     }
     task_key_map = {
         "mrpc": ["sentence1", "sentence2"],
-        "qnli": ["question", "answer"],
+        "qnli": ["question", "sentence"],
         "qqp": ["question1", "question2"],
         "rte": ["sentence1", "sentence2"],
         "wnli": ["sentence1", "sentence2"],
@@ -110,7 +110,12 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
     dataset = load_dataset("glue", task_name)
     res_ls = []
     if task_name in single_input_tasks:
-        for d in dataset["validation"]:
+        if len(dataset["validation"]) > 1000:
+            sets = dataset["validation"]\
+            .to_iterable_dataset().take(1000)
+        else:
+            sets = dataset["validation"]
+        for d in sets:
             inps = d["sentence"]
             label = d["label"]
             label = task_label_map[task_name][str(label)]
@@ -121,9 +126,15 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
             res = gen_pipeline("Instruction: " + prompt +
                                " User: "+inps+" Assistant: ")
             res_ls.append((res, label))
+            # break
 
     elif task_name == "mnli":
-        for d in dataset["validation_matched"]:
+        if len(dataset["validation_matched"]) > 1000:
+            sets = dataset["validation_matched"]\
+            .to_iterable_dataset().take(1000)
+        else:
+            sets = dataset["validation_matched"]
+        for d in sets:
             inps = d["premise"]+"SEP"+d["hypothesis"]
             label = d["label"]
             label = task_label_map[task_name][str(label)]
@@ -131,7 +142,12 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
                                " User: "+inps+" Assistant: ")
             res_ls.append((res, label))
     elif task_name in double_input_tasks:
-        for d in dataset["validation"]:
+        if len(dataset["validation_matched"]) > 1000:
+            sets = dataset["validation_matched"]\
+            .to_iterable_dataset().take(1000)
+        else:
+            sets = dataset["validation_matched"]
+        for d in sets:
             inps = d[task_key_map[task_name][0]]+"SEP" +\
                 d[task_key_map[task_name][1]]
             label = d["label"]
@@ -140,6 +156,7 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
                                f" User: The sentence is '{inps}'. "
                                + " Assistant: ")
             res_ls.append((res, label))
+            # break
     else:
         logging.error(f"task name: {task_name} not found.")
     with open(save_pth, 'w', encoding='utf8') as f:
