@@ -88,7 +88,7 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
     }
     task_key_map = {
         "mrpc": ["sentence1", "sentence2"],
-        "qnli": ["question", "answer"],
+        "qnli": ["question", "sentence"],
         "qqp": ["question1", "question2"],
         "rte": ["sentence1", "sentence2"],
         "wnli": ["sentence1", "sentence2"],
@@ -121,6 +121,7 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
             res = gen_pipeline("Instruction: " + prompt +
                                " User: "+inps+" Assistant: ")
             res_ls.append((res, label))
+            # break
 
     elif task_name == "mnli":
         for d in dataset["validation_matched"]:
@@ -140,6 +141,7 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
                                f" User: The sentence is '{inps}'. "
                                + " Assistant: ")
             res_ls.append((res, label))
+            # break
     else:
         logging.error(f"task name: {task_name} not found.")
     with open(save_pth, 'w', encoding='utf8') as f:
