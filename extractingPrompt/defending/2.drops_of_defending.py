@@ -141,7 +141,7 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
         # "cola",
 
         # "qnli",
-        "qqp",
+        # "qqp",
         "rte",
         "sst2",
         "wnli",]

@@ -142,11 +142,11 @@ def one_prompt_one_task_one_model(gen_pipeline, prompt,
                                " User: "+inps+" Assistant: ")
             res_ls.append((res, label))
     elif task_name in double_input_tasks:
-        if len(dataset["validation_matched"]) > 1000:
-            sets = dataset["validation_matched"]\
+        if len(dataset["validation"]) > 1000:
+            sets = dataset["validation"]\
             .to_iterable_dataset().take(1000)
         else:
-            sets = dataset["validation_matched"]
+            sets = dataset["validation"]
         for d in sets:
             inps = d[task_key_map[task_name][0]]+"SEP" +\
                 d[task_key_map[task_name][1]]
