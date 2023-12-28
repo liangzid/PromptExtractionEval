@@ -55,11 +55,11 @@ past_model_sized_ls = [
 
 prefix = "facebook/opt-"
 past_model_sized_ls = [
-    "125m",
-    "350m",
-    "1.3b",
-    "2.7b",
-    "6.7b",
+    #"125m",
+    #"350m",
+    #"1.3b",
+    #"2.7b",
+    #"6.7b",
     "13b",
     # "30b",
     # "66b",

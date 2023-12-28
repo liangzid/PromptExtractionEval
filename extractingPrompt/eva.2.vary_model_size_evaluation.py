@@ -39,6 +39,19 @@ model_ls = [
     "12b-deduped",
 ]
 
+# target_dir = "./opt_varying_modelsize/"
+
+# model_ls = [
+#     "125m",
+#     "350m",
+#     "1.3b",
+#     "2.7b",
+#     "6.7b",
+#     "13b",
+# ]
+
+
+
 model_directly_res = {}
 
 # from collections import OrderedDict
