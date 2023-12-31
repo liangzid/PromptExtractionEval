@@ -37,8 +37,8 @@ from tqdm import tqdm
 # normal import
 task_label_map = {
     "cola": {"1": "acceptable", "0": "unacceptable"},
-    "mnli": {"1": "neutral", "0": "entailment", "2": "contradiction"},
-    "mrpc": {"1": "equivalent", "2": "not_equivalent"},
+    # "mnli": {"1": "neutral", "0": "entailment", "2": "contradiction"},
+    "mrpc": {"1": "equivalent", "0": "not_equivalent"},
     "qnli": {"1": "not_entailment", "0": "entailment"},
     "qqp": {"1": "duplicate", "0": "not_duplicate"},
     "rte": {"1": "not_entailment", "0": "entailment"},
@@ -52,16 +52,27 @@ def myeval(task, res):
     label_ls = []
     submap = task_label_map[task]
     sm_r = {v: k for k, v in submap.items()}
+    text_dict = list(sm_r.keys())
 
     for res_sent, lbl in res:
-        hit = 0
-        for k in sm_r:
-            if k == lbl and lbl in res_sent:
-                hit = 1.
-            if k != lbl and lbl in res_sent:
-                hit = 0.
-
-        predict_ls.append(hit)
+        # label_ls.append(float(sm_r[lbl]))
+        if "not" in text_dict[0] or "not" in text_dict[1]:
+            if "not" in text_dict[0]:
+                if "not" in lbl:
+                    vv = float(sm_r[text_dict[0]])
+                else:
+                    vv = float(sm_r[text_dict[1]])
+            else:
+                if "not" in lbl:
+                    vv = float(sm_r[text_dict[1]])
+                else:
+                    vv = float(sm_r[text_dict[0]])
+        else:
+            if text_dict[0] in res_sent and text_dict[1] not in res_sent:
+                vv = float(sm_r[text_dict[0]])
+            else:
+                vv = float(sm_r[text_dict[1]])
+        predict_ls.append(vv)
         label_ls.append(float(sm_r[lbl]))
 
     metric_ls = [accuracy_score, precision_score, recall_score, f1_score]
@@ -70,7 +81,37 @@ def myeval(task, res):
         scores.append(m(label_ls, predict_ls))
     return scores
 
-    # then we do evaluation to calculate acc, P, R, and F1
+
+def evaluation_datas():
+    task_ls = list(task_label_map.keys())
+    score_dict = {}
+    for task in task_ls:
+        prefix_pth = f"task___{task}-pindex___"
+        fls = os.listdir("./glue_res/")
+        scores = []
+        for f in fls:
+            if f.startswith(prefix_pth):
+                # from collections import OrderedDict
+                with open("./glue_res/"+f, 'r', encoding='utf8') as f:
+                    data = json.load(f, object_pairs_hook=OrderedDict)
+                res = []
+                for item in data:
+                    resp = item[0][0]["generated_text"]
+                    if "Assistant" in resp:
+                        resp = resp.split("Assistant")[1]
+                        resp = resp.lower()
+                    else:
+                        resp = ""
+                    res.append((
+                        resp,
+                        item[1].lower()
+                    ))
+                s = myeval(task, res)
+                scores.append(s)
+        score_dict[task] = scores
+    with open("./overall_new_performance_drop_res.json",
+              'w', encoding='utf8') as f:
+        json.dump(score_dict, f, ensure_ascii=False, indent=4)
 
 
 def oneDefense_oneTask_MultipleOriginalPrompts(
@@ -86,7 +127,7 @@ def oneDefense_oneTask_MultipleOriginalPrompts(
 
     all_res = []
     for iii, p in tqdm(enumerate(pls), desc=f"Task: {task}  defense: {defense_method}"):
-        tmppth = save_dir+f"task___{task}-pindex___{iii}.json"
+        tmppth = save_dir+f"task___{task}Defense_{defense_method}-pindex___{iii}.json"
         res = o3(pipeline, p, task, save_pth=tmppth)
         scores = myeval(task, res)
         all_res.append(scores)
@@ -138,10 +179,9 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
 
     # set experiment tasks
     tasks_we_used = [
-        # "cola",
-
-        # "qnli",
-        # "qqp",
+        "cola",
+        "qnli",
+        "qqp",
         "rte",
         "sst2",
         "wnli",]
@@ -194,6 +234,7 @@ def std(ls):
 
 def main():
     mulDefen_mulTask()
+    # evaluation_datas()
 
     # running entry
 if __name__ == "__main__":
