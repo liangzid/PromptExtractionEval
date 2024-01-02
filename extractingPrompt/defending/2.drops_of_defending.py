@@ -11,7 +11,6 @@ evaluate the performance drops of defending prompts
 """
 
 # ------------------------ Code --------------------------------------
-
 import sys
 sys.path.append("../")
 import os
@@ -33,6 +32,7 @@ from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_sc
 from ppl_high2_confusingBeginnings import defense_reshape
 from instruction_performance_eval import one_prompt_one_task_one_model as o3
 from tqdm import tqdm
+
 
 # normal import
 task_label_map = {
@@ -58,12 +58,12 @@ def myeval(task, res):
         # label_ls.append(float(sm_r[lbl]))
         if "not" in text_dict[0] or "not" in text_dict[1]:
             if "not" in text_dict[0]:
-                if "not" in lbl:
+                if "not" in res_sent:
                     vv = float(sm_r[text_dict[0]])
                 else:
                     vv = float(sm_r[text_dict[1]])
             else:
-                if "not" in lbl:
+                if "not" in res_sent:
                     vv = float(sm_r[text_dict[1]])
                 else:
                     vv = float(sm_r[text_dict[0]])
@@ -83,35 +83,59 @@ def myeval(task, res):
 
 
 def evaluation_datas():
-    task_ls = list(task_label_map.keys())
+    task_ls = [
+        "cola",
+        "qnli",
+        "qqp",
+        "rte",
+        "sst2",
+        "wnli",]
+    defend_ls = ["prefix", "fakeone", "insert", "donot", "locallook"]
     score_dict = {}
     for task in task_ls:
-        prefix_pth = f"task___{task}-pindex___"
-        fls = os.listdir("./glue_res/")
-        scores = []
-        for f in fls:
-            if f.startswith(prefix_pth):
-                # from collections import OrderedDict
-                with open("./glue_res/"+f, 'r', encoding='utf8') as f:
-                    data = json.load(f, object_pairs_hook=OrderedDict)
-                res = []
-                for item in data:
-                    resp = item[0][0]["generated_text"]
-                    if "Assistant" in resp:
-                        resp = resp.split("Assistant")[1]
-                        resp = resp.lower()
-                    else:
-                        resp = ""
-                    res.append((
-                        resp,
-                        item[1].lower()
-                    ))
-                s = myeval(task, res)
-                scores.append(s)
-        score_dict[task] = scores
+        score_dict[task] = {}
+        for defend in defend_ls:
+            prefix_pth = f"task___{task}Defense_{defend}-pindex___"
+            fls = os.listdir("./glue_res/")
+            scores = []
+            for f in fls:
+                if f.startswith(prefix_pth):
+                    # from collections import OrderedDict
+                    with open("./glue_res/"+f, 'r', encoding='utf8') as f:
+                        data = json.load(f, object_pairs_hook=OrderedDict)
+                    res = []
+                    for item in data:
+                        resp = item[0][0]["generated_text"]
+                        if "Assistant" in resp:
+                            resp = resp.split("Assistant")[1]
+                            resp = resp.lower()
+                        else:
+                            resp = ""
+                        res.append((
+                            resp,
+                            item[1].lower()
+                        ))
+                    s = myeval(task, res)
+                    scores.append(s)
+            score_dict[task][defend] = scores
     with open("./overall_new_performance_drop_res.json",
               'w', encoding='utf8') as f:
         json.dump(score_dict, f, ensure_ascii=False, indent=4)
+
+    # further evaluation to obtain the mean and the standard-variance value
+    agg_dict = {}
+    for task in score_dict:
+        agg_dict[task] = {}
+        for defend in score_dict[task]:
+            accls, prels, recls, f1ls = zip(* score_dict[task][defend])
+            ls = [accls, prels, recls, f1ls]
+            agg_dict[task][defend] = {}
+            agg_dict[task][defend]["mean"] = [mean(x) for x in ls]
+            agg_dict[task][defend]["std"] = [std(x) for x in ls]
+    with open("aggregated_defense_performance_score.json",
+              'w', encoding='utf8') as f:
+        json.dump(agg_dict, f, ensure_ascii=False, indent=4)
+    print("Save aggregation results DONE.")
 
 
 def oneDefense_oneTask_MultipleOriginalPrompts(
@@ -127,7 +151,8 @@ def oneDefense_oneTask_MultipleOriginalPrompts(
 
     all_res = []
     for iii, p in tqdm(enumerate(pls), desc=f"Task: {task}  defense: {defense_method}"):
-        tmppth = save_dir+f"task___{task}Defense_{defense_method}-pindex___{iii}.json"
+        tmppth = save_dir + \
+            f"task___{task}Defense_{defense_method}-pindex___{iii}.json"
         res = o3(pipeline, p, task, save_pth=tmppth)
         scores = myeval(task, res)
         all_res.append(scores)
@@ -233,8 +258,9 @@ def std(ls):
 
 
 def main():
-    mulDefen_mulTask()
-    # evaluation_datas()
+    # mulDefen_mulTask()
+    evaluation_datas()
+
 
     # running entry
 if __name__ == "__main__":
