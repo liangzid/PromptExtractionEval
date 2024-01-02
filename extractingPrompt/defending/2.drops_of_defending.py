@@ -32,6 +32,7 @@ from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_sc
 from ppl_high2_confusingBeginnings import defense_reshape
 from instruction_performance_eval import one_prompt_one_task_one_model as o3
 from tqdm import tqdm
+from pprint import pprint as ppp
 
 
 # normal import
@@ -90,7 +91,8 @@ def evaluation_datas():
         "rte",
         "sst2",
         "wnli",]
-    defend_ls = ["prefix", "fakeone", "insert", "donot", "locallook"]
+    # defend_ls = ["prefix", "fakeone", "insert", "donot", "locallook"]
+    defend_ls = ["original",]
     score_dict = {}
     for task in task_ls:
         score_dict[task] = {}
@@ -118,9 +120,9 @@ def evaluation_datas():
                     s = myeval(task, res)
                     scores.append(s)
             score_dict[task][defend] = scores
-    with open("./overall_new_performance_drop_res.json",
-              'w', encoding='utf8') as f:
-        json.dump(score_dict, f, ensure_ascii=False, indent=4)
+    # with open("./overall_new_performance_drop_res.json",
+    #           'w', encoding='utf8') as f:
+    #     json.dump(score_dict, f, ensure_ascii=False, indent=4)
 
     # further evaluation to obtain the mean and the standard-variance value
     agg_dict = {}
@@ -132,9 +134,10 @@ def evaluation_datas():
             agg_dict[task][defend] = {}
             agg_dict[task][defend]["mean"] = [mean(x) for x in ls]
             agg_dict[task][defend]["std"] = [std(x) for x in ls]
-    with open("aggregated_defense_performance_score.json",
-              'w', encoding='utf8') as f:
-        json.dump(agg_dict, f, ensure_ascii=False, indent=4)
+    # with open("aggregated_defense_performance_score.json",
+    #           'w', encoding='utf8') as f:
+    #     json.dump(agg_dict, f, ensure_ascii=False, indent=4)
+    ppp(agg_dict)
     print("Save aggregation results DONE.")
 
 
@@ -210,8 +213,11 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
         "rte",
         "sst2",
         "wnli",]
-    defenses_methods = ["prefix", "fakeone",
-                        "insert", "donot", "locallook"]
+    defenses_methods = [
+        # "prefix", "fakeone",
+        # "insert", "donot", "locallook",
+        "original",
+        ]
 
     overall_res = OrderedDict()
     for ttt in tasks_we_used:
@@ -243,9 +249,9 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
                   'w', encoding='utf8') as f:
             json.dump(overall_res[ttt],
                       f, ensure_ascii=False, indent=4)
-    with open(f"./glue_res/overall-performance-res.json",
-              'w', encoding='utf8') as f:
-        json.dump(overall_res, f, ensure_ascii=False, indent=4)
+    # with open(f"./glue_res/overall-performance-res.json",
+    #           'w', encoding='utf8') as f:
+    #     json.dump(overall_res, f, ensure_ascii=False, indent=4)
     print("Save Done..")
 
 
@@ -258,7 +264,7 @@ def std(ls):
 
 
 def main():
-    # mulDefen_mulTask()
+    mulDefen_mulTask()
     evaluation_datas()
 
 

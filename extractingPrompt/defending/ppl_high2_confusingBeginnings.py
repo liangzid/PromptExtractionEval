@@ -114,6 +114,11 @@ def defense_reshape(pls, method="prefix"):
             newp = r_p + p
             newprompts.append(newp)
             skip_list_on_eva.extend(locallook_ls)
+    elif method =="original":
+        for p in prompts:
+            r_p = ""
+            newp = r_p + p
+            newprompts.append(newp)
 
     return newprompts, skip_list_on_eva
 
