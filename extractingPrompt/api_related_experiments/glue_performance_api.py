@@ -86,7 +86,7 @@ def one_prompt_one_task_one_model(model_name, prompt,
     }
     task_key_map = {
         "mrpc": ["sentence1", "sentence2"],
-        "qnli": ["question", "answer"],
+        "qnli": ["question", "sentence"],
         "qqp": ["question1", "question2"],
         "rte": ["sentence1", "sentence2"],
         "wnli": ["sentence1", "sentence2"],
