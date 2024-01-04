@@ -27,6 +27,10 @@ from pprint import pprint as ppp
 
 from data_4 import Prompt_res_dict
 
+def mean(ls):
+    # actually this function is not the mean.
+    # return sum(ls)/len(ls)
+    return np.median(ls)
 
 # for m in Prompt_res_dict:
 #     for p in Prompt_res_dict[m]:
@@ -90,15 +94,19 @@ def plot_box_figures():
     # color_map2 = {"Phi-1.5B": "#2ecc71",
     #               "Llama2-7B": "#e67e22", }
 
-    color_map2 = {"Phi-1.5B": "red",
+    # color_map2 = {"Phi-1.5B": "red",
+                  # "Llama2-7B": "blue", }
+    # color_map = {"Phi-1.5B": "#be2edd",
+    #              "Llama2-7B": "#130f40", }
+    color_map = {"Phi-1.5B": "red",
                   "Llama2-7B": "blue", }
-    color_map = {"Phi-1.5B": "#be2edd",
-                 "Llama2-7B": "#130f40", }
+    color_map2 = color_map
 
-    line_map2 = {"Phi-1.5B": "--",
-                 "Llama2-7B": "-", }
-    line_map = {"Phi-1.5B": "-.",
-                "Llama2-7B": ":", }
+    # line_map2 = {"Phi-1.5B": "--",
+                 # "Llama2-7B": "-", }
+    line_map = {"Phi-1.5B": "-",
+                "Llama2-7B": "--", }
+    line_map2=line_map
 
     name_convert = {"phi-1_5": "Phi-1.5B",
                     "Llama-2-7b-chat-hf": "Llama2-7B", }
@@ -165,8 +173,10 @@ def plot_box_figures():
                 big_y.append(y)
 
             newbigy = []
+            meany = []
             for k in y_dict:
                 newbigy.append(y_dict[k])
+                meany.append(mean(y_dict[k]))
 
             sorted_ls = sorted(zip(xvls, newbigy))
             xvls, newbigy = zip(*sorted_ls)
@@ -221,6 +231,22 @@ def plot_box_figures():
                                          showfliers=False,
                                          # patch_artist=True,
                                          )
+            medians=[mm.get_ydata()[0] for mm in boxes["medians"]]
+            if sn==2:
+                ## add the line figure:
+                axs[0+sn][j].plot(
+                    xvls,
+                    medians,
+                    linewidth=1.5,
+                    marker=marker_map[model],
+                    markevery=1,
+                    markersize=5,
+                    markeredgewidth=1.5,
+                    markerfacecolor='none',
+                    alpha=.5,
+                    linestyle=ls,
+                    color=cr,
+                    )
 
             # import pandas as pd
             # data= pd.DataFrame({"x":[x for bx in big_x for x in bx],
@@ -305,7 +331,7 @@ def plot_box_figures():
             kr = marker_map[model]
             axs[1+sn][j].set_xscale("log")
             width = np.diff([2**x for x in range(5, 12)])/14.5
-            axs[1+sn][j].boxplot(big_y,
+            boxes=axs[1+sn][j].boxplot(big_y,
                                  positions=xvls,
                                  widths=width,
                                  boxprops={"color": cr,
@@ -328,6 +354,23 @@ def plot_box_figures():
                                  showfliers=False,
                                  )
 
+            medians=[mm.get_ydata()[0] for mm in boxes["medians"]]
+            if sn==2:
+                ## add the line figure:
+                axs[1+sn][j].plot(
+                    xvls,
+                    medians,
+                    linewidth=1.5,
+                    marker=marker_map[model],
+                    markevery=1,
+                    markersize=5,
+                    markeredgewidth=1.5,
+                    markerfacecolor='none',
+                    alpha=.5,
+                    linestyle=ls,
+                    color=cr,
+                    )
+
         j += 1
 
     fig.subplots_adjust(wspace=0.30, hspace=0.36)
@@ -345,31 +388,44 @@ def plot_box_figures():
     m22 = "Llama2-7B w. PI-Implicit"
     m1 = "Phi-1.5B"
     m2 = "Llama2-7B"
+
+    # legend_elements = [Line2D([0], [0],
+    #                           color=color_map[m1],
+    #                           linestyle=line_map[m1],
+    #                           lw=3,
+    #                           label=m11),
+    #                    Line2D([0], [0],
+    #                           color=color_map[m2],
+    #                           linestyle=line_map[m2],
+    #                           lw=3,
+    #                           label=m21),
+    #                    Line2D([0], [0],
+    #                           color=color_map2[m1],
+    #                           linestyle=line_map2[m1],
+    #                           lw=3,
+    #                           label=m12),
+    #                    Line2D([0], [0],
+    #                           color=color_map2[m2],
+    #                           linestyle=line_map2[m2],
+    #                           lw=3,
+    #                           label=m22),
+    #                    ]
+
     legend_elements = [Line2D([0], [0],
                               color=color_map[m1],
                               linestyle=line_map[m1],
                               lw=3,
-                              label=m11),
+                              label=m1),
                        Line2D([0], [0],
                               color=color_map[m2],
                               linestyle=line_map[m2],
                               lw=3,
-                              label=m21),
-                       Line2D([0], [0],
-                              color=color_map2[m1],
-                              linestyle=line_map2[m1],
-                              lw=3,
-                              label=m12),
-                       Line2D([0], [0],
-                              color=color_map2[m2],
-                              linestyle=line_map2[m2],
-                              lw=3,
-                              label=m22),
-
-
+                              label=m2),
                        ]
+
+
     plt.legend(
-        loc=(-4.00, 5.10),
+        loc=(-2.20, 5.10),
         handles=legend_elements,
         # loc="upper left",
         prop=font1, ncol=4, frameon=False,
