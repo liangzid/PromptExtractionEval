@@ -15,20 +15,18 @@ in closed AI models.
 # ------------------------ Code --------------------------------------
 import sys
 sys.path.append("../")
-import os
-from collections import OrderedDict
-from pprint import pprint as ppp
-import random
-from typing import List, Tuple, Dict
-import json
-from collections import OrderedDict
-import numpy as np
-from datasets import load_dataset
-from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_score
-from Defense import defense_reshape
-from glue_performance_api import one_prompt_one_task_one_model as o3
 from tqdm import tqdm
+from glue_performance_api import one_prompt_one_task_one_model as o3
+from Defense import defense_reshape
+from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_score
+from datasets import load_dataset
+import numpy as np
+import json
+from typing import List, Tuple, Dict
+import random
 from pprint import pprint as ppp
+from collections import OrderedDict
+import os
 
 # normal import
 task_label_map = {
@@ -41,6 +39,7 @@ task_label_map = {
     "sst2": {"1": "positive", "0": "negative"},
     "wnli": {"0": "not_entailment", "1": "entailment"},
 }
+
 
 def myeval(task, res):
     predict_ls = []
@@ -108,7 +107,7 @@ def evaluation_datas():
                         #     resp = resp.lower()
                         # else:
                         #     resp = ""
-                        resp=item[0].lower()
+                        resp = item[0].lower()
                         res.append((
                             resp,
                             item[1].lower()
@@ -194,7 +193,7 @@ def mulDefen_mulTask(model_name="gpt-3.5-turbo-0613",
         "prefix", "fakeone",
         "insert", "donot", "locallook",
         "original",
-        ]
+    ]
 
     overall_res = OrderedDict()
     for ttt in tasks_we_used:
@@ -212,6 +211,8 @@ def mulDefen_mulTask(model_name="gpt-3.5-turbo-0613",
         # overall_res[ttt]["vanilla"] = ress
 
         for ddd in defenses_methods:
+            if ttt == "cola" and ddd in ["prefix", "fakeone", "insert"]:
+                continue
             newprompts, _ = defense_reshape(subset, method=ddd)
             # print("Newprompts", newprompts)
             ress = oneDefense_oneTask_MultipleOriginalPrompts(
@@ -243,7 +244,6 @@ def std(ls):
 def main():
     mulDefen_mulTask()
     evaluation_datas()
-
 
     # running entry
 if __name__ == "__main__":

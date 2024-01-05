@@ -27,6 +27,7 @@ from pprint import pprint as ppp
 
 from data_4 import Prompt_res_dict
 
+
 def mean(ls):
     # actually this function is not the mean.
     # return sum(ls)/len(ls)
@@ -95,18 +96,18 @@ def plot_box_figures():
     #               "Llama2-7B": "#e67e22", }
 
     # color_map2 = {"Phi-1.5B": "red",
-                  # "Llama2-7B": "blue", }
+    # "Llama2-7B": "blue", }
     # color_map = {"Phi-1.5B": "#be2edd",
     #              "Llama2-7B": "#130f40", }
     color_map = {"Phi-1.5B": "red",
-                  "Llama2-7B": "blue", }
+                 "Llama2-7B": "blue", }
     color_map2 = color_map
 
     # line_map2 = {"Phi-1.5B": "--",
-                 # "Llama2-7B": "-", }
+    # "Llama2-7B": "-", }
     line_map = {"Phi-1.5B": "-",
                 "Llama2-7B": "--", }
-    line_map2=line_map
+    line_map2 = line_map
 
     name_convert = {"phi-1_5": "Phi-1.5B",
                     "Llama-2-7b-chat-hf": "Llama2-7B", }
@@ -118,7 +119,8 @@ def plot_box_figures():
     fig_5to8 = [70, 80, 90, 100]
 
     j = 0
-    fig, axs = plt.subplots(4, 4, figsize=(20, 15))
+    # fig, axs = plt.subplots(4, 4, figsize=(20, 15))
+    fig, axs = plt.subplots(2, 4, figsize=(20, 7.7))
     # fig = plt.figure(figsize=(20, 15))
     # import matplotlib.gridspec as gridspec
     # gs = gridspec.GridSpec(4, 4, wspace=0.4, hspace=0.9)
@@ -141,6 +143,13 @@ def plot_box_figures():
             else:
                 shift_num = 0
                 sn = 0
+
+            if sn == 0:
+                continue
+            else:
+                sn = 0
+                shift_num = 0
+
             model = name_convert[model.split("#")[0]]
 
             interval_ls = list(Prompt_res_dict[o_model]
@@ -231,9 +240,9 @@ def plot_box_figures():
                                          showfliers=False,
                                          # patch_artist=True,
                                          )
-            medians=[mm.get_ydata()[0] for mm in boxes["medians"]]
-            if sn==2:
-                ## add the line figure:
+            medians = [mm.get_ydata()[0] for mm in boxes["medians"]]
+            if sn == 0:
+                # add the line figure:
                 axs[0+sn][j].plot(
                     xvls,
                     medians,
@@ -246,7 +255,7 @@ def plot_box_figures():
                     alpha=.5,
                     linestyle=ls,
                     color=cr,
-                    )
+                )
 
             # import pandas as pd
             # data= pd.DataFrame({"x":[x for bx in big_x for x in bx],
@@ -278,6 +287,13 @@ def plot_box_figures():
             else:
                 sn = 0
                 shift_num = 0
+
+            if sn == 0:
+                continue
+            else:
+                sn = 0
+                shift_num = 0
+
             model = name_convert[model.split("#")[0]]
 
             interval_ls = list(Prompt_res_dict[o_model]
@@ -331,32 +347,32 @@ def plot_box_figures():
             kr = marker_map[model]
             axs[1+sn][j].set_xscale("log")
             width = np.diff([2**x for x in range(5, 12)])/14.5
-            boxes=axs[1+sn][j].boxplot(big_y,
-                                 positions=xvls,
-                                 widths=width,
-                                 boxprops={"color": cr,
-                                           "linewidth": 1.5,
-                                           "linestyle": ls,
-                                           },
-                                 capprops={"color": cr,
-                                           "linewidth": 1.5,
-                                           },
-                                 whiskerprops={"color": cr,
-                                               "linewidth": 1.5,
-                                               "linestyle": ls,
-                                               },
-                                 flierprops={
-                                     "markeredgecolor": cr,
-                                     "marker": kr,
-                                 },
-                                 # showmeans=True,
-                                 # meanline=True,
-                                 showfliers=False,
-                                 )
+            boxes = axs[1+sn][j].boxplot(big_y,
+                                         positions=xvls,
+                                         widths=width,
+                                         boxprops={"color": cr,
+                                                   "linewidth": 1.5,
+                                                   "linestyle": ls,
+                                                   },
+                                         capprops={"color": cr,
+                                                   "linewidth": 1.5,
+                                                   },
+                                         whiskerprops={"color": cr,
+                                                       "linewidth": 1.5,
+                                                       "linestyle": ls,
+                                                       },
+                                         flierprops={
+                                             "markeredgecolor": cr,
+                                             "marker": kr,
+                                         },
+                                         # showmeans=True,
+                                         # meanline=True,
+                                         showfliers=False,
+                                         )
 
-            medians=[mm.get_ydata()[0] for mm in boxes["medians"]]
-            if sn==2:
-                ## add the line figure:
+            medians = [mm.get_ydata()[0] for mm in boxes["medians"]]
+            if sn == 0:
+                # add the line figure:
                 axs[1+sn][j].plot(
                     xvls,
                     medians,
@@ -369,7 +385,7 @@ def plot_box_figures():
                     alpha=.5,
                     linestyle=ls,
                     color=cr,
-                    )
+                )
 
         j += 1
 
@@ -423,9 +439,8 @@ def plot_box_figures():
                               label=m2),
                        ]
 
-
     plt.legend(
-        loc=(-2.20, 5.10),
+        loc=(-2.20, 2.30),
         handles=legend_elements,
         # loc="upper left",
         prop=font1, ncol=4, frameon=False,

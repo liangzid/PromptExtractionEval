@@ -81,6 +81,14 @@ model_color_dict = {
     "E": "red",
     "I": "green",
 }
+model_color_dict2=model_color_dict
+# model_color_dict2 = {
+#     # "E": "#FF0202",
+#     # "I": "#008000",
+#     "E": (252/255, 224/255, 225/255),
+#     "I": (194/255, 232/255, 247/255),
+# }
+
 model_line_style = {
     "E": "-",
     "I": "-.",
@@ -168,8 +176,9 @@ def plot_figures():
                              )  # 绘制当前模型的曲线
             # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
             axs[0][i_n].fill_between(xvls, ymin, ymax,
-                                     alpha=0.3,
-                                     color=model_color_dict[mode])  # 透明度
+                                     alpha=0.2,
+                                     # alpha=1.0,
+                                     color=model_color_dict2[mode])  # 透明度
         axs[0][i_n].set_xlabel("Model Parameters", fontsize=font_size)
         axs[0][i_n].set_ylabel(ylabel, fontsize=font_size-5)
         axs[0][i_n].set_xticks(xvls, xs,
@@ -222,8 +231,8 @@ def plot_figures():
                              )  # 绘制当前模型的曲线
             # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
             axs[1][i_n].fill_between(xvls, ymin, ymax,
-                                     alpha=0.3,
-                                     color=model_color_dict[mode],
+                                     alpha=0.2,
+                                     color=model_color_dict2[mode],
                                      )  # 透明度
         axs[1][i_n].set_xlabel("Model Parameters", fontsize=font_size)
         axs[1][i_n].set_ylabel(ylabel, fontsize=font_size-5)
@@ -248,7 +257,7 @@ def plot_figures():
                handletextpad=0., handlelength=1.2)  # 设置信息框
     fig.subplots_adjust(wspace=0.26, hspace=0.6)
     plt.subplots_adjust(bottom=0.33, top=0.85)
-    plt.show()
+    # plt.show()
     plt.savefig("./vary_params.pdf",
                 pad_inches=0.1)
 
