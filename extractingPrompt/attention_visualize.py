@@ -246,10 +246,10 @@ def visualizeSampled2(model, tokenizer, text,
                     pad_inches=0.1)
         print(f"Save to {pth}layer{nl+1}_head{nh+1}.pdf DONE.")
 
-    # with open(f"{pth}metricsRes_layer{nl+1}_head{nh+1}.json",
-    #           'w', encoding='utf8') as f:
-    #     json.dump(score_dict, f, ensure_ascii=False, indent=4)
-    # print(f"Save to `{pth}metricsRes_layer{nl+1}_head{nh+1}.json` DONE.")
+    with open(f"{pth}metricsRes_layer{nl+1}_head{nh+1}.json",
+              'w', encoding='utf8') as f:
+        json.dump(score_dict, f, ensure_ascii=False, indent=4)
+    print(f"Save to `{pth}metricsRes_layer{nl+1}_head{nh+1}.json` DONE.")
 
 
 def visualizeSampled(model, tokenizer, text,
@@ -404,7 +404,9 @@ def compute_metric_of_attentions(tokens, inp_p_tokens, atts,
         offset = 0
         while True:
             bgn = idx_last_token_in_inps+offset
-            if tokens[bgn:bgn+len(inp_p_tokens)-1] == inp_p_tokens[:-1]:
+            # print("bgn:",bgn,"len(inp_p_tokens):",len(inp_p_tokens),
+                  # "offset:",offset)
+            if tokens[bgn+1:bgn+len(inp_p_tokens)-1] == inp_p_tokens[1:-1]:
                 break
             offset += 1
             if offset > 1500 or idx_last_token_in_inps+offset == len(tokens):
@@ -558,7 +560,9 @@ def main1():
         json.dump([poss, negs], f, ensure_ascii=False, indent=4)
 
     for i, pos in tqdm(enumerate(poss), desc="Samples"):
-        if i > 2:
+        if i <= 2:
+            continue
+        if i > 12:
             break
         text = f"Instruction: {pos[0]} User: {pos[1]} Assistant: {pos[2]}"
         inps_p_tokens = tokenizer.tokenize(pos[0])
@@ -574,26 +578,28 @@ def main1():
         #                            pth=pth,
         #                            )
 
-        # visualizeSampled(model,
-        #                  tokenizer,
-        #                  text,
-        #                  inps_p_tokens,
-        #                  text_tokens,
-        #                  "cuda:0",
-        #                  pth=pth,
-        #                  )
+        visualizeSampled(model,
+                         tokenizer,
+                         text,
+                         inps_p_tokens,
+                         text_tokens,
+                         "cuda:0",
+                         pth=pth,
+                         )
 
-        visualizeSampled2(model,
-                          tokenizer,
-                          text,
-                          inps_p_tokens,
-                          text_tokens,
-                          "cuda:0",
-                          pth=pth,
-                          )
+        # visualizeSampled2(model,
+        #                   tokenizer,
+        #                   text,
+        #                   inps_p_tokens,
+        #                   text_tokens,
+        #                   "cuda:0",
+        #                   pth=pth,
+        #                   )
 
     for i, neg in tqdm(enumerate(negs), desc="Samples"):
-        if i > 2:
+        if i <= 2:
+            continue
+        if i > 12:
             break
         text = f"Instruction: {neg[0]} User: {neg[1]} Assistant: {neg[2]}"
         print(i, text)
@@ -610,25 +616,25 @@ def main1():
         #                            pth=pth,
         #                            )
 
-        # visualizeSampled(model,
-        #                  tokenizer,
-        #                  text,
-        #                  inps_p_tokens,
-        #                  text_tokens,
-        #                  "cuda:1",
-        #                  pth=pth,
-        #                  is_negtive=True,
-        #                  )
+        visualizeSampled(model,
+                         tokenizer,
+                         text,
+                         inps_p_tokens,
+                         text_tokens,
+                         "cuda:1",
+                         pth=pth,
+                         is_negtive=True,
+                         )
 
-        visualizeSampled2(model,
-                          tokenizer,
-                          text,
-                          inps_p_tokens,
-                          text_tokens,
-                          "cuda:1",
-                          pth=pth,
-                          is_negtive=True,
-                          )
+        # visualizeSampled2(model,
+        #                   tokenizer,
+        #                   text,
+        #                   inps_p_tokens,
+        #                   text_tokens,
+        #                   "cuda:1",
+        #                   pth=pth,
+        #                   is_negtive=True,
+        #                   )
 
 
 # running entry
