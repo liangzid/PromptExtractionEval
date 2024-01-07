@@ -69,7 +69,7 @@ def filter_targeted_samples(pth, selected_num=12):
             for pair in pps:
                 p, gen_p = pair
                 if fuzzy_match_recall([gen_p], [p], ratio=100) == 1:
-                    if len(p.split(" ")) > 15:
+                    if len(p.split(" ")) > 50:
                         continue
                     pos_ls.append((p, ap, gen_p))
                 elif fuzzy_match_recall([gen_p], [p], ratio=20) == 0:
@@ -520,7 +520,7 @@ def main1():
     # device = "cuda:0"
     device = "auto"
 
-    poss, negs = filter_targeted_samples(pth, selected_num=30)
+    poss, negs = filter_targeted_samples(pth, selected_num=50)
 
     # model = AutoModelForCausalLM.from_pretrained(
     #     model_name,
@@ -562,7 +562,7 @@ def main1():
     for i, pos in tqdm(enumerate(poss), desc="Samples"):
         if i <= 2:
             continue
-        if i > 12:
+        if i > 20:
             break
         text = f"Instruction: {pos[0]} User: {pos[1]} Assistant: {pos[2]}"
         inps_p_tokens = tokenizer.tokenize(pos[0])
@@ -599,7 +599,7 @@ def main1():
     for i, neg in tqdm(enumerate(negs), desc="Samples"):
         if i <= 2:
             continue
-        if i > 12:
+        if i > 20:
             break
         text = f"Instruction: {neg[0]} User: {neg[1]} Assistant: {neg[2]}"
         print(i, text)

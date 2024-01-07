@@ -23,7 +23,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from collections import OrderedDict
 
-def plot_heatmap_10x8(idexes=[3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+def plot_heatmap_10x8(idexes=[3, 4, 5, 6, 7, 8,
+                              9, 10, 11, 12, 13,
+                              14, 15, 16,],
                      save_path="./attention_viz/10x8indicators_res.pdf"
                      ):
     fig, axs = plt.subplots(len(idexes), 8, figsize=(40, 3.5*len(idexes)))
