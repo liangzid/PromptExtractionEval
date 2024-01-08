@@ -211,7 +211,8 @@ def mulDefen_mulTask(model_name="gpt-3.5-turbo-0613",
         # overall_res[ttt]["vanilla"] = ress
 
         for ddd in defenses_methods:
-            if ttt == "cola" and ddd in ["prefix", "fakeone", "insert"]:
+            if ttt == "cola" and ddd in ["prefix", "fakeone", "insert",
+                                         "donot", "locallook"]:
                 continue
             newprompts, _ = defense_reshape(subset, method=ddd)
             # print("Newprompts", newprompts)

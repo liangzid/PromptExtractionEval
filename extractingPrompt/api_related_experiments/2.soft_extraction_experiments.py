@@ -713,10 +713,10 @@ def main():
 
     big_result_pth = "./soft_extraction/gpt-3.5-turbo-1106---BIGRESULT.json"
     res_dict35 = compute_score(big_result_pth)
-    big_result_pth = "./soft_extraction/gpt-4-0613---BIGRESULT.json"
-    res_dict4 = compute_score(big_result_pth)
-    show_as_histgram2x4({"GPT-3.5-turbo": res_dict35,
-                         "GPT-4": res_dict4})
+    # big_result_pth = "./soft_extraction/gpt-4-0613---BIGRESULT.json"
+    # res_dict4 = compute_score(big_result_pth)
+    # show_as_histgram2x4({"GPT-3.5-turbo": res_dict35,
+    #                      "GPT-4": res_dict4})
 
 
 # running entry
