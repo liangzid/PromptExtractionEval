@@ -288,8 +288,9 @@ def draw_14x8():
         (3, 26),
     ]
 
-    indexes = [3, 4, 5, 6, 7, 8, 9,]
-    fig, axs = plt.subplots(14, 8, figsize=(30, 7*len(indexes)))
+    # indexes = [3, 4, 5, 6, 7, 8, 9,]
+    indexes = [3, 4, 5, 6, 7,]
+    fig, axs = plt.subplots(10, 8, figsize=(30, 7*len(indexes)))
     fig.subplots_adjust(wspace=0.01, hspace=0.7)
     fs = 20
 
