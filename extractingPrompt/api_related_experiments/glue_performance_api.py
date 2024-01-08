@@ -114,7 +114,7 @@ def one_prompt_one_task_one_model(model_name, prompt,
                 prompt=prompt,
                 utter=inps,
             )
-            time.sleep(1.2)
+            time.sleep(4.2)
             res_ls.append((res, label))
             # break
     elif task_name == "mnli":
@@ -133,7 +133,7 @@ def one_prompt_one_task_one_model(model_name, prompt,
                 prompt=prompt,
                 utter=inps,
             )
-            time.sleep(1.2)
+            time.sleep(4.2)
             res_ls.append((res, label))
             # break
     elif task_name in double_input_tasks:
@@ -155,7 +155,7 @@ def one_prompt_one_task_one_model(model_name, prompt,
                 prompt=prompt,
                 utter=inps,
             )
-            time.sleep(1.2)
+            time.sleep(4.2)
             res_ls.append((res, label))
             # break
     else:
