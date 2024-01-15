@@ -15,18 +15,18 @@ in closed AI models.
 # ------------------------ Code --------------------------------------
 import sys
 sys.path.append("../")
-from tqdm import tqdm
-from glue_performance_api import one_prompt_one_task_one_model as o3
-from Defense import defense_reshape
-from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_score
-from datasets import load_dataset
-import numpy as np
-import json
-from typing import List, Tuple, Dict
-import random
-from pprint import pprint as ppp
-from collections import OrderedDict
 import os
+from collections import OrderedDict
+from pprint import pprint as ppp
+import random
+from typing import List, Tuple, Dict
+import json
+import numpy as np
+from datasets import load_dataset
+from sklearn.metrics import precision_score, accuracy_score, recall_score, f1_score
+from Defense import defense_reshape
+from glue_performance_api import one_prompt_one_task_one_model as o3
+from tqdm import tqdm
 
 # normal import
 task_label_map = {
@@ -150,6 +150,9 @@ def oneDefense_oneTask_MultipleOriginalPrompts(
 
     all_res = []
     for iii, p in tqdm(enumerate(pls), desc=f"Task: {task}  defense: {defense_method}"):
+        if iii < 3 and defense_method == "fakeone" and task == "sst2":
+            print("Skip the running we already have.")
+            continue
         tmppth = save_dir + \
             f"task___{task}Defense_{defense_method}-pindex___{iii}.json"
         res = o3(model_name, p, task, save_pth=tmppth)
@@ -183,10 +186,10 @@ def mulDefen_mulTask(model_name="gpt-3.5-turbo-0613",
 
     # set experiment tasks
     tasks_we_used = [
-        "cola",
-        "qnli",
-        "qqp",
-        "rte",
+        # "cola",
+        # "qnli",
+        # "qqp",
+        # "rte",
         "sst2",
         "wnli",]
     defenses_methods = [
@@ -211,8 +214,12 @@ def mulDefen_mulTask(model_name="gpt-3.5-turbo-0613",
         # overall_res[ttt]["vanilla"] = ress
 
         for ddd in defenses_methods:
-            if ttt == "cola" and ddd in ["prefix", "fakeone", "insert",
-                                         "donot", "locallook"]:
+            if ttt == "sst2" and ddd in ["prefix",
+                                        # "fakeone",
+                                        # "insert",
+                                        # "donot",
+                                        # "locallook",
+                                        ]:
                 continue
             newprompts, _ = defense_reshape(subset, method=ddd)
             # print("Newprompts", newprompts)

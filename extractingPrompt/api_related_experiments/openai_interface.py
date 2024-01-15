@@ -29,7 +29,7 @@ def extract_prompt_interface(modelname="gpt-3.5-turbo-1106",
             {"role": "user", "content": utter}
         ]
     )
-    time.sleep(1)
+    # time.sleep(1)
     return res.choices[0].message.content
 
 

@@ -102,7 +102,8 @@ def one_prompt_one_task_one_model(model_name, prompt,
     if task_name in single_input_tasks:
         if len(dataset["validation"]) > 1000:
             sets = dataset["validation"]\
-            .to_iterable_dataset().take(1000)
+            .to_iterable_dataset().take(500)
+            # .to_iterable_dataset().take(1000)
         else:
             sets = dataset["validation"]
         for d in sets:
@@ -114,13 +115,13 @@ def one_prompt_one_task_one_model(model_name, prompt,
                 prompt=prompt,
                 utter=inps,
             )
-            time.sleep(4.2)
             res_ls.append((res, label))
             # break
     elif task_name == "mnli":
         if len(dataset["validation_matched"]) > 1000:
             sets = dataset["validation_matched"]\
-            .to_iterable_dataset().take(1000)
+            .to_iterable_dataset().take(500)
+            # .to_iterable_dataset().take(1000)
         else:
             sets = dataset["validation_matched"]
         for d in sets:
@@ -133,14 +134,14 @@ def one_prompt_one_task_one_model(model_name, prompt,
                 prompt=prompt,
                 utter=inps,
             )
-            time.sleep(4.2)
             res_ls.append((res, label))
             # break
     elif task_name in double_input_tasks:
         if len(dataset["validation"]) > 1000:
             # print(type(dataset["validation"]))
             sets = dataset["validation"]\
-            .to_iterable_dataset().take(1000)
+            .to_iterable_dataset().take(500)
+            # .to_iterable_dataset().take(1000)
             # print(type(sets))
         else:
             sets = dataset["validation"]
@@ -155,7 +156,6 @@ def one_prompt_one_task_one_model(model_name, prompt,
                 prompt=prompt,
                 utter=inps,
             )
-            time.sleep(4.2)
             res_ls.append((res, label))
             # break
     else:
