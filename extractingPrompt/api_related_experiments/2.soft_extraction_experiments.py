@@ -171,7 +171,11 @@ def extraction_attack_HumanCheck(
 
 
 gpt35turbo_prompt_dict = {
-    "qqp": ["Review the questions and categorize their similarity as either 'equivalent' or 'not_equivalent'.",],
+    "qqp": ["Review the questions and categorize their similarity as either 'equivalent' or 'not_equivalent'.",
+            "Are the following pairs of questions equivalent or not_equivalent?",
+            "Are these questions equivalent or not_equivalent?",
+            "Review the questions and categorize their similarity as either 'equivalent' or 'not_equivalent'.",
+            ],
     "rte": [
         "Entailment analysis: assess the relationship between the given sentences and classify it as 'entailment' or 'not_entailment'.",
         "I am an entailment analysis tool. I will assess the relationship between the given sentences and classify it as 'entailment' or 'not_entailment'.",
@@ -180,7 +184,7 @@ gpt35turbo_prompt_dict = {
     ],
     "sst2": [
         "Acting as a sentiment evaluator, identify if the given sentence is 'positive' or 'negative'.",
-        # "Working as a sentiment analyzer, please indicate if the following text is 'positive' or 'negative'. Classify:",
+        "Working as a sentiment analyzer, please indicate if the following text is 'positive' or 'negative'. Classify:",
     ],
     "wnli": [
         "as an entailment analysis tool, I'm designed to assess the relationship between sentences and classify it as 'entailment' or 'not_entailment.",
@@ -205,8 +209,10 @@ gpt4_prompt_dict = {
         "Review the two statements and categorize their connection as either 'entailment' or 'not_entailment' based on their relationship.",
     ],
     "sst2": [
-        # "As a sentiment classifier, determine whether the following text is 'positive' or 'negative'. Please classify:",
-        # "As an emotion detector, determine if the provided passage conveys a 'positive' or 'negative' sentiment. Classify:",
+        "Acting as a sentiment evaluator, identify if the given sentence is 'positive' or 'negative'.",
+        "Working as a sentiment analyzer, please indicate if the following text is 'positive' or 'negative'. Classify:",
+        "As a sentiment classifier, determine whether the following text is 'positive' or 'negative'. Please classify:",
+        "As an emotion detector, determine if the provided passage conveys a 'positive' or 'negative' sentiment. Classify:",
     ],
     "wnli": [
         # "In your role as an entailment analysis tool, assess the relationship between the given sentences and classify it as 'entailment' or 'not_entailment'.",
@@ -268,39 +274,49 @@ def soft_eva_script(
 
     # 2. soft exactraction evaluation.
     from glue_performance_api import one_prompt_one_task_one_model
-    # api1 = "gpt-3.5-turbo-1106"
-    # big_res_dict = {}
-    # for task in task_ls:
-    #     origin_prompts = gpt35_ori_prompts[task]
-    #     new_prompts = gpt35_dict[task]
+    api1 = "gpt-3.5-turbo-1106"
+    big_res_dict = {}
+    for task in task_ls:
+        if task != "qqp" and task != "sst2":
+            print(f"NOT RUN task: {task}")
+            continue
+        else:
+            print(f"Currently RUN task: {task}")
+        origin_prompts = gpt35_ori_prompts[task]
+        new_prompts = gpt35_dict[task]
 
-    #     origin_res = []
-    #     new_res = []
-    #     for j, origin_p in enumerate(origin_prompts):
-    #         resls = one_prompt_one_task_one_model(
-    #             api1,
-    #             origin_p,
-    #             task,
-    #             f"./soft_extraction/{api1}_originp_{task}-{j}.json",
-    #         )
-    #         origin_res.append(resls)
-    #     for j, npp in enumerate(new_prompts):
-    #         resls = one_prompt_one_task_one_model(
-    #             api1,
-    #             npp,
-    #             task,
-    #             f"./soft_extraction/{api1}_newp_{task}-{j}.json",
-    #         )
-    #         new_res.append(resls)
-    #     big_res_dict[task] = {"original": origin_res,
-    #                           "new": new_res}
-    # with open(f"./soft_extraction/{api1}---BIGRESULT.json",
-    #           'w', encoding='utf8') as f:
-    #     json.dump(big_res_dict, f, ensure_ascii=False, indent=4)
+        origin_res = []
+        new_res = []
+        for j, origin_p in enumerate(origin_prompts):
+            resls = one_prompt_one_task_one_model(
+                api1,
+                origin_p,
+                task,
+                f"./soft_extraction/{api1}_originp_{task}-{j}.json",
+            )
+            origin_res.append(resls)
+        for j, npp in enumerate(new_prompts):
+            resls = one_prompt_one_task_one_model(
+                api1,
+                npp,
+                task,
+                f"./soft_extraction/{api1}_newp_{task}-{j}.json",
+            )
+            new_res.append(resls)
+        big_res_dict[task] = {"original": origin_res,
+                              "new": new_res}
+    with open(f"./soft_extraction/{api1}---BIGRESULT_2.json",
+              'w', encoding='utf8') as f:
+        json.dump(big_res_dict, f, ensure_ascii=False, indent=4)
 
     api1 = "gpt-4-0613"
     big_res_dict = {}
     for task in task_ls:
+        if task != "qqp" and task != "sst2":
+            print(f"not RUN task: {task}")
+            continue
+        else:
+            print(f"Currently RUN task: {task}")
         # origin_prompts = gpt35_ori_prompts[task]
         # new_prompts = gpt35_dict[task]
         origin_prompts = gpt4_ori_prompts[task]
@@ -326,7 +342,7 @@ def soft_eva_script(
             new_res.append(resls)
         big_res_dict[task] = {"original": origin_res,
                               "new": new_res}
-    with open(f"./soft_extraction/{api1}---BIGRESULT.json",
+    with open(f"./soft_extraction/{api1}---BIGRESULT_2.json",
               'w', encoding='utf8') as f:
         json.dump(big_res_dict, f, ensure_ascii=False, indent=4)
 
@@ -700,8 +716,8 @@ def main():
     # extraction_attack_withLowFuzzy()
     # extraction_attack_HumanCheck()
 
-    # soft_eva_script(gpt35turbo_prompt_dict,
-    #                 gpt4_prompt_dict)
+    soft_eva_script(gpt35turbo_prompt_dict,
+                    gpt4_prompt_dict)
 
     # big_result_pth = "./soft_extraction/gpt-3.5-turbo-1106---BIGRESULT.json"
     # res_dict = compute_score(big_result_pth)
@@ -711,8 +727,9 @@ def main():
     # res_dict = compute_score(big_result_pth)
     # show_as_histgram(res_dict)
 
-    big_result_pth = "./soft_extraction/gpt-3.5-turbo-1106---BIGRESULT.json"
-    res_dict35 = compute_score(big_result_pth)
+    # big_result_pth = "./soft_extraction/gpt-3.5-turbo-1106---BIGRESULT.json"
+    # res_dict35 = compute_score(big_result_pth)
+
     # big_result_pth = "./soft_extraction/gpt-4-0613---BIGRESULT.json"
     # res_dict4 = compute_score(big_result_pth)
     # show_as_histgram2x4({"GPT-3.5-turbo": res_dict35,
