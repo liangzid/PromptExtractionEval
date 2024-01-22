@@ -552,8 +552,13 @@ def show_as_histgram2x4(res_dict_big,):
             all_data_dict[index] = pd.DataFrame(all_data_dict[index])
         print(all_data_dict)
         # x = np.arange(len(temp_dict))
-        color = ["#2ecc71", "#1abc9c", "green",
-                 "#f39c12", "#d35400", "#c23616",]
+
+        # color = ["#2ecc71", "#1abc9c", "green",
+        #          "#f39c12", "#d35400", "#c23616",]
+
+        color = ["#96c0ea", "#6ca7e2", "#428eda",
+                 "#fba1a9", "#ff7785", "#ff0a22",]
+
         hatches = [
             "/", "\\", "|",
             "-", "+", "x",
@@ -716,8 +721,8 @@ def main():
     # extraction_attack_withLowFuzzy()
     # extraction_attack_HumanCheck()
 
-    soft_eva_script(gpt35turbo_prompt_dict,
-                    gpt4_prompt_dict)
+    # soft_eva_script(gpt35turbo_prompt_dict,
+    #                 gpt4_prompt_dict)
 
     # big_result_pth = "./soft_extraction/gpt-3.5-turbo-1106---BIGRESULT.json"
     # res_dict = compute_score(big_result_pth)
@@ -727,13 +732,13 @@ def main():
     # res_dict = compute_score(big_result_pth)
     # show_as_histgram(res_dict)
 
-    # big_result_pth = "./soft_extraction/gpt-3.5-turbo-1106---BIGRESULT.json"
-    # res_dict35 = compute_score(big_result_pth)
+    big_result_pth = "./soft_extraction/gpt-3.5-turbo-1106---BIGRESULT.json"
+    res_dict35 = compute_score(big_result_pth)
 
-    # big_result_pth = "./soft_extraction/gpt-4-0613---BIGRESULT.json"
-    # res_dict4 = compute_score(big_result_pth)
-    # show_as_histgram2x4({"GPT-3.5-turbo": res_dict35,
-    #                      "GPT-4": res_dict4})
+    big_result_pth = "./soft_extraction/gpt-4-0613---BIGRESULT.json"
+    res_dict4 = compute_score(big_result_pth)
+    show_as_histgram2x4({"GPT-3.5-turbo": res_dict35,
+                         "GPT-4": res_dict4})
 
 
 # running entry

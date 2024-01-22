@@ -78,17 +78,23 @@ marker = {
 model_color_dict = {
     # "E": "#FF0202",
     # "I": "#008000",
-    "E": "red",
-    "I": "green",
+    # "E": "red",
+    # "I": "green",
+    "I": "#eb3b5a",
+    "E": "#3867d6",
+    # "E":"#2d98da",
 }
-model_color_dict2=model_color_dict
-# model_color_dict2 = {
-#     # "E": "#FF0202",
-#     # "I": "#008000",
-#     "E": (252/255, 224/255, 225/255),
-#     "I": (194/255, 232/255, 247/255),
-# }
-
+# model_color_dict2=model_color_dict
+model_color_dict2 = {
+    # "E": "#FF0202",
+    # "I": "#008000",
+    # "E": (252/255, 224/255, 225/255),
+    # "I": (194/255, 232/255, 247/255),
+    "I" : "#f78fb3",
+    "E" : "#778beb",
+}
+a=0.4
+lw=1.7
 model_line_style = {
     "E": "-",
     "I": "-.",
@@ -162,13 +168,15 @@ def plot_figures():
             ymin = [ngram_dict[mx][mode]["min"] for mx in ngram_dict]
             ymax = [ngram_dict[mx][mode]["max"] for mx in ngram_dict]
             print("xs and yls: ", xs, yls)
+            lbl = "Explicit" if mode == "E" else "Implicit"
+            lbl = lbl + " intent attackings"
             axs[0][i_n].plot(xvls,
                              yls,
-                             label="Explicit Attacking",
-                             linewidth=1.5,
+                             label=lbl,
+                             linewidth=lw,
                              marker=marker[mode],
                              markevery=1, markersize=15,
-                             markeredgewidth=1.5,
+                             markeredgewidth=lw,
                              markerfacecolor='none',
                              alpha=1.,
                              linestyle=model_line_style[mode],
@@ -176,7 +184,8 @@ def plot_figures():
                              )  # 绘制当前模型的曲线
             # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
             axs[0][i_n].fill_between(xvls, ymin, ymax,
-                                     alpha=0.2,
+                                     alpha=a,
+                                     linewidth=0.,
                                      # alpha=1.0,
                                      color=model_color_dict2[mode])  # 透明度
         axs[0][i_n].set_xlabel("Model Parameters", fontsize=font_size)
@@ -217,13 +226,15 @@ def plot_figures():
             ymin = [ngram_dict[mx][mode]["min"] for mx in ngram_dict]
             ymax = [ngram_dict[mx][mode]["max"] for mx in ngram_dict]
             print("xs and yls: ", xs, yls)
+            lbl = "Explicit" if mode == "E" else "Implicit"
+            lbl = lbl + " intent attackings"
             axs[1][i_n].plot(xvls,
                              yls,
-                             label="Explicit Attacking",
-                             linewidth=1.5,
+                             label=lbl,
+                             linewidth=lw,
                              marker=marker[mode],
                              markevery=1, markersize=15,
-                             markeredgewidth=1.5,
+                             markeredgewidth=lw,
                              markerfacecolor='none',
                              alpha=1.,
                              linestyle=model_line_style[mode],
@@ -231,7 +242,8 @@ def plot_figures():
                              )  # 绘制当前模型的曲线
             # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
             axs[1][i_n].fill_between(xvls, ymin, ymax,
-                                     alpha=0.2,
+                                     linewidth=0.,
+                                     alpha=a,
                                      color=model_color_dict2[mode],
                                      )  # 透明度
         axs[1][i_n].set_xlabel("Model Parameters", fontsize=font_size)
@@ -252,7 +264,7 @@ def plot_figures():
         'weight': 'normal',
         'size': font_size-1,
     }
-    plt.legend(loc=(-2.41, 2.60),
+    plt.legend(loc=(-2.71, 2.60),
                prop=font1, ncol=6, frameon=False,
                handletextpad=0., handlelength=1.2)  # 设置信息框
     fig.subplots_adjust(wspace=0.26, hspace=0.6)
