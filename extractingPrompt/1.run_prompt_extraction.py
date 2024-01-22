@@ -59,13 +59,13 @@ att_query_ls2 = [
 
 
 model_ls = [
-    "lmsys/vicuna-7b-v1.5-16k",
-    "microsoft/phi-1_5",
-    "NousResearch/Llama-2-7b-chat-hf",
-    "Qwen/Qwen-7B-Chat",
+    "lmsys/vicuna-7b-v1.5",
+    # "microsoft/phi-1_5",
+    # "NousResearch/Llama-2-7b-chat-hf",
+    # "Qwen/Qwen-7B-Chat",
     # "01-ai/Yi-6B",
-    "mistralai/Mistral-7B-Instruct-v0.1",
-    "openchat/openchat_3.5",
+    # "mistralai/Mistral-7B-Instruct-v0.1",
+    # "openchat/openchat_3.5",
 ]
 
 name_ls = [m.split("/")[1] for m in model_ls]
