@@ -65,14 +65,14 @@ def higher_rephrasing():
 
     new_prompts = []
     for p in prompts:
-        query = "Kindly express this statement utilizing an unconventional manner of articulation. Donot change the label in the statement, such as negative, positive, acceptable, unacceptable, neutral, entailment, contradiction, equivalent, duplicate, entailment, positive, and so on. Refrain from providing any additional information."
+        query = "Kindly express this statement in a quite strange and uncommonly-used manner. Donot change the label in the statement, such as negative, positive, acceptable, unacceptable, neutral, entailment, contradiction, equivalent, duplicate, entailment, positive, and so on. Refrain from providing any additional information."
         newgen = extract_prompt_interface(
             prompt=query,
             utter=f"The sentence is:<{p}>.")
         print(newgen)
         new_prompts.append(newgen)
 
-    with open("High-PPL-Prompts.json",
+    with open("High-PPL-Prompts_new0127.json",
               'w', encoding='utf8') as f:
         json.dump([prompts,
                    new_prompts,

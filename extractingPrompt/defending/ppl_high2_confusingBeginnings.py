@@ -166,7 +166,8 @@ def eva_new_ppls(method="prefix"):
             newprompts.append(newp)
             skip_list_on_eva.extend(locallook_ls)
     elif method == "high-ppl":
-        hppl_pth = "./High-PPL-Prompts.json"
+        # hppl_pth = "./High-PPL-Prompts.json"
+        hppl_pth = "./High-PPL-Prompts_new0127.json"
         with open(hppl_pth,
                   'r', encoding='utf8') as f:
             data = json.load(f, object_pairs_hook=OrderedDict)
