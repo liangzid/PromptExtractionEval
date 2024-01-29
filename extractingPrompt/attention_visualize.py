@@ -69,11 +69,12 @@ def filter_targeted_samples(pth, selected_num=12):
             for pair in pps:
                 p, gen_p = pair
                 if fuzzy_match_recall([gen_p], [p], ratio=100) == 1:
-                    if len(p.split(" ")) > 50:
+                    if len(p.split(" ")) > 25:
                         continue
                     pos_ls.append((p, ap, gen_p))
                 elif fuzzy_match_recall([gen_p], [p], ratio=20) == 0:
-                    if len(p.split(" ")) > 150:
+                    # if len(p.split(" ")) > 150:
+                    if len(p.split(" ")) > 50:
                         continue
                     neg_ls.append((p, ap, gen_p))
 
@@ -364,13 +365,13 @@ def compute_metric_of_attentions(tokens, inp_p_tokens, atts,
         if t == inp_p_tokens[0] and tokens[i+1] == inp_p_tokens[1]:
             idx_first_token_in_inps = i
             break
-    try: 
+    try:
         assert idx_first_token_in_inps != -1
     except Exception:
         print("text:", tokens)
         print("inp_p", inp_p_tokens)
         raise Exception
-        
+
     idx_last_token_in_inps = idx_first_token_in_inps+len(inp_p_tokens)
 
     idxes_prompts = [idx_first_token_in_inps,
@@ -404,8 +405,9 @@ def compute_metric_of_attentions(tokens, inp_p_tokens, atts,
         offset = 0
         while True:
             bgn = idx_last_token_in_inps+offset
-            # print("bgn:",bgn,"len(inp_p_tokens):",len(inp_p_tokens),
-                  # "offset:",offset)
+            # print("bgn:", bgn,
+            #       "len(inp_p_tokens):", len(inp_p_tokens),
+            #       "offset:", offset)
             if tokens[bgn+1:bgn+len(inp_p_tokens)-1] == inp_p_tokens[1:-1]:
                 break
             offset += 1
@@ -495,13 +497,13 @@ def compute_metric_of_attentions(tokens, inp_p_tokens, atts,
             gammar_n *= att_valuen/gammar_sum
 
         import math
-        alpha_p = math.pow(alpha_p, 1/num)
-        alpha_n = math.pow(alpha_n, 1/num)
-        beta_p = math.pow(beta_p, 1/num)
+        alpha_p = math.pow(alpha_p, 1/(num+1e-6))
+        alpha_n = math.pow(alpha_n, 1/(num+1e-6))
+        beta_p = math.pow(beta_p, 1/(num+1e-6))
         beta_p = beta_p*alpha_p
 
-        gammar_p = math.pow(gammar_p, 1/num)
-        gammar_n = math.pow(gammar_n, 1/num)
+        gammar_p = math.pow(gammar_p, 1/(num+1e-6))
+        gammar_n = math.pow(gammar_n, 1/(num+1e-6))
 
     res = {"alpha_p": alpha_p, "alpha_n": alpha_n,
            "beta_p": beta_p,
