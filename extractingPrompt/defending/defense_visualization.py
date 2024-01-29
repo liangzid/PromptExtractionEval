@@ -160,10 +160,11 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
 
         lw = 0.8
 
-        axs[iii].set_xlabel('Attention From')
-        axs[iii].set_ylabel('Attention To')
+        fs=23
+        axs[iii].set_xlabel('Attention From', fontsize=fs)
+        axs[iii].set_ylabel('Attention To', fontsize=fs)
         # plt.colorbar(res, ax=axs[iii])
-        axs[iii].title.set_text(f'{name_map[key]}')
+        axs[iii].title.set_text(f'{name_map[key]}', fontsize=fs)
         iii += 1
     # plt.show()
     plt.savefig(spth+"4-attention-visualize.pdf", pad_inches=0.1)
