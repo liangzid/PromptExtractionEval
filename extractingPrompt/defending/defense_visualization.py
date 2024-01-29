@@ -11,20 +11,6 @@ Visualize the results after defending.
 """
 
 # ------------------------ Code --------------------------------------
-import sys
-sys.path.append("../")
-from attention_visualize import compute_metric_of_attentions
-from attention_visualize import visualizeSampled, visualizeSampled2
-from attention_visualize import filter_targeted_samples
-from ppl_high2_confusingBeginnings import defense_reshape
-import json
-from typing import List, Tuple, Dict
-import random
-from pprint import pprint as ppp
-from tqdm import tqdm
-import os
-from matplotlib import pyplot as plt
-from collections import OrderedDict
 from transformers import (
     AutoModelForCausalLM,
     AutoModel,
@@ -35,6 +21,20 @@ from transformers import (
     TrainingArguments,
     pipeline
 )
+from collections import OrderedDict
+from matplotlib import pyplot as plt
+import os
+from tqdm import tqdm
+from pprint import pprint as ppp
+import random
+from typing import List, Tuple, Dict
+import json
+from ppl_high2_confusingBeginnings import defense_reshape
+from attention_visualize import filter_targeted_samples
+from attention_visualize import visualizeSampled, visualizeSampled2
+from attention_visualize import compute_metric_of_attentions
+import sys
+sys.path.append("../")
 
 
 def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
@@ -42,11 +42,11 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
 
     name_map = OrderedDict({
         "none": "Vanilla",
-        "donot": "Directly Defense",
+        "donot": "Direct Defense",
         "prefix": "Repeated Prefix",
         "fakeone": "Fake Prompt",
         "insert": "Random Insertion",
-        "locallook": "Directly Defense",
+        "locallook": "Local Lookup",
     })
     methodls = list(name_map.keys())
     negls = [False,]*len(methodls)
@@ -81,7 +81,7 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
                         tokenizer=tokenizer,
                         max_length=512)
 
-    poss, negs = filter_targeted_samples(pth, selected_num=30)
+    poss, negs = filter_targeted_samples(pth, selected_num=10)
     # print(poss)
     pos_dict = {}
     inpp, ap, resp = zip(*poss)
@@ -90,7 +90,9 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
             pos_dict[method] = poss[0]
         else:
             newinpp = defense_reshape(inpp[:1], method=method)[0][0]
-            nap = ap
+            print("new input prompts", newinpp)
+            nap = ap[0]
+            print("adversarial prompts", nap)
             q = f"Instruction: {newinpp} User: {nap} Assistant: "
             resp = text_gen(q)
             resp = resp[0]["generated_text"]
@@ -98,6 +100,7 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
             pos_dict[method] = (newinpp, nap, resp)
             if newinpp not in resp and inpp[0] not in resp:
                 negls[i] = True
+                # negls[i] = False
 
     if not os.path.exists("./attention_viz"):
         os.makedirs("./attention_viz")
@@ -106,7 +109,7 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
         json.dump(pos_dict, f, ensure_ascii=False, indent=4)
 
     model.eval()
-    fig, axs = plt.subplots(1, 6, figsize=(26, 3.5))
+    fig, axs = plt.subplots(1, 6, figsize=(26, 4.5))
     iii = 0
     for key, pos in pos_dict.items():
         device = "cuda:0"
@@ -147,6 +150,12 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
                                                     per_att,
                                                     is_negtive=is_negtive
                                                     )
+        print("end_p", end_p,
+              "bgn_genp", bgn_genp,
+              "end_genp", end_genp)
+        if is_negtive:
+            bgn_genp = text_tokens.index("istant")
+            end_genp = len(text_tokens)-1
         axs[iii].axvline(x=end_p, color="green", linestyle="-")
         axs[iii].axhline(y=bgn_genp, color="red", linestyle="dotted")
 
@@ -159,12 +168,14 @@ def visualize_cases_experi(methodls=["none", "fakeone", "donot", "prefix"],
                               )
 
         lw = 0.8
-
-        axs[iii].set_xlabel('Attention From')
-        axs[iii].set_ylabel('Attention To')
+        fs=19
+        axs[iii].set_xlabel('Attention From', fontsize=fs)
+        axs[iii].set_ylabel('Attention To', fontsize=fs)
         # plt.colorbar(res, ax=axs[iii])
         axs[iii].title.set_text(f'{name_map[key]}')
+        axs[iii].title.set_size(fs)
         iii += 1
+    fig.tight_layout()
     # plt.show()
     plt.savefig(spth+"4-attention-visualize.pdf", pad_inches=0.1)
 
