@@ -99,8 +99,9 @@ def plot_box_figures():
     # "Llama2-7B": "blue", }
     # color_map = {"Phi-1.5B": "#be2edd",
     #              "Llama2-7B": "#130f40", }
-    color_map = {"Phi-1.5B": "red",
-                 "Llama2-7B": "blue", }
+    color_map = {"Phi-1.5B": "#E64B35",
+                 "Llama2-7B": "#9370DB", }
+
     color_map2 = color_map
 
     # line_map2 = {"Phi-1.5B": "--",

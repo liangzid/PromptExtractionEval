@@ -75,6 +75,25 @@ marker = {
     "E": "o",
     "I": "s",
 }
+# model_color_dict = {
+#     # "E": "#FF0202",
+#     # "I": "#008000",
+#     # "E": "red",
+#     # "I": "green",
+#     "I": "#eb3b5a",
+#     "E": "#3867d6",
+#     # "E":"#2d98da",
+# }
+# # model_color_dict2=model_color_dict
+# model_color_dict2 = {
+#     # "E": "#FF0202",
+#     # "I": "#008000",
+#     # "E": (252/255, 224/255, 225/255),
+#     # "I": (194/255, 232/255, 247/255),
+#     "I" : "#f78fb3",
+#     "E" : "#778beb",
+# }
+
 model_color_dict = {
     # "E": "#FF0202",
     # "I": "#008000",
@@ -93,7 +112,10 @@ model_color_dict2 = {
     "I" : "#f78fb3",
     "E" : "#778beb",
 }
-a=0.4
+
+
+
+a=0.2
 lw=1.7
 model_line_style = {
     "E": "-",

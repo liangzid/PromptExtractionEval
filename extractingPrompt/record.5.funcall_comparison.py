@@ -40,8 +40,10 @@ def plot_curves():
     model_types = {funcpth: "Json format Function Callings",
                    normpth: "Normal prompts",
                    }
-    color_map = {funcpth: "red",
-                 normpth: "blue", }
+    # color_map = {funcpth: "red",
+                 # normpth: "blue", }
+    color_map = {funcpth: "#C381A8",
+                 normpth: "#407BAE", }
     marker_map = {
         funcpth: "o",
         normpth: "s",
@@ -155,12 +157,14 @@ def box_curves():
     funcpth = prefix+"#Func-res.json"
     normpth = prefix+"#Norm-res.json"
 
-    model_types = OrderedDict({funcpth: "Json format Function Callings",
+    model_types = OrderedDict({funcpth: "Json format function callings",
                                normpth: "Normal prompts",
                                })
     line_map = {funcpth: "-", normpth: "-."}
-    color_map = {funcpth: "red",
-                 normpth: "blue", }
+    color_map = {funcpth: "#E64B35",
+                 normpth: "#407BAE", }
+    # color_map = {funcpth: "red",
+                 # normpth: "blue", }
     marker_map = {
         funcpth: "o",
         normpth: "s",
@@ -226,7 +230,7 @@ def box_curves():
                     ys.append(new_dict[interval_str][ap]["ngram"][n])
                 yls.append(ys)
 
-            axs[0][i_n].set_xlabel("# of Tokens", fontsize=font_size)
+            axs[0][i_n].set_xlabel("# of Tokens", fontsize=font_size-5)
             axs[0][i_n].set_ylabel(ylabel, fontsize=font_size-5)
             axs[0][i_n].tick_params(axis='y', labelsize=font_size-6,
                                     rotation=65,
@@ -273,7 +277,7 @@ def box_curves():
                     ys.append(new_dict[interval_str][ap]["fuzzy"][n])
                 yls.append(ys)
 
-            axs[1][i_n].set_xlabel("# of Tokens", fontsize=font_size)
+            axs[1][i_n].set_xlabel("# of Tokens", fontsize=font_size-5)
             axs[1][i_n].set_ylabel(ylabel, fontsize=font_size-5)
             axs[1][i_n].tick_params(axis='y', labelsize=font_size-6,
                                     rotation=65,
