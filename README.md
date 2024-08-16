@@ -1,6 +1,6 @@
 # Extracting Prompts from Customized Large Language Models
 
-This paper consists of the source code of paper: `Extracting Prompts from Customized Large Language Models`.
+This paper consists of the source code of paper: `Why Are My Prompts Leaked? Unraveling Prompt Extraction Threats in Customized Large Language Models`([arxiv](https://arxiv.org/abs/2408.02416)).
 
 
 
