@@ -28,6 +28,7 @@ from tqdm import tqdm
 from metrics_with_LMs import perplexity_llama2_7b
 from metrics import ngram_recall_evaluate, fuzzy_match_recall
 from collections import OrderedDict
+from scipy import stats
 
 
 def mean_ppl_eval2(pth, eva_type="input_ppl-ur"):
@@ -253,6 +254,11 @@ def scatter_of_two_ppls():
         pre_p_ls, gen_p_ls, fuzzy_scores = zip(*res[m])
         x = pre_p_ls
         y = gen_p_ls
+
+        spearman_c=float(
+            stats.spearmanr(x, y).statistic
+            )
+        print(f"Spearman Correlation: {spearman_c}, m: {m}")
 
         y = [-xxx for i, xxx in enumerate(y)]
 
