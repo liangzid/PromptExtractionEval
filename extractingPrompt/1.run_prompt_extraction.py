@@ -11,7 +11,7 @@
 # ------------------------ Code --------------------------------------
 import os
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUDA_VISIBLE_DEVICES"] = "3"
 import logging
 import json
 from test_llama2_extracting import InferPromptExtracting
@@ -60,9 +60,10 @@ att_query_ls2 = [
 
 
 model_ls = [
-    "meta-llama/Meta-Llama-3-8B-Instruct",
-    "microsoft/Phi-3-mini-4k-instruct",
+    # "meta-llama/Meta-Llama-3-8B-Instruct",
+    # "microsoft/Phi-3-mini-4k-instruct",
     "Qwen/Qwen2-7B-Instruct",
+
     # "lmsys/vicuna-7b-v1.5",
     # "microsoft/phi-1_5",
     # "NousResearch/Llama-2-7b-chat-hf",

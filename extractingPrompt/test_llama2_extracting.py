@@ -115,7 +115,8 @@ class InferPromptExtracting:
                 device_map=device,
                 # load_in_8bit=True,
                 trust_remote_code=True,
-                offload_folder="offload",
+                torch_dtype=torch.float16,
+                # offload_folder="offload",
             )
 
         self.text_gen = pipeline(task="text-generation",
