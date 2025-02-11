@@ -28,7 +28,10 @@ from metrics import ngram_recall_evaluate, fuzzy_match_recall
 
 def eva_1(aptype="#E"):
     model_ls = [
-        "lmsys/vicuna-7b-v1.5",
+        "meta-llama/Meta-Llama-3-8B-Instruct",
+        "microsoft/Phi-3-mini-4k-instruct",
+        "Qwen/Qwen2-7B-Instruct",
+        # "lmsys/vicuna-7b-v1.5",
         # "microsoft/phi-1_5",
         # "NousResearch/Llama-2-7b-chat-hf",
         # "Qwen/Qwen-7B-Chat",

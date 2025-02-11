@@ -1,6 +1,6 @@
 # Extracting Prompts from Customized Large Language Models
 
-This paper consists of the source code of paper: `Extracting Prompts from Customized Large Language Models`.
+This paper consists of the source code of paper: `Why Are My Prompts Leaked? Unraveling Prompt Extraction Threats in Customized Large Language Models`([arxiv](https://arxiv.org/abs/2408.02416)).
 
 
 
@@ -65,5 +65,13 @@ Feel free to open an issue, or send the email to `zi1415926.liang@connect.polyu.
 Citation:
 
 ```bibtex
-waiting.
+@misc{liang2024promptsleakedunravelingprompt,
+      title={Why Are My Prompts Leaked? Unraveling Prompt Extraction Threats in Customized Large Language Models}, 
+      author={Zi Liang and Haibo Hu and Qingqing Ye and Yaxin Xiao and Haoyang Li},
+      year={2024},
+      eprint={2408.02416},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2408.02416}, 
+}
 ```
