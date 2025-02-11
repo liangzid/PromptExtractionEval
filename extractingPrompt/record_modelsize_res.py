@@ -109,14 +109,13 @@ model_color_dict2 = {
     # "I": "#008000",
     # "E": (252/255, 224/255, 225/255),
     # "I": (194/255, 232/255, 247/255),
-    "I" : "#f78fb3",
-    "E" : "#778beb",
+    "I": "#f78fb3",
+    "E": "#778beb",
 }
 
 
-
-a=0.2
-lw=1.7
+a = 0.2
+lw = 1.7
 model_line_style = {
     "E": "-",
     "I": "-.",
@@ -296,8 +295,101 @@ def plot_figures():
                 pad_inches=0.1)
 
 
+def plot_figures1x4():
+    with open("./opt_varying_modelsize/scores.json",
+              'r', encoding='utf8') as f:
+        data1 = json.load(f, object_pairs_hook=OrderedDict)
+    Prompt_res_dict1 = data1
+
+    with open("./pythia_p_model_res/scores.json",
+              'r', encoding='utf8') as f:
+        data = json.load(f, object_pairs_hook=OrderedDict)
+    Prompt_res_dict = data
+
+    j = 0
+    fig, axs = plt.subplots(1, 4, figsize=(20, 4.65))
+    for i_n, n in enumerate(fig_5to8_ls):
+        axs[i_n].set_xscale("log")
+        ylabel = f"{n}% Fuzzy\nMatch UR"
+        if n == 100:
+            ylabel = r"$\mathbf{100\%}$"+" Fuzzy\nMatch UR"
+        ngram_dict = {}
+        for m in Prompt_res_dict.keys():
+            ngram_dict[m] = {"E": {},
+                             "I": {},
+                             }
+            for mode in Prompt_res_dict[m]:
+                y = []
+                axs[i_n].set_xscale("log")
+                for ap in Prompt_res_dict[m][mode]:
+                    y.append(Prompt_res_dict[m][mode]
+                             [ap]["fuzzy"][str(n)])
+                ngram_dict[m][mode]["mean"] = sum(y)/len(y)
+                std=np.std(y,ddof=1)
+                ngram_dict[m][mode]["max"] = ngram_dict[m][mode]["mean"]+std
+                ngram_dict[m][mode]["min"] = ngram_dict[m][mode]["mean"]-std
+
+        print("ngram dict: ", ngram_dict)
+        mode = "E"
+        for mode in ["E", "I"]:
+            xs = list(model_xname_map.values())
+            xvls = list(model_parameter_map.values())
+            yls = [ngram_dict[mx][mode]["mean"] for mx in ngram_dict]
+            ymin = [ngram_dict[mx][mode]["min"] for mx in ngram_dict]
+            ymax = [ngram_dict[mx][mode]["max"] for mx in ngram_dict]
+            print("xs and yls: ", xs, yls)
+            lbl = "Explicit" if mode == "E" else "Implicit"
+            lbl = lbl + " intent attackings"
+            axs[i_n].plot(xvls,
+                             yls,
+                             label=lbl,
+                             linewidth=lw,
+                             marker=marker[mode],
+                             markevery=1, markersize=15,
+                             markeredgewidth=lw,
+                             markerfacecolor='none',
+                             alpha=1.,
+                             linestyle=model_line_style[mode],
+                             color=model_color_dict[mode]
+                             )  # 绘制当前模型的曲线
+            # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
+            axs[i_n].fill_between(xvls, ymin, ymax,
+                                     linewidth=0.2,
+                                     alpha=a,
+                                     color=model_color_dict2[mode],
+                                     )  # 透明度
+
+        axs[i_n].set_xlabel("Model Parameters", fontsize=font_size)
+        axs[i_n].set_ylabel(ylabel, fontsize=font_size-5)
+        axs[i_n].set_xticks(xvls, xs,
+                            rotation=48, size=font_size-4)
+        axs[i_n].set_xticks(xvls, xs,
+                            rotation=48, size=font_size-4)
+        axs[i_n].tick_params(axis='y', labelsize=font_size-6,
+                             rotation=65,
+                             width=2, length=2,
+                             pad=0, direction="in",
+                             which="both")
+
+    # plt.legend(loc=(3.4, 5.8), prop=font1, ncol=6)  # 设置信息框
+    # plt.legend(loc=(20, 1.5), prop=font1, ncol=6)  # 设置信息框
+    font1 = {
+        'weight': 'normal',
+        'size': font_size-1,
+    }
+    plt.legend(loc=(-2.71, 0.96),
+               prop=font1, ncol=6, frameon=False,
+               handletextpad=0., handlelength=1.2)  # 设置信息框
+    fig.subplots_adjust(wspace=0.31, hspace=0.6)
+    plt.subplots_adjust(bottom=0.33, top=0.85)
+    # plt.show()
+    plt.savefig("./vary-params-1x4.pdf",
+                pad_inches=0.1)
+
+
 def main():
-    plot_figures()
+    # plot_figures()
+    plot_figures1x4()
 
 
 # running entry

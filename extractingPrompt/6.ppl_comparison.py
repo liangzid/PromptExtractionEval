@@ -452,10 +452,110 @@ def draw_scatter():
     plt.savefig(f"./PPL_eval1{eva_type}.pdf",
                 pad_inches=0.1)
 
+def draw_scatter1x4():
+    # res = {"llama_as_test": mean_ppl_eval1(), }
+
+    # ================================================Vanilla_images
+    # res = {"Phi-1.5B": mean_ppl_eval1(pth="./vary_sl/phi-1_5-res.json"),
+    #        "llama2-finetuning-test": mean_ppl_eval1(pth="./vary_sl/Llama-2-7b-chat-hf-res.json")
+    #        }
+    # with open("temp.json", 'w', encoding='utf8') as f:
+    #     json.dump(res, f, ensure_ascii=False, indent=4)
+    # with open("temp.json", 'r', encoding='utf8') as f:
+    #     res = json.load(f, object_pairs_hook=OrderedDict)
+    # ==============================================================
+
+    eva_type = "input_ppl-ur"
+    # eva_type = "output_ppl-ur"
+    # eva_type = "ppl_input-output"
+
+    # res = {"Phi-1.5B": mean_ppl_eval2(pth="./vary_sl/phi-1_5#I-res.json",
+    #                                   eva_type=eva_type,
+    #                                   ),
+    #        "llama2-finetuning-test": mean_ppl_eval2(pth="./vary_sl/Llama-2-7b-chat-hf#I-res.json",
+    #                                                 eva_type=eva_type,
+    #                                                 )
+
+    #        }
+    # with open(f"evaluate.6--{eva_type}.json", 'w', encoding='utf8') as f:
+    #     json.dump(res, f, ensure_ascii=False, indent=4)
+
+    with open(f"evaluate.6--{eva_type}.json", 'r', encoding='utf8') as f:
+        res = json.load(f, object_pairs_hook=OrderedDict)
+
+    # ================================================ gen-PPL UR
+
+    color_map = {"Phi-1.5B": "red",
+                 "Llama2-7B": "blue",
+                 "llama2-finetuning-test": "orange",
+                 }
+    marker = ['o', 's', 'o', 's',]  # 曲线标记
+    marker = {
+        "llama2-finetuning-test": "^",
+        "Phi-1.5B": "o",
+    }
+    alpha = {
+        "llama2-finetuning-test": 0.5,
+        "Phi-1.5B": 0.5,
+    }
+    font_size = 21
+
+    n_range = list(range(5, 15, 3))
+    ratio_range = list(range(70, 101, 10))
+
+    j = 0
+    fig, axs = plt.subplots(1, 4, figsize=(20, 3.55))
+    for m in res:
+        j = 0
+        res_ls = res[m]
+        for n in n_range:
+            ylabel = f"{n}-gram UR"
+            x = [x[0] for x in res_ls]
+            y = [x[1][str(n)] for x in res_ls]
+
+            axs[j].scatter(x, y, label=m,
+                              linewidth=1.5,
+                              marker=marker[m],
+                              alpha=alpha[m],
+                              color=color_map[m]
+                              )  # 绘制当前模型的曲线
+
+            # 填充上下界区域内，设置边界、填充部分颜色，以及透明度
+            # axs[j].fill_between(x, y1, y2, alpha=0.3)  # 透明度
+            axs[j].set_xlabel("Perplexity", fontsize=font_size)
+            axs[j].set_ylabel(ylabel, fontsize=font_size-5)
+            # axs[j].set_ylim([0, 5000])  # 设置纵轴大小范围
+
+            # axs[0][j].set_xticks(x, x_s,
+            #                      rotation=48, size=font_size-4)
+
+            axs[j].tick_params(axis='y', labelsize=font_size-6,
+                                  rotation=65,
+                                  width=2, length=2,
+                                  pad=0, direction="in",
+                                  which="both")
+            j += 1
+
+    fig.subplots_adjust(wspace=0.33, hspace=0.5)
+    # plt.legend(loc=(3.4, 5.8), prop=font1, ncol=6)  # 设置信息框
+    # plt.legend(loc=(20, 1.5), prop=font1, ncol=6)  # 设置信息框
+    font1 = {
+        'weight': 'normal',
+        'size': font_size-1,
+    }
+    plt.legend(loc=(-2.48, 0.96),
+               prop=font1, ncol=6, frameon=False,
+               handletextpad=0.01, handlelength=1.2)  # 设置信息框
+
+    plt.subplots_adjust(bottom=0.33, top=0.85)
+    # plt.show()
+    plt.savefig(f"./PPL-eval1{eva_type}-1x4.pdf",
+                pad_inches=0.1)
 
 # running entry
 if __name__ == "__main__":
     # main()
     # draw_scatter()
-    scatter_of_two_ppls()
+    draw_scatter1x4()
+    # scatter_of_two_ppls()
     print("EVERYTHING DONE.")
