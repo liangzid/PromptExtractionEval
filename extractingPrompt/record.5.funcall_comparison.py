@@ -344,6 +344,208 @@ def box_curves():
     t2 = time.time()
     print("Time:", t2-t1)
 
+
+def box_curves_mix_1x4():
+    prefix = "./func_callll/Llama-2-7b-chat-hf"
+    funcpth = prefix+"#Func-res.json"
+    normpth = prefix+"#Norm-res.json"
+
+    model_types = OrderedDict({funcpth: "Json format function callings",
+                               normpth: "Normal prompts",
+                               })
+    line_map = {funcpth: "-", normpth: "-."}
+    color_map = {funcpth: "#E64B35",
+                 normpth: "#407BAE", }
+    # color_map = {funcpth: "red",
+                 # normpth: "blue", }
+    marker_map = {
+        funcpth: "o",
+        normpth: "s",
+    }
+    # t = AutoTokenizer.from_pretrained("NousResearch/Llama-2-7b-chat-hf",
+    #                                   trust_remote_code=True)
+
+    n_ls = [12, 24, 36, 48]
+    fuzzy_ls = [70, 80, 90, 100]
+
+    font_size = 21
+    t1 = time.time()
+
+    j = 0
+    fig, axs = plt.subplots(1, 4, figsize=(20, 3.55))
+    interval_value_ls_bp = None
+    for pth, m in model_types.items():
+        with open(pth, 'r', encoding='utf8') as f:
+            data = json.load(f, object_pairs_hook=OrderedDict)
+
+        new_dict = {}
+        for ap in data:
+            for x_str in data[ap]:
+                if x_str not in new_dict:
+                    new_dict[x_str] = {}
+                pair_ls = data[ap][x_str]
+                ps, genps = zip(*pair_ls)
+                n_gram_dict = {}
+                fuzzy_dict = {}
+                for n in n_ls:
+                    n_gram_dict[n] = ngram_recall_evaluate(genps, ps, n=n)
+                for r in fuzzy_ls:
+                    fuzzy_dict[r] = fuzzy_match_recall(genps, ps, ratio=r)
+
+                new_dict[x_str][ap] = {
+                    "ngram": n_gram_dict,
+                    "fuzzy": fuzzy_dict,
+                }
+
+        # now plot the box plot.
+        interval_str_ls = list(new_dict.keys())
+        interval_value_ls = [int(float(x)) for x in interval_str_ls]
+        interval_value_ls = sorted(interval_value_ls)
+
+        if interval_value_ls_bp is None:
+            interval_value_ls_bp = interval_value_ls
+        else:
+            interval_value_ls = interval_value_ls_bp
+
+            # new_interval_ls=[]
+            # for num in interval_value_ls:
+            #     for x in interval_value_ls_bp:
+            #         if x <= num+10 and x>= num-10:
+            #             new_interval_ls.append(x)
+            # interval_value_ls=new_interval_ls
+
+        for i_n, n in enumerate(n_ls):
+            ylabel = f"{n}-gram UR"
+            yls = []
+            for interval_str in interval_str_ls:
+                ys = []
+                for ap in new_dict[interval_str]:
+                    ys.append(new_dict[interval_str][ap]["ngram"][n])
+                yls.append(ys)
+
+            if i_n==0:
+                inidx=2
+            if i_n==3:
+                inidx=3
+            axs[inidx].set_xlabel("# of Tokens", fontsize=font_size-5)
+            axs[inidx].set_ylabel(ylabel, fontsize=font_size-5)
+            axs[inidx].tick_params(axis='y', labelsize=font_size-6,
+                                    rotation=65,
+                                    width=2, length=2,
+                                    pad=0, direction="in",
+                                    which="both")
+
+            print("==================")
+            print(yls)
+            print(interval_value_ls)
+            cr = color_map[pth]
+            kr = marker_map[pth]
+            boxes = axs[inidx].boxplot(yls,
+                                        positions=interval_value_ls,
+                                        widths=15.5,
+                                        boxprops={"color": cr,
+                                                  "linewidth": 1.5,
+                                                  # "gid":5.5,
+                                                  },
+                                        capprops={"color": cr,
+                                                  "linewidth": 1.5,
+                                                  },
+                                        whiskerprops={"color": cr,
+                                                      "linewidth": 1.5,
+                                                      },
+                                        flierprops={
+                                            "markeredgecolor": cr,
+                                            "marker": kr,
+                                        },
+                                        showmeans=True,
+                                        meanline=True,
+                                        showfliers=False,
+                                        # patch_artist=True,
+                                        )
+            axs[inidx].set_xlim(200, 1000)
+        for i_n, n in enumerate(fuzzy_ls):
+            ylabel = f"{n}% Fuzzy\nMatch UR"
+            if n == 100:
+                ylabel = r"$\mathbf{100\%}$"+" Fuzzy\nMatch UR"
+            yls = []
+            for interval_str in interval_str_ls:
+                ys = []
+                for ap in new_dict[interval_str]:
+                    ys.append(new_dict[interval_str][ap]["fuzzy"][n])
+                yls.append(ys)
+
+            if i_n==0:
+                inidx=0
+            if i_n==3:
+                inidx=1
+
+            axs[inidx].set_xlabel("# of Tokens", fontsize=font_size-5)
+            axs[inidx].set_ylabel(ylabel, fontsize=font_size-5)
+            axs[inidx].tick_params(axis='y', labelsize=font_size-6,
+                                    rotation=65,
+                                    width=2, length=2,
+                                    pad=0, direction="in",
+                                    which="both")
+
+            cr = color_map[pth]
+            kr = marker_map[pth]
+            boxes = axs[inidx].boxplot(yls,
+                                        positions=interval_value_ls,
+                                        widths=15.5,
+                                        boxprops={"color": cr,
+                                                  "linewidth": 1.5,
+                                                  # "gid":5.5,
+                                                  },
+                                        capprops={"color": cr,
+                                                  "linewidth": 1.5,
+                                                  },
+                                        whiskerprops={"color": cr,
+                                                      "linewidth": 1.5,
+                                                      },
+                                        flierprops={
+                                            "markeredgecolor": cr,
+                                            "marker": kr,
+                                        },
+
+                                        showmeans=True,
+                                        meanline=True,
+                                        showfliers=False,
+                                        # patch_artist=True,
+                                        )
+            axs[inidx].set_xlim(200, 1000)
+
+    font1 = {
+        'weight': 'normal',
+        'size': font_size-1,
+    }
+
+    from matplotlib.lines import Line2D
+    legend_elements = [Line2D([0], [0],
+                              color=color_map[funcpth],
+                              linestyle=line_map[funcpth],
+                              lw=3,
+                              label=model_types[funcpth]),
+                       Line2D([0], [0],
+                              color=color_map[normpth],
+                              linestyle=line_map[normpth],
+                              lw=3,
+                              label=model_types[normpth]),
+                       ]
+
+    plt.legend(loc=(-2.88, 0.96),
+               handles=legend_elements,
+               prop=font1, ncol=6, frameon=False,
+               handletextpad=0., handlelength=1.2)  # 设置信息框
+
+    # plt.show()
+    fig.subplots_adjust(wspace=0.33, hspace=0.5)
+    plt.subplots_adjust(bottom=0.33, top=0.85)
+    # plt.tight_layout()
+    plt.savefig("./funcalling-boxes-mixed-1x4.pdf",
+                pad_inches=0.1)
+    t2 = time.time()
+    print("Time:", t2-t1)
+
 def box_curves1x4():
     prefix = "./func_callll/Llama-2-7b-chat-hf"
     funcpth = prefix+"#Func-res.json"
@@ -497,5 +699,6 @@ if __name__ == "__main__":
     # main()
     # plot_curves()
     # box_curves()
-    box_curves1x4()
+    # box_curves1x4()
+    box_curves_mix_1x4()
     print("EVERYTHING DONE.")
