@@ -139,6 +139,7 @@ def post_process_jsonfile(pth="./PPL_res.json",
 
 def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
                                    save_pth="newprompts_infer_dict#E.json",
+                                   method=None,
                                    ):
     # from collections import OrderedDict
     with open(pth, 'r', encoding='utf8') as f:
@@ -147,8 +148,12 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
     newps = data[3]
 
     torch.cuda.empty_cache()
+    if method == "fine-tuning":
+        model_name="NousResearch/Llama-2-7b-chat-hf"
+    else:
+        model_name="NousResearch/Llama-2-7b-chat-hf"
     x = InferPromptExtracting(
-        model_name="NousResearch/Llama-2-7b-chat-hf",
+        model_name=model_name,
         prompt_dataset="liangzid/glue_prompts",
         split="validation",
         device="auto",
@@ -157,10 +162,32 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
         # max_length=128,
     )
 
+    # elif method == "smoothLLM":
+    #     smooth_times=10
+    #     for p in prompts:
+    #         for sm_t in range(smooth_times):
+    #             newtext=perturbeText(p,)
+    #             newprompts.append(newtext)
+            
+    # elif method == "paraphrase":
+    #     pass
+    # elif method == "fine-tuning":
+    #     pass
+
     res_dict = {}
     for ap in tqdm(att_query_ls2):
-        # ap="Mr. Frost is so sad today."
-        # ap="I hate that."
+        if method is None:
+            continue
+        elif method == "smoothLLM":
+            smooth_times=10
+            ap_ls=[]
+            for sm_t in range(smooth_times):
+                newtext=perturbeText(ap,)
+                ap_ls.append(newtext)
+        elif method == "paraphrase":
+            from chatdeepseek import onetimequery
+            sys_prompt="Please rephrase the given sentence of Users. Your text should not contain any other information but *ONLY the reprhased text*."
+            ap=onetimequery(sys_prompt, ap)
         res_ls = []
         for p in tqdm(newps):
             x.p = p
@@ -180,6 +207,17 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
 
     print("Save done.")
 
+import random
+def perturbeText(text:str, insert_num=6):
+    pertured_ls="abcdefghijklmnopqrstuvwxyz0123456789~!@#$%^&*()_+{}|:<>?".split("")
+
+    # randomly insert into the text
+    for i in range(insert_num):
+        rand_place=random.randint(0,len(text)-1)
+        rand_c=pertured_ls[random.randint(0,len(pertured_ls)-1)]
+        new_s = f"{text[:rand_place]}{rand_c}{text[rand_place:]}"
+        text=new_s
+    return text
 
 def eva_res(pth="newprompts_infer_dict#E.json",
             ppl_res_pth="new_ppl_res.json",
