@@ -156,7 +156,7 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
         model_name=model_name,
         prompt_dataset="liangzid/glue_prompts",
         split="validation",
-        device="auto",
+        device="cuda",
         # max_length=512,
         max_length=256,
         # max_length=128,
@@ -177,30 +177,48 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
     res_dict = {}
     for ap in tqdm(att_query_ls2):
         if method is None:
-            continue
+            pass
         elif method == "smoothLLM":
+            print("Using smooth LLM")
             smooth_times=10
             ap_ls=[]
             for sm_t in range(smooth_times):
                 newtext=perturbeText(ap,)
                 ap_ls.append(newtext)
         elif method == "paraphrase":
+            print("Using paraphrase")
             from chatdeepseek import onetimequery
             sys_prompt="Please rephrase the given sentence of Users. Your text should not contain any other information but *ONLY the reprhased text*."
             ap=onetimequery(sys_prompt, ap)
+        else:
+            pass
         res_ls = []
         for p in tqdm(newps):
-            x.p = p
-            q = f"Instruction: {p}" + f" User: {ap} Assistant: "
-            res = x.text_gen(q, do_sample=False)
-            res = res[0]["generated_text"]
-            res = res.split(q)[1]
-            # print("p: ", p)
-            # print("ap: ", ap)
-            # print("res: ", res)
-            res_ls.append([p, res])
-            # break
-        res_dict[ap] = res_ls
+            if method=="smoothLLM":
+                for app in ap_ls:
+                    x.p = p
+                    q = f"Instruction: {p}" + f" User: {app} Assistant: "
+                    res = x.text_gen(q, do_sample=False)
+                    res = res[0]["generated_text"]
+                    res = res.split(q)[1]
+                    # print("p: ", p)
+                    # print("ap: ", ap)
+                    # print("res: ", res)
+                    res_ls.append([p, res])
+                    # break
+                    res_dict[app] = res_ls
+            else:
+                x.p = p
+                q = f"Instruction: {p}" + f" User: {ap} Assistant: "
+                res = x.text_gen(q, do_sample=False)
+                res = res[0]["generated_text"]
+                res = res.split(q)[1]
+                # print("p: ", p)
+                # print("ap: ", ap)
+                # print("res: ", res)
+                res_ls.append([p, res])
+                # break
+                res_dict[ap] = res_ls
         # break
     with open(save_pth, 'w', encoding='utf8') as f:
         json.dump(res_dict, f, ensure_ascii=False, indent=4)

@@ -123,7 +123,7 @@ def defense_reshape(pls, method="prefix"):
     return newprompts, skip_list_on_eva
 
 
-def eva_new_ppls(method="prefix"):
+def eva_new_ppls(method="prefix", ap_defend_method=None,):
     dn = "liangzid/glue_prompts"
     dataset = load_dataset(dn)['validation'].to_list()
     prompts = []
@@ -173,6 +173,9 @@ def eva_new_ppls(method="prefix"):
             data = json.load(f, object_pairs_hook=OrderedDict)
         newprompts = data[1]
         assert data[0] == prompts
+    else:
+        newprompts=prompts
+        skip_list_on_eva=["" for _ in newprompts]
 
     print("Now evaluate the old PPL and new PPLs.")
 
@@ -181,13 +184,15 @@ def eva_new_ppls(method="prefix"):
     old_ppl = [0]
     new_ppl = [0]
 
-    old_ppl = perplexity_llama2_7b(prompts, llamapth)
-    new_ppl = perplexity_llama2_7b(newprompts, llamapth)
+    old_ppl=[1. for _ in prompts]
+    new_ppl=old_ppl
+    # old_ppl = perplexity_llama2_7b(prompts, llamapth)
+    # new_ppl = perplexity_llama2_7b(newprompts, llamapth)
 
-    print("----------------")
-    print(sum(old_ppl)/len(old_ppl))
-    print(sum(new_ppl)/len(new_ppl))
-    print("----------------")
+    # print("----------------")
+    # print(sum(old_ppl)/len(old_ppl))
+    # print(sum(new_ppl)/len(new_ppl))
+    # print("----------------")
 
     save_pth = f"confuse_prompts_gen{method}.json"
     with open(save_pth,
@@ -202,7 +207,7 @@ def eva_new_ppls(method="prefix"):
             object_pairs_hook=OrderedDict)
 
     infer_res_pth = f"confuse_prompts_extracted{method}.json"
-    estimate_scores_of_new_prompts(save_pth, infer_res_pth)
+    estimate_scores_of_new_prompts(save_pth, infer_res_pth,method)
 
     print("==========================================================")
     print("Compared to the pure response.")
@@ -216,6 +221,8 @@ def eva_new_ppls(method="prefix"):
 
 # running entry
 if __name__ == "__main__":
+    # import os
+    # os.environ["CUDA_VISIBLE_DEVICES"]="1"
     # main()
     # eva_new_ppls(method="prefix")
     # eva_new_ppls(method="fakeone")
@@ -223,5 +230,6 @@ if __name__ == "__main__":
     # eva_new_ppls(method="locallook")
     # eva_new_ppls(method="insert")
     # eva_new_ppls(method="high-ppl")
-    eva_new_ppls(method="high-ppl")
+    eva_new_ppls(method="none",ap_defend_method="smoothLLM",)
+    eva_new_ppls(method="none",ap_defend_method="paraphrase",)
     print("EVERYTHING DONE.")
