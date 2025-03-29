@@ -231,5 +231,6 @@ if __name__ == "__main__":
     # eva_new_ppls(method="insert")
     # eva_new_ppls(method="high-ppl")
     eva_new_ppls(method="none",ap_defend_method="smoothLLM",)
-    eva_new_ppls(method="none",ap_defend_method="paraphrase",)
+    # eva_new_ppls(method="none",ap_defend_method="paraphrase",)
+    # eva_new_ppls(method="none",ap_defend_method="ppl_filter",)
     print("EVERYTHING DONE.")
