@@ -122,7 +122,9 @@ class InferPromptExtracting:
         self.text_gen = pipeline(task="text-generation",
                                  model=self.model,
                                  tokenizer=self.tokenizer,
-                                 max_length=max_length)
+                                 max_length=max_length,
+                                 max_new_tokens=128,
+                                 )
 
         self.temp_prompts = load_dataset(prompt_dataset)[split].to_list()
         self.prompts = []
