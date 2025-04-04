@@ -193,9 +193,10 @@ def mulDefen_mulTask(model_name="gpt-3.5-turbo-0613",
         "sst2",
         "wnli",]
     defenses_methods = [
-        "prefix", "fakeone",
-        "insert", "donot", "locallook",
-        "original",
+        # "prefix", "fakeone",
+        # "insert", "donot", "locallook",
+        # "original",
+        "high-ppl",
     ]
 
     overall_res = OrderedDict()
@@ -214,11 +215,13 @@ def mulDefen_mulTask(model_name="gpt-3.5-turbo-0613",
         # overall_res[ttt]["vanilla"] = ress
 
         for ddd in defenses_methods:
-            if ttt == "sst2" and ddd in ["prefix",
+            if ttt == "sst2" and ddd in [
+                    # "prefix",
                                         # "fakeone",
                                         # "insert",
                                         # "donot",
                                         # "locallook",
+                    "high-ppl",
                                         ]:
                 continue
             newprompts, _ = defense_reshape(subset, method=ddd)

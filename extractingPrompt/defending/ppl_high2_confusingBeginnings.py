@@ -12,20 +12,24 @@ Add confusing beginning phrase to imporve the PPL of words.
 
 
 # ------------------------ Code --------------------------------------
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 import sys
 sys.path.append("../")
-from collections import OrderedDict
-from datasets import load_dataset
-from pprint import pprint as ppp
-import random
-from typing import List, Tuple, Dict
-import json
-from test_llama2_extracting import InferPromptExtracting
-from metrics_with_LMs import perplexity_llama2_7b
-from metrics import ngram_recall_evaluate, fuzzy_match_recall
-from ppl_high import estimate_scores_of_new_prompts
+
 from ppl_high import eva_res, att_query_ls2
+from ppl_high import estimate_scores_of_new_prompts
+from metrics import ngram_recall_evaluate, fuzzy_match_recall
+from metrics_with_LMs import perplexity_llama2_7b
+from test_llama2_extracting import InferPromptExtracting
+import json
+from typing import List, Tuple, Dict
+import random
+from pprint import pprint as ppp
+from datasets import load_dataset
+from collections import OrderedDict
+
 
 # normal import
 
@@ -114,7 +118,7 @@ def defense_reshape(pls, method="prefix"):
             newp = r_p + p
             newprompts.append(newp)
             skip_list_on_eva.extend(locallook_ls)
-    elif method =="original":
+    elif method == "original":
         for p in prompts:
             r_p = ""
             newp = r_p + p
@@ -151,7 +155,10 @@ def eva_new_ppls(method="prefix", ap_defend_method=None,):
             newp = mixup(p, inserted_unfamiliar_words)
             newprompts.append(newp)
             skip_list_on_eva = inserted_unfamiliar_words
-    elif method == "donot":
+    elif ap_defend_method=="paraphrase":
+        newprompts = prompts
+        skip_list_on_eva = ["" for _ in newprompts]
+    elif method == "donot" or ap_defend_method is not None:
         for p in prompts:
             r_p = donot_disclose[random.randint(0,
                                                 len(fakeone_phrase_ls)-1)]
@@ -174,8 +181,8 @@ def eva_new_ppls(method="prefix", ap_defend_method=None,):
         newprompts = data[1]
         assert data[0] == prompts
     else:
-        newprompts=prompts
-        skip_list_on_eva=["" for _ in newprompts]
+        newprompts = prompts
+        skip_list_on_eva = ["" for _ in newprompts]
 
     print("Now evaluate the old PPL and new PPLs.")
 
@@ -184,8 +191,8 @@ def eva_new_ppls(method="prefix", ap_defend_method=None,):
     old_ppl = [0]
     new_ppl = [0]
 
-    old_ppl=[1. for _ in prompts]
-    new_ppl=old_ppl
+    old_ppl = [1. for _ in prompts]
+    new_ppl = old_ppl
     # old_ppl = perplexity_llama2_7b(prompts, llamapth)
     # new_ppl = perplexity_llama2_7b(newprompts, llamapth)
 
@@ -207,7 +214,7 @@ def eva_new_ppls(method="prefix", ap_defend_method=None,):
             object_pairs_hook=OrderedDict)
 
     infer_res_pth = f"confuse_prompts_extracted{method}.json"
-    estimate_scores_of_new_prompts(save_pth, infer_res_pth,method)
+    estimate_scores_of_new_prompts(save_pth, infer_res_pth, method)
 
     print("==========================================================")
     print("Compared to the pure response.")
@@ -221,16 +228,16 @@ def eva_new_ppls(method="prefix", ap_defend_method=None,):
 
 # running entry
 if __name__ == "__main__":
-    # import os
-    # os.environ["CUDA_VISIBLE_DEVICES"]="1"
     # main()
-    # eva_new_ppls(method="prefix")
-    # eva_new_ppls(method="fakeone")
+
+    # eva_new_ppls(method="original")
     # eva_new_ppls(method="donot")
+    # eva_new_ppls(method="prefix")
+    eva_new_ppls(method="none", ap_defend_method="paraphrase",)
+    # eva_new_ppls(method="none", ap_defend_method="sandwich",)
+    # eva_new_ppls(method="none", ap_defend_method="xml",)
+    # eva_new_ppls(method="fakeone")
     # eva_new_ppls(method="locallook")
     # eva_new_ppls(method="insert")
     # eva_new_ppls(method="high-ppl")
-    eva_new_ppls(method="none",ap_defend_method="smoothLLM",)
-    # eva_new_ppls(method="none",ap_defend_method="paraphrase",)
-    # eva_new_ppls(method="none",ap_defend_method="ppl_filter",)
     print("EVERYTHING DONE.")

@@ -156,7 +156,7 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
         model_name=model_name,
         prompt_dataset="liangzid/glue_prompts",
         split="validation",
-        device="cuda",
+        device="cuda:0",
         # max_length=512,
         max_length=256,
         # max_length=128,
@@ -177,6 +177,7 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
         from defend_pplfilter import PerplexityFilter
         PPLFilter = PerplexityFilter(x.model, x.tokenizer)
 
+    print("--------------", f"{method=}")
     res_dict = {}
     for ap in tqdm(att_query_ls2):
         if method is None:
@@ -191,7 +192,7 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
         elif method == "paraphrase":
             print("Using paraphrase")
             from chatdeepseek import onetimequery
-            sys_prompt = "Please rephrase the given sentence of Users. Your text should not contain any other information but *ONLY the reprhased text*."
+            sys_prompt = "Please rephrase the given sentence of Users into other styles. Your text should not contain any other information but *ONLY* the reprhased text."
             ap = onetimequery(sys_prompt, ap)
         elif method == "ppl_filter":
             if PPLFilter.filter_window([ap],)[2][0]:
@@ -206,7 +207,7 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
                 app = ap_ls[random.randint(0,len(ap_ls)-1)]
                 x.p = p
                 q = f"Instruction: {p}" + f" User: {app} Assistant: "
-                res = x.text_gen(q, do_sample=False)
+                res = x.text_gen(q, do_sample=True)
                 res = res[0]["generated_text"]
                 res = res.split(q)[1]
                 # print("p: ", p)
@@ -218,7 +219,7 @@ def estimate_scores_of_new_prompts(pth="./new_ppl_res.json",
             elif method == "sandwich":
                 x.p = p
                 q = f"Instruction: {p}" + f" User: {ap} Remember, your task is {p} Assistant: "
-                res = x.text_gen(q, do_sample=False)
+                res = x.text_gen(q, do_sample=True)
                 res = res[0]["generated_text"]
                 res = res.split(q)[1]
                 # print("p: ", p)
