@@ -79,14 +79,15 @@ def myeval(task, res):
 def evaluation_datas():
     task_ls = [
         "cola",
-        "qnli",
-        "qqp",
-        "rte",
+        # "qnli",
+        # "qqp",
+        # "rte",
         "sst2",
-        "wnli",]
+        # "wnli",
+        ]
     defend_ls = ["original", "prefix", "fakeone",
                  "insert", "donot", "locallook"]
-    # defend_ls = ["original",]
+    defend_ls = ["high-ppl",]
     score_dict = OrderedDict({})
     for task in task_ls:
         score_dict[task] = {}
@@ -186,12 +187,13 @@ def mulDefen_mulTask(model_name="gpt-3.5-turbo-0613",
 
     # set experiment tasks
     tasks_we_used = [
-        # "cola",
+        "cola",
         # "qnli",
         # "qqp",
         # "rte",
         "sst2",
-        "wnli",]
+        # "wnli",
+        ]
     defenses_methods = [
         # "prefix", "fakeone",
         # "insert", "donot", "locallook",
@@ -217,6 +219,7 @@ def mulDefen_mulTask(model_name="gpt-3.5-turbo-0613",
         for ddd in defenses_methods:
             if ttt == "sst2" and ddd in [
                     # "prefix",
+                                        # "prefix",
                                         # "fakeone",
                                         # "insert",
                                         # "donot",
