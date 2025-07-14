@@ -4,8 +4,8 @@ ALPHA_GAMMA_TOPK_SEARCH_REBUTTAL ---
 
 Search Top-K Alpha and Gamma Values.
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2025, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXx
+    Copyright © 2025, XXXXX, all rights reserved.
     Created: 31 March 2025
 ======================================================================
 """

@@ -4,8 +4,8 @@ STATISTIC_DATASET ---
 
 Obtain the statistical information of the dataset.
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2025, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXX
+    Copyright © 2025, XXXXX, all rights reserved.
     Created: 29 March 2025
 ======================================================================
 """

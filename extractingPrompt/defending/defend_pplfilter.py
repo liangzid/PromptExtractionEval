@@ -2,8 +2,8 @@
 ======================================================================
 DEFEND_PPLFILTER --- 
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2025, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXx
+    Copyright © 2025, XXXXX, all rights reserved.
     Created: 29 March 2025
 ======================================================================
 """
