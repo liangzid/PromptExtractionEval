@@ -11,9 +11,10 @@ OPENAI_INTERFACE ---
 
 # ------------------------ Code --------------------------------------
 
-from openai import OpenAI as oa
+from openai import OpenAI
 import time
-client = oa()
+client = OpenAI(base_url = "http://chatapi.littlewheat.com/v1",
+                api_key  = "sk-vmDfRnf6DDpn9R6BuF9zLJYgfplrjPOwbOk6lkHDDi1IoMaO")
 
 
 def extract_prompt_interface(modelname="gpt-3.5-turbo-1106",

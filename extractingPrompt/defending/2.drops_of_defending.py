@@ -92,7 +92,8 @@ def evaluation_datas():
         "sst2",
         "wnli",]
     # defend_ls = ["prefix", "fakeone", "insert", "donot", "locallook"]
-    defend_ls = ["original",]
+    # defend_ls = ["original",]
+    defend_ls = ["high-ppl",]
     score_dict = {}
     for task in task_ls:
         score_dict[task] = {}
@@ -153,6 +154,7 @@ def oneDefense_oneTask_MultipleOriginalPrompts(
         os.makedirs(save_dir)
 
     all_res = []
+    # print(f"{pls=}")
     for iii, p in tqdm(enumerate(pls), desc=f"Task: {task}  defense: {defense_method}"):
         tmppth = save_dir + \
             f"task___{task}Defense_{defense_method}-pindex___{iii}.json"
@@ -216,7 +218,8 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
     defenses_methods = [
         # "prefix", "fakeone",
         # "insert", "donot", "locallook",
-        "original",
+        "high-ppl",
+        # "original",
         ]
 
     overall_res = OrderedDict()
@@ -234,9 +237,10 @@ def mulDefen_mulTask(model_name="NousResearch/Llama-2-7b-chat-hf",
         # )
         # overall_res[ttt]["vanilla"] = ress
 
+        # print("------------------------>>>>subset", subset)
         for ddd in defenses_methods:
             newprompts, _ = defense_reshape(subset, method=ddd)
-            # print("Newprompts", newprompts)
+            # print("------------------->>>>Newprompts", newprompts)
             ress = oneDefense_oneTask_MultipleOriginalPrompts(
                 text_gen,
                 ddd,
@@ -264,7 +268,7 @@ def std(ls):
 
 
 def main():
-    mulDefen_mulTask()
+    mulDefen_mulTask(device="cuda:0")
     evaluation_datas()
 
 

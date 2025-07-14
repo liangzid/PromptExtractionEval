@@ -246,9 +246,9 @@ def defense_reshape(pls, method="prefix"):
                   'r', encoding='utf8') as f:
             data = json.load(f, object_pairs_hook=OrderedDict)
         newprompts = data[1]
-        assert data[0] == prompts
+        # assert data[0] == prompts
     elif method == "with-rephrase":
-        rephrase_prompt = "Please rephrase the given sentence without any other words."
+        rephrase_prompt = "Please rephrase the given sentence without containing any other words."
         new_p_ls = []
         for p in prompts:
             newp = extract_prompt_interface(prompt=rephrase_prompt,

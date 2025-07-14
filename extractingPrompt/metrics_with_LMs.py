@@ -198,7 +198,7 @@ def information_cover_llama2_chat_7b(gens, ps):
 
 def perplexity_llama2_7b(gens, model_name):
 
-    device = "auto"
+    device = "cuda:0"
     # model_name = "NousResearch/Llama-2-7b-chat-hf"
 
     tokenizer = AutoTokenizer.from_pretrained(model_name,
@@ -210,7 +210,7 @@ def perplexity_llama2_7b(gens, model_name):
     model = AutoModelForCausalLM.from_pretrained(
         model_name,
         # quantization_config=quant_config,
-        device_map=device,
+        device_map="cuda:0",
         trust_remote_code=True,
     )
     print("model loading done.")

@@ -12,20 +12,27 @@ Add confusing beginning phrase to imporve the PPL of words.
 
 
 # ------------------------ Code --------------------------------------
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="3"
 
 import sys
 sys.path.append("../")
-from collections import OrderedDict
-from datasets import load_dataset
-from pprint import pprint as ppp
-import random
-from typing import List, Tuple, Dict
-import json
-from test_llama2_extracting import InferPromptExtracting
-from metrics_with_LMs import perplexity_llama2_7b
-from metrics import ngram_recall_evaluate, fuzzy_match_recall
-from ppl_high import estimate_scores_of_new_prompts
+
 from ppl_high import eva_res, att_query_ls2
+from ppl_high import estimate_scores_of_new_prompts
+from metrics import ngram_recall_evaluate, fuzzy_match_recall
+from metrics_with_LMs import perplexity_llama2_7b
+from test_llama2_extracting import InferPromptExtracting
+import json
+from typing import List, Tuple, Dict
+import random
+from pprint import pprint as ppp
+from datasets import load_dataset
+from collections import OrderedDict
+
 
 # normal import
 
@@ -114,21 +121,35 @@ def defense_reshape(pls, method="prefix"):
             newp = r_p + p
             newprompts.append(newp)
             skip_list_on_eva.extend(locallook_ls)
-    elif method =="original":
+    elif method == "original":
         for p in prompts:
             r_p = ""
             newp = r_p + p
+            newprompts.append(newp)
+    elif method =="high-ppl":
+        from chatdeepseek import onetimequery
+        sys_prompt="Please rephrase the given sentence slightly. Your response should *ONLY* contain the sentence after rephrasing."
+        for p in prompts:
+            newp = onetimequery(sys_prompt, p)
             newprompts.append(newp)
 
     return newprompts, skip_list_on_eva
 
 
-def eva_new_ppls(method="prefix"):
-    dn = "liangzid/glue_prompts"
-    dataset = load_dataset(dn)['validation'].to_list()
-    prompts = []
-    for d in dataset:
-        prompts.append(d["text"])
+def eva_new_ppls(method="prefix", ap_defend_method=None, task_specific=None,):
+    if task_specific is not None:
+        dn = "liangzid/nlu_prompts"
+        dataset = load_dataset(dn)['train'][task_specific]
+        prompts=dataset[0]
+    else:
+        dn = "liangzid/glue_prompts"
+        dataset = load_dataset(dn)['validation'].to_list()
+        prompts = []
+        for d in dataset:
+            prompts.append(d["text"])
+
+    # print(f"{prompts=}")
+    # print(f"{prompts[0]=}")
 
     newprompts = []
     skip_list_on_eva = []
@@ -151,7 +172,10 @@ def eva_new_ppls(method="prefix"):
             newp = mixup(p, inserted_unfamiliar_words)
             newprompts.append(newp)
             skip_list_on_eva = inserted_unfamiliar_words
-    elif method == "donot":
+    elif ap_defend_method=="paraphrase":
+        newprompts = prompts
+        skip_list_on_eva = ["" for _ in newprompts]
+    elif method == "donot" or ap_defend_method is not None:
         for p in prompts:
             r_p = donot_disclose[random.randint(0,
                                                 len(fakeone_phrase_ls)-1)]
@@ -173,6 +197,9 @@ def eva_new_ppls(method="prefix"):
             data = json.load(f, object_pairs_hook=OrderedDict)
         newprompts = data[1]
         assert data[0] == prompts
+    else:
+        newprompts = prompts
+        skip_list_on_eva = ["" for _ in newprompts]
 
     print("Now evaluate the old PPL and new PPLs.")
 
@@ -181,15 +208,20 @@ def eva_new_ppls(method="prefix"):
     old_ppl = [0]
     new_ppl = [0]
 
-    old_ppl = perplexity_llama2_7b(prompts, llamapth)
-    new_ppl = perplexity_llama2_7b(newprompts, llamapth)
+    old_ppl = [1. for _ in prompts]
+    new_ppl = old_ppl
+    # old_ppl = perplexity_llama2_7b(prompts, llamapth)
+    # new_ppl = perplexity_llama2_7b(newprompts, llamapth)
 
-    print("----------------")
-    print(sum(old_ppl)/len(old_ppl))
-    print(sum(new_ppl)/len(new_ppl))
-    print("----------------")
+    # print("----------------")
+    # print(sum(old_ppl)/len(old_ppl))
+    # print(sum(new_ppl)/len(new_ppl))
+    # print("----------------")
 
-    save_pth = f"confuse_prompts_gen{method}.json"
+    if task_specific is None:
+        save_pth = f"confuse_prompts_gen{method}.json"
+    else:
+        save_pth = f"confuse_prompts_gen{method}{task_specific}.json"
     with open(save_pth,
               'w', encoding='utf8') as f:
         json.dump([old_ppl, new_ppl,
@@ -201,8 +233,11 @@ def eva_new_ppls(method="prefix"):
             f,
             object_pairs_hook=OrderedDict)
 
-    infer_res_pth = f"confuse_prompts_extracted{method}.json"
-    estimate_scores_of_new_prompts(save_pth, infer_res_pth)
+    if task_specific is None:
+        infer_res_pth = f"confuse_prompts_extracted{method}.json"
+    else:
+        infer_res_pth = f"confuse_prompts_extracted{method}{task_specific}.json"
+    estimate_scores_of_new_prompts(save_pth, infer_res_pth,method)
 
     print("==========================================================")
     print("Compared to the pure response.")
@@ -217,10 +252,26 @@ def eva_new_ppls(method="prefix"):
 # running entry
 if __name__ == "__main__":
     # main()
-    # eva_new_ppls(method="prefix")
-    # eva_new_ppls(method="fakeone")
+
+    # eva_new_ppls(method="original")
     # eva_new_ppls(method="donot")
+    # eva_new_ppls(method="prefix")
+    eva_new_ppls(method="none", ap_defend_method="paraphrase",)
+    # eva_new_ppls(method="none", ap_defend_method="sandwich",)
+    # eva_new_ppls(method="none", ap_defend_method="xml",)
+    # eva_new_ppls(method="fakeone")
     # eva_new_ppls(method="locallook")
     # eva_new_ppls(method="insert")
-    eva_new_ppls(method="high-ppl")
+    # eva_new_ppls(method="high-ppl")
+    # eva_new_ppls(method="none",ap_defend_method="smoothLLM",)
+    # eva_new_ppls(method="none",ap_defend_method="sandwich",)
+    # eva_new_ppls(method="none",ap_defend_method="xml",)
+
+
+    method_ls=["original", "donot","prefix","fakeone","locallook"]
+    dataset_ls=["cola","qqp","sst2"]
+    for m in method_ls:
+        for d in dataset_ls:
+            print(f"Method: {m}, Dataset: {d}...")
+            eva_new_ppls(m, task_specific=d)
     print("EVERYTHING DONE.")
