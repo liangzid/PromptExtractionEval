@@ -5,8 +5,8 @@
 The script to evaluate the performance drops of the defending strategies
 in closed AI models.
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2024, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXXXX
+    Copyright © 2024, XXX, all rights reserved.
     Created:  3 January 2024
 ======================================================================
 """

@@ -4,8 +4,8 @@ CONSTRUCT_VARYING_SEQUENCE_LENGTH ---
 
 Constructing Dataset varying Sequence Length
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2023, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXXXX
+    Copyright © 2023, XXX, all rights reserved.
     Created: 21 November 2023
 ======================================================================
 """

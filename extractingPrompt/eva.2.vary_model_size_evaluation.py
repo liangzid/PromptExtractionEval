@@ -4,8 +4,8 @@ EVA.2.VARY_MODEL_SIZE_EVALUATION ---
 
 Evaluation script of 2.model_size_prompt_extraction_experiments.py
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2023, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXXXX
+    Copyright © 2023, XXX, all rights reserved.
     Created: 20 November 2023
 ======================================================================
 """

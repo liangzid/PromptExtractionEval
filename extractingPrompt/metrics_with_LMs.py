@@ -4,8 +4,8 @@ METRICS_WITH_LMS ---
 
 High-level evluation, about the quality of LMs.
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2023, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXXXX
+    Copyright © 2023, XXX, all rights reserved.
     Created: 17 November 2023
 ======================================================================
 """

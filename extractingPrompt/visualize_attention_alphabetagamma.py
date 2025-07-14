@@ -4,8 +4,8 @@ VISUALIZE_ATTENTION_ALPHABETAGAMMA ---
 
 After running `attention_visualize.py`
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2023, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXXXX
+    Copyright © 2023, XXX, all rights reserved.
     Created: 10 December 2023
 ======================================================================
 """

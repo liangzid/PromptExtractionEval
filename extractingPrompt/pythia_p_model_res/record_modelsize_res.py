@@ -4,8 +4,8 @@ RECORD_MODELSIZE_RES ---
 
 As the filename stated.
 
-    Author: Zi Liang <frost.liang@polyu.edu.hk>
-    Copyright © 2023, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXX
+    Copyright © 2023, XXX, all rights reserved.
     Created: 20 November 2023
 ======================================================================
 """

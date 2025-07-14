@@ -5,8 +5,8 @@ UNBALANCED_CORPUS_WITH_RAW_DISTRIBUTION_PREPROCESS ---
 Different from `preprocess_legalLAMA.py`, this file focuses on constructing
 fewshowt dataset more similar to real-world exmaple distributions.
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2023, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXXXX
+    Copyright © 2023, XXX, all rights reserved.
     Created: 14 November 2023
 ======================================================================
 """

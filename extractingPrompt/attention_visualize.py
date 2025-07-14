@@ -4,8 +4,8 @@
 
 Visualization of the attention matrices, to 
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2023, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXXXX
+    Copyright © 2023, XXX, all rights reserved.
     Created: 24 November 2023
 ======================================================================
 """

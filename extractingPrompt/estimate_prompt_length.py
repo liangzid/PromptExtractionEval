@@ -3,8 +3,8 @@
 ESTIMATE_PROMPT_LENGTH --- 
 varying prompt length for experiments.
 
-    Author: Zi Liang <zi1415926.liang@connect.polyu.hk>
-    Copyright © 2023, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXXXXXX
+    Copyright © 2023, XXX, all rights reserved.
     Created: 18 November 2023
 ======================================================================
 """

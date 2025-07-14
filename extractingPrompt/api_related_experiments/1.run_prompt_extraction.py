@@ -4,8 +4,8 @@
 
 For API experiments.
 
-    Author: Zi Liang <frost.liang@polyu.edu.hk>
-    Copyright © 2023, ZiLiang, all rights reserved.
+    Author: XXXXXXXXXX
+    Copyright © 2023, XXX, all rights reserved.
     Created: 18 December 2023
 ======================================================================
 """

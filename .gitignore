@@ -11,3 +11,4 @@
 extractingPrompt/offload/
 *ipynb_checkpoints/
 *.pdf
+/extractingPrompt/instructions/dirty_dir/chatgpt_system_prompt/
