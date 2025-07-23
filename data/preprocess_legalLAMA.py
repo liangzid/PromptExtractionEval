@@ -5,8 +5,8 @@ PREPROCESS_LEGALLAMA ---
 extract subtasks based on LegalLAMA benchmark.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 10 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 10 November 20xx
 ======================================================================
 """
 

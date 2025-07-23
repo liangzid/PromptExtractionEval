@@ -5,8 +5,8 @@ DEFENSE_VISUALIZATION ---
 Visualize the results after defending.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 19 December 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 19 December 20xx
 ======================================================================
 """
 

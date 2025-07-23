@@ -5,8 +5,8 @@ EVA.1.MODELS_TABLE ---
 Evaluate the scores of different LMs.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 28 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 28 November 20xx
 ======================================================================
 """
 

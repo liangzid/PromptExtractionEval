@@ -3,8 +3,8 @@
 DATA_2 --- 
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 27 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 27 November 20xx
 ======================================================================
 """
 

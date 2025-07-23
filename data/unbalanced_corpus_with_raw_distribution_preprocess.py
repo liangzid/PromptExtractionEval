@@ -6,8 +6,8 @@ Different from `preprocess_legalLAMA.py`, this file focuses on constructing
 fewshowt dataset more similar to real-world exmaple distributions.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 14 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 14 November 20xx
 ======================================================================
 """
 

@@ -10,5 +10,6 @@
 *.jsonl
 extractingPrompt/offload/
 *ipynb_checkpoints/
+*ipynb
 *.pdf
 /extractingPrompt/instructions/dirty_dir/chatgpt_system_prompt/

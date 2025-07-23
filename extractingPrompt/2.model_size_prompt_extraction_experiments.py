@@ -5,8 +5,8 @@
 For model size experiments.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 18 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 18 November 20xx
 ======================================================================
 """
 

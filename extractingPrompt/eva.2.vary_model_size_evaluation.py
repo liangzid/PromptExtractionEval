@@ -5,8 +5,8 @@ EVA.2.VARY_MODEL_SIZE_EVALUATION ---
 Evaluation script of 2.model_size_prompt_extraction_experiments.py
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 20 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 20 November 20xx
 ======================================================================
 """
 

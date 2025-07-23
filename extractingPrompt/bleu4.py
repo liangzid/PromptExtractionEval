@@ -6,8 +6,8 @@ From https://github.com/zhyack/BLEU4Python/blob/master/bleu.py
 All rights belong to the original author
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 17 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 17 November 20xx
 ======================================================================
 """
 from __future__ import absolute_import

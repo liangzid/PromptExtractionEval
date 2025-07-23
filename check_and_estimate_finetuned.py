@@ -6,8 +6,8 @@ Examples of data preparation and analysis of OpenAI's fine-tuning.
 Reference: https://cookbook.openai.com/examples/chat_finetuning_data_prep
 
     Author: XXXXXXXXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 11 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 11 November 20xx
 ======================================================================
 """
 

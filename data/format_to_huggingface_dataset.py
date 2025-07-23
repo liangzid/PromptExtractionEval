@@ -5,8 +5,8 @@ FORMAT_TO_HUGGINGFACE_DATASET ---
 Format existing formats into huggingface's dataset style, and update it.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 12 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 12 November 20xx
 ======================================================================
 """
 

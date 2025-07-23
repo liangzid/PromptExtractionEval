@@ -5,8 +5,8 @@
 Soft extraction of large language models.
 
     Author: XXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 21 December 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 21 December 20xx
 ======================================================================
 """
 

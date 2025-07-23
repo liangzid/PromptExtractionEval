@@ -6,8 +6,8 @@ Compare the perplexity (PPL) between prompts, or between prompts and
 other things.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 23 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 23 November 20xx
 ======================================================================
 """
 
