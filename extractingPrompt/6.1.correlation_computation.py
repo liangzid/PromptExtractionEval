@@ -5,8 +5,8 @@
 Compute the correlation of different subfigures.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2024, XXX, all rights reserved.
-    Created: 15 April 2024
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 15 April 20xx
 ======================================================================
 """
 

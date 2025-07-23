@@ -5,8 +5,8 @@ TEST_LLAMA2_EXTRACTING ---
 Evaluate whether LLAMA-2-7B can be extracted prompts at inference time.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 16 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 16 November 20xx
 ======================================================================
 """
 

@@ -5,8 +5,8 @@ VISUALIZE_ATTENTION_ALPHABETAGAMMA ---
 After running `attention_visualize.py`
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 10 December 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 10 December 20xx
 ======================================================================
 """
 

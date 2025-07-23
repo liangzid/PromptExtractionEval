@@ -5,8 +5,8 @@
 Defending strategies in openai apis. Experiments.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2024, XXX, all rights reserved.
-    Created:  2 January 2024
+    Copyright © 20xx, XXX, all rights reserved.
+    Created:  2 January 20xx
 ======================================================================
 """
 

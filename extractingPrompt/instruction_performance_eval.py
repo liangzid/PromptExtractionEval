@@ -6,8 +6,8 @@ To evaluate the differences of performances under hand-crafted instructions
 and generated instructions.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 19 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 19 November 20xx
 ======================================================================
 """
 

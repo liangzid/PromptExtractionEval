@@ -7,8 +7,8 @@ Handle fine-tuning procedure with OpenAI interfaces.
 reference: https://platform.openai.com/docs/guides/fine-tuning/preparing-your-dataset
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 11 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 11 November 20xx
 ======================================================================
 """
 

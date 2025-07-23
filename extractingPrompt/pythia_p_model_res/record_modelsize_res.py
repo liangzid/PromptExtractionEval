@@ -5,8 +5,8 @@ RECORD_MODELSIZE_RES ---
 As the filename stated.
 
     Author: XXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 20 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 20 November 20xx
 ======================================================================
 """
 

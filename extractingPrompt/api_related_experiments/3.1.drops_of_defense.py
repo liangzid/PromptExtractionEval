@@ -6,8 +6,8 @@ The script to evaluate the performance drops of the defending strategies
 in closed AI models.
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2024, XXX, all rights reserved.
-    Created:  3 January 2024
+    Copyright © 20xx, XXX, all rights reserved.
+    Created:  3 January 20xx
 ======================================================================
 """
 

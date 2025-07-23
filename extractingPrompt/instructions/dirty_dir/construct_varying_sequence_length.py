@@ -5,8 +5,8 @@ CONSTRUCT_VARYING_SEQUENCE_LENGTH ---
 Constructing Dataset varying Sequence Length
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 21 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 21 November 20xx
 ======================================================================
 """
 

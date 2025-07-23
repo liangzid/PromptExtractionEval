@@ -3,8 +3,8 @@
 COLLECT_PUSHTO_HF --- 
 
     Author: XXXXXXXXXXXXXX
-    Copyright © 2023, XXX, all rights reserved.
-    Created: 16 November 2023
+    Copyright © 20xx, XXX, all rights reserved.
+    Created: 16 November 20xx
 ======================================================================
 """
 
