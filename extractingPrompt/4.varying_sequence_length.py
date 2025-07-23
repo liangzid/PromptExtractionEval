@@ -12,8 +12,6 @@ Varing sequence length experiments.
 
 
 # ------------------------ Code --------------------------------------
-import os
-os.environ['CUDA_VISIBLE_DEVICES']="1"
 
 # normal import
 import json
@@ -59,13 +57,10 @@ print("Dataset loading DONE.")
 
 
 model_ls = [
-    # "microsoft/phi-1_5#E",
-    # "microsoft/phi-1_5#I",
-    # "NousResearch/Llama-2-7b-chat-hf#E",
-    # "NousResearch/Llama-2-7b-chat-hf#I",
-
-    "meta-llama/Llama-3.2-3B-Instruct#I",
-
+    "microsoft/phi-1_5#E",
+    "microsoft/phi-1_5#I",
+    "NousResearch/Llama-2-7b-chat-hf#E",
+    "NousResearch/Llama-2-7b-chat-hf#I",
     # "Qwen/Qwen-7B-Chat",
     # "01-ai/Yi-6B",
     # "mistralai/Mistral-7B-Instruct-v0.1",

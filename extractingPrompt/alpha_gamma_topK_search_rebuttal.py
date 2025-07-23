@@ -38,6 +38,7 @@ from attention_visualize import filter_targeted_samples
 from heapq import nlargest
 
 
+
 def obtainTopKFromeDoubleKeyDict(score_dict, K=15):
     all_entries = []
     for b in score_dict:
@@ -51,40 +52,29 @@ def obtainTopKFromeDoubleKeyDict(score_dict, K=15):
 
 def main_infer():
     file_pth = "./vary_sl/Llama-2-7b-chat-hf-res.json"
-    # file_pth = "vary_sl/Llama-3.2-3B-Instruct#I-res.json"
-    # model_name = "NousResearch/Llama-2-7b-chat-hf"
-    # model_name = "922-CA/llama-2-7b-monika-v0.3b"
-    # method_name = "DeeWoo/Llama-2-7b-chat_FFT_GSM8K"
-    model_name = "meta-llama/Llama-2-13b-hf"
+    model_name = "NousResearch/Llama-2-7b-chat-hf"
 
-    res_ls=[]
     try:
-        x=searchTopKGammaCur(file_pth, model_name, "cuda:0")
-        res_ls.append(x)
+        searchTopKGammaCur(file_pth, model_name, "cuda:0")
     except Exception as e:
         raise e
         print("error: ", e)
 
-    # try:
-    #     model_name = "meta-llama/Llama-2-7b-hf"
-    #     x=searchTopKGammaCur(file_pth, model_name, "cuda:0")
-    #     res_ls.append(x)
-    # except Exception as e:
-    #     print("error: ", e)
+    try:
+        model_name = "meta-llama/Llama-2-7b-hf"
+        searchTopKGammaCur(file_pth, model_name, "cuda:0")
+    except Exception as e:
+        print("error: ", e)
 
-    # # file_pth = "./vary_sl/phi-1_5-res.json"
-    # model_name = "microsoft/phi-1_5"
-    # try:
-    #     x=searchTopKGammaCur(file_pth, model_name, "cuda:0")
-    #     res_ls.append(x)
-    # except Exception as e:
-    #     print("error: ", e)
-
-    from pprint import pprint
-    pprint(res_ls)
+    pth = "./vary_sl/phi-1_5-res.json"
+    model_name = "microsoft/phi-1_5"
+    try:
+        searchTopKGammaCur(pth, model_name, "cuda:0")
+    except Exception as e:
+        print("error: ", e)
 
 
-def searchTopKGammaCur(filepth, model_name, device="cuda:0",):
+def searchTopKGammaCur(filepth, model_name, device="cuda:3",):
 
     # --- 1. Prepare test cases
     posls, negls = filter_targeted_samples(
@@ -118,10 +108,9 @@ def searchTopKGammaCur(filepth, model_name, device="cuda:0",):
 
     from attention_visualize import compute_metric_of_attentions
 
-    for i, pos in tqdm(enumerate(posls), desc="Samples"):
-        # is_negative = True
+    for i, pos in tqdm(enumerate(posls), sec="Samples"):
         is_negative = False
-        if i > 5:
+        if i > 2:
             break
 
         text = f"Instruction: {pos[0]} User: {pos[1]} Assistant: {pos[2]}"
@@ -164,14 +153,9 @@ def searchTopKGammaCur(filepth, model_name, device="cuda:0",):
         # 3. obtain the topK's indices within in `score_dict`.
         index_pair_ls = obtainTopKFromeDoubleKeyDict(score_dict, K=15)
 
-        res_ls=[]
-        for a,b in index_pair_ls:
-            res_ls.append(score_dict[a][b])
-
         print("-----------------------------------------------------")
         print(f"{index_pair_ls=}")
-    
-    return index_pair_ls, res_ls
+
 
 if __name__ == "__main__":
     main_infer()
